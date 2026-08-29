@@ -1,0 +1,33 @@
+{
+  "case_ids": [
+    "C001",
+    "C002",
+    "C003",
+    "C004",
+    "C005",
+    "C006",
+    "C007",
+    "C008",
+    "C009",
+    "C010",
+    "C011",
+    "C012",
+    "C013",
+    "C014",
+    "C015",
+    "C016",
+    "C017",
+    "C018",
+    "C019",
+    "C020",
+    "C021",
+    "C022",
+    "C023",
+    "C024"
+  ],
+  "mode": "baseline",
+  "model": "openai/gpt-oss-20b",
+  "provider": "replay",
+  "raw_results": "/storage/cash/hakerearth-micro1/results/baseline-replay-gpt-oss-20b/raw-results.jsonl",
+  "schema_version": 1
+}

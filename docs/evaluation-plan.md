@@ -65,3 +65,7 @@ Metrics are recomputed by a standalone script from raw JSONL. The report generat
 ## Clean reproduction
 
 The final release is rerun in a fresh container with no provider credentials using replay mode. The clean run must regenerate the benchmark metrics and representative reports byte-for-byte, except for explicitly normalized timestamps and environment metadata.
+
+## Post-baseline protocol amendment
+
+The canonical one-shot baseline saturated unsafe-change decision F1 at 1.000 while scoring 0.500 issue-category micro-F1. The binary metric remains a mandatory no-regression safety gate, while verified issue-category micro-F1 becomes the preregistered discriminative improvement metric. The immutable rationale, thresholds, and unchanged controls are recorded in `docs/evaluation-protocol-v2.md` before advanced implementation.

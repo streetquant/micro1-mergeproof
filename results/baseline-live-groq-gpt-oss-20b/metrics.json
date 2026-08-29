@@ -1,0 +1,42 @@
+{
+  "cases": 24,
+  "evidence_reference_validity": 1.0,
+  "issue_category_micro": {
+    "f1": 0.5000000000000001,
+    "fn": 13,
+    "fp": 5,
+    "precision": 0.6428571428571429,
+    "recall": 0.4090909090909091,
+    "tp": 9
+  },
+  "mode": "baseline",
+  "model": "openai/gpt-oss-20b",
+  "model_usage": {
+    "calls": 24,
+    "estimated_cost_usd": 0,
+    "http_attempts": 24,
+    "input_tokens": 33348,
+    "output_tokens": 10702,
+    "rate_limit_wait_ms": 232365,
+    "total_tokens": 44050
+  },
+  "primary_metric": "unsafe_change_decision_f1",
+  "provider": "groq",
+  "runtime_ms": {
+    "median": 11778.5,
+    "p95": 13692,
+    "total": 277991
+  },
+  "safe_approval_precision": 1.0,
+  "schema_version": 1,
+  "unsafe_change_decision": {
+    "accuracy": 1.0,
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tn": 12,
+    "tp": 12
+  }
+}

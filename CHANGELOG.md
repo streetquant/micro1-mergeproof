@@ -33,3 +33,14 @@ This log records material design and evaluation decisions, including failed or r
 **Changes:** add bounded 429/5xx retry, parse `Retry-After` and token-reset durations, pace sequential Groq calls at 12 seconds, and report HTTP attempts plus rate-limit wait time in resource metrics.
 **Integrity rule:** a canonical live run is accepted only when there are 24 successful model usages and 24 content-addressed replay fixtures.
 **Reason removed:** incomplete replay coverage and provider failures violate the run manifest.
+
+## E004 — Canonical one-shot baseline and metric ceiling
+
+**Status:** kept and frozen
+**Model/provider:** `openai/gpt-oss-20b` through Groq, temperature zero.
+**Integrity:** 24 results, 24 successful model usages, 24 content-addressed replay fixtures, zero gate violations, and a clean artifact security scan.
+**Measured result:** unsafe-change decision F1 1.000; safe approval precision 1.000; issue-category micro-F1 0.500; evidence-reference validity 1.000; 44,050 total tokens; 24 HTTP attempts.
+**Replay:** offline replay reproduces every semantic result and comparable metric; only provider identity and measured runtime/latency differ.
+**Protocol consequence:** preserve unsafe-change F1 as a mandatory 1.000 no-regression gate. Before advanced implementation, preregister verified issue-category micro-F1 as the discriminative optimization metric with a target of at least 0.850 and at least +0.250 absolute improvement.
+**Reason:** binary merge/block classification saturated, while actionable diagnosis remained materially incomplete. The v1 metric and run are retained rather than hidden or rewritten.
+**Evidence:** `results/baseline-live-groq-gpt-oss-20b/`, `results/baseline-replay-gpt-oss-20b/`, `fixtures/replay/groq-gpt-oss-20b/`, and `docs/evaluation-protocol-v2.md`.

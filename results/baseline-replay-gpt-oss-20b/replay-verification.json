@@ -1,0 +1,13 @@
+{
+  "case_count": 24,
+  "fixture_count": 24,
+  "fixture_directory_sha256": "a99fc38725b2897ff8aedc218d9b49cd1f2a46a394e24b5259d366bbdac8bedc",
+  "live_metrics_sha256": "406aa14a04fe84faf2fca794fbaa5ad38f422a3a8325c066be1b8e0335e3b8b1",
+  "live_raw_results_sha256": "edd9be617235ce4bf79ccbad86eaf3d2ede4592c69bcbe319997b3adf1fe1302",
+  "model": "openai/gpt-oss-20b",
+  "replay_metrics_sha256": "cdd3114b567b2a1bb08bc9f88c0ff500996f34775b74227f7c0f97327deadbad",
+  "replay_raw_results_sha256": "c3b210191b3f8123601b26a26aa7cdab76808c6e4385e916cf8d7519e314911b",
+  "schema_version": 1,
+  "semantic_comparison": "All fields except provider identity and measured runtime/latency are identical.",
+  "verified": true
+}

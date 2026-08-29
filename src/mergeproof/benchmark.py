@@ -106,6 +106,8 @@ def compute_metrics(results: list[AuditResult], gold: dict[str, GoldCase]) -> di
         },
         "model_usage": {
             "calls": len(usages),
+            "http_attempts": sum(item.http_attempts for item in usages),
+            "rate_limit_wait_ms": sum(item.rate_limit_wait_ms for item in usages),
             "input_tokens": sum(item.input_tokens for item in usages),
             "output_tokens": sum(item.output_tokens for item in usages),
             "total_tokens": sum(item.total_tokens for item in usages),

@@ -116,6 +116,8 @@ class ModelUsage(StrictModel):
     output_tokens: int = 0
     total_tokens: int = 0
     latency_ms: int = 0
+    http_attempts: int = Field(default=1, ge=1)
+    rate_limit_wait_ms: int = Field(default=0, ge=0)
     estimated_cost_usd: float | None = None
 
 

@@ -8,7 +8,14 @@ import httpx
 import pytest
 
 from mergeproof.models import ModelUsage
-from mergeproof.providers import GeminiProvider, LLMProvider, ProviderError, ReplayProvider
+from mergeproof.providers import (
+    GeminiProvider,
+    LLMProvider,
+    OpenAICompatibleProvider,
+    ProviderError,
+    ReplayProvider,
+    _parse_duration_seconds,
+)
 from mergeproof.utils import stable_request_hash, write_json
 
 
@@ -140,3 +147,96 @@ def test_gemini_uses_header_only_authentication(monkeypatch: pytest.MonkeyPatch)
     assert "key=" not in call["url"]
     assert fake_key not in call["url"]
     assert call["headers"] == {"x-goog-api-key": fake_key}
+
+
+def test_parse_provider_reset_durations() -> None:
+    assert _parse_duration_seconds("9.84s") == pytest.approx(9.84)
+    assert _parse_duration_seconds("1m31.2s") == pytest.approx(91.2)
+    assert _parse_duration_seconds("250ms") == pytest.approx(0.25)
+    assert _parse_duration_seconds("2.5") == pytest.approx(2.5)
+    assert _parse_duration_seconds("nonsense") is None
+
+
+class SequenceClient:
+    def __init__(self, responses: list[httpx.Response]) -> None:
+        self.responses = responses
+        self.calls = 0
+
+    def __enter__(self) -> SequenceClient:
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
+
+    def post(self, *args: object, **kwargs: object) -> httpx.Response:
+        response = self.responses[self.calls]
+        self.calls += 1
+        return response
+
+
+def test_openai_compatible_provider_retries_rate_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    request = httpx.Request("POST", "https://example.invalid/chat/completions")
+    limited = httpx.Response(
+        429,
+        headers={"x-ratelimit-reset-tokens": "1.5s"},
+        request=request,
+    )
+    data = {
+        "choices": [
+            {
+                "message": {
+                    "content": json.dumps(
+                        {
+                            "decision": "approve",
+                            "summary": "fixture",
+                            "confidence": 1,
+                            "findings": [],
+                        }
+                    )
+                }
+            }
+        ],
+        "usage": {"prompt_tokens": 11, "completion_tokens": 7, "total_tokens": 18},
+    }
+    success = httpx.Response(200, json=data, request=request)
+    client = SequenceClient([limited, success])
+    waits: list[float] = []
+    monkeypatch.setattr(httpx, "Client", lambda **_: client)
+    monkeypatch.setattr("mergeproof.providers.time.sleep", waits.append)
+
+    provider = OpenAICompatibleProvider(
+        provider_name="fixture",
+        model="fixture-model",
+        base_url="https://example.invalid",
+        api_key="not-a-credential",
+        max_attempts=2,
+    )
+    response = provider.complete_json(agent="reviewer", system="system", user="user")
+
+    assert response.data["decision"] == "approve"
+    assert client.calls == 2
+    assert waits == [pytest.approx(2.0)]
+    assert response.usage.http_attempts == 2
+    assert response.usage.rate_limit_wait_ms == 2000
+
+
+def test_openai_compatible_provider_paces_sequential_calls(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    provider = OpenAICompatibleProvider(
+        provider_name="fixture",
+        model="fixture-model",
+        base_url="https://example.invalid",
+        api_key="not-a-credential",
+        minimum_interval_seconds=12,
+    )
+    clock = iter([100.0, 105.0, 112.0])
+    waits: list[float] = []
+    monkeypatch.setattr("mergeproof.providers.time.perf_counter", lambda: next(clock))
+    monkeypatch.setattr("mergeproof.providers.time.sleep", waits.append)
+
+    assert provider._pace() == 0
+    assert provider._pace() == 7000
+    assert waits == [pytest.approx(7.0)]

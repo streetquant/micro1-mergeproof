@@ -36,7 +36,7 @@ class LLMProvider(ABC):
             raw_text, token_usage = self._request(system=system, user=user)
             data = extract_json_object(raw_text)
         except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
-            raise ProviderError(f"{self.name} request failed: {exc}") from exc
+            raise ProviderError(f"{self.name} request failed: {redact_secrets(str(exc))}") from exc
         latency_ms = round((time.perf_counter() - started) * 1000)
         usage = ModelUsage(
             provider=self.name,
@@ -88,16 +88,17 @@ class GeminiProvider(LLMProvider):
         timeout_seconds: float = 90,
     ) -> None:
         super().__init__(model=model.removeprefix("models/"), record_dir=record_dir)
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        if not self.api_key:
+        resolved_api_key = api_key or os.getenv("GEMINI_API_KEY")
+        if not resolved_api_key:
             raise ProviderError("GEMINI_API_KEY is required for the Gemini provider")
+        self.api_key: str = resolved_api_key
         self.timeout_seconds = timeout_seconds
 
     def _request(self, *, system: str, user: str) -> tuple[str, dict[str, int]]:
         url = (
             f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
-            f"?key={self.api_key}"
         )
+        headers = {"x-goog-api-key": self.api_key}
         payload = {
             "systemInstruction": {"parts": [{"text": system}]},
             "contents": [{"role": "user", "parts": [{"text": user}]}],
@@ -108,7 +109,7 @@ class GeminiProvider(LLMProvider):
             },
         }
         with httpx.Client(timeout=self.timeout_seconds) as client:
-            response = client.post(url, json=payload)
+            response = client.post(url, headers=headers, json=payload)
             response.raise_for_status()
             body = response.json()
         raw_text = "".join(

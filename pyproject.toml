@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mergeproof"
+version = "0.1.0"
+description = "Evidence-grounded release gate for agent-authored code changes"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Shayan Banerjee" }]
+dependencies = [
+  "httpx>=0.28,<1",
+  "jinja2>=3.1,<4",
+  "pydantic>=2.10,<3",
+  "rich>=13.9,<15",
+  "typer>=0.15,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "hypothesis>=6.130,<7",
+  "mypy>=1.15,<2",
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+  "ruff>=0.11,<1",
+]
+
+[project.scripts]
+mergeproof = "mergeproof.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mergeproof"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["mergeproof"]
+
+[tool.coverage.run]
+branch = true
+source = ["mergeproof"]

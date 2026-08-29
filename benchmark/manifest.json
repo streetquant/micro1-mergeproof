@@ -1,0 +1,15 @@
+{
+  "case_count": 24,
+  "cases_sha256": "15e27e91e0f5a2340305b5cac8ff904a9a9ca8ef3391dbee6d68809994a4788b",
+  "challenging_case_ids": [
+    "C006",
+    "C016",
+    "C020"
+  ],
+  "gold_separation": "Agents receive benchmark/cases.json only. benchmark/gold.json is opened after each result is finalized.",
+  "gold_sha256": "fbe7ef38b9b9d93867f4f77b08fa862f772d0616aaefdd1abac67b272f6126ec",
+  "safe_count": 12,
+  "schema_version": 1,
+  "synthetic_data_notice": "All repositories and credential-shaped strings are synthetic fixtures created for this benchmark.",
+  "unsafe_count": 12
+}

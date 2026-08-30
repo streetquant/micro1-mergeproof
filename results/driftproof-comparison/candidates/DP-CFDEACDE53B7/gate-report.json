@@ -1,0 +1,224 @@
+{
+  "build": {
+    "command": [
+      "dbt",
+      "build",
+      "--project-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-CFDEACDE53B7",
+      "--profiles-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-CFDEACDE53B7",
+      "--no-use-colors"
+    ],
+    "duration_ms": 3747,
+    "isolation": "disposable_copy",
+    "passed": true,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 2 models, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 4 START sql table model analytics.stg_orders_v2 ........................... [RUN]\n1 of 4 OK created sql table model analytics.stg_orders_v2 ...................... [OK in <DURATION>]\n2 of 4 START sql table model analytics.mart_orders ............................. [RUN]\n2 of 4 OK created sql table model analytics.mart_orders ........................ [OK in <DURATION>]\n3 of 4 START test not_null_mart_orders_order_id ................................ [RUN]\n3 of 4 PASS not_null_mart_orders_order_id ...................................... [PASS in <DURATION>]\n4 of 4 START test unique_mart_orders_order_id .................................. [RUN]\n4 of 4 PASS unique_mart_orders_order_id ........................................ [PASS in <DURATION>]\nFinished running 2 table models, 2 data tests in 0 hours 0 minutes and 0.58 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=4 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=4\n",
+    "worktree_sha256": "184133e0bb1bb5d4a7826ad47d7ac491f8577276b733dacf0c4538c39f44ab33"
+  },
+  "candidate_id": "DP-CFDEACDE53B7",
+  "certificate_sha256": "f4b9a39f59b23e3be66337b3e018e16f75ee8995b69e61ce96709c7f31994e30",
+  "checks": [
+    {
+      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "evidence": [
+        "dbt build",
+        "184133e0bb1bb5d4a7826ad47d7ac491f8577276b733dacf0c4538c39f44ab33"
+      ],
+      "id": "C-046C625A4D7B",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Candidate builds from the disposable review worktree"
+    },
+    {
+      "detail": "The source tree hash is unchanged.",
+      "evidence": [
+        "184133e0bb1bb5d4a7826ad47d7ac491f8577276b733dacf0c4538c39f44ab33",
+        "184133e0bb1bb5d4a7826ad47d7ac491f8577276b733dacf0c4538c39f44ab33"
+      ],
+      "id": "C-2EE4ED4DFCAA",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Original candidate project remained unchanged"
+    },
+    {
+      "detail": "Compiled 5 rules without using an external benchmark oracle.",
+      "evidence": [
+        "BUSINESS_CONTEXT.md",
+        "b0bf4e1a92c8cc49707123c9fb125afa7a9f2b1dba314999c283c35730937e4d"
+      ],
+      "id": "C-98B308A9B658",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Visible business context compiled into executable checks"
+    },
+    {
+      "detail": "All documented fields are projected by the candidate.",
+      "evidence": [
+        "models/mart_orders.sql",
+        "models/stg_orders_v2.sql"
+      ],
+      "id": "C-3829DDC1E5FC",
+      "metadata": {
+        "missing": [],
+        "observed_outputs": [
+          "amount",
+          "customer_id",
+          "order_id"
+        ]
+      },
+      "rule_id": "R-7EB5DBCDC415",
+      "status": "pass",
+      "title": "Public output contract is represented"
+    },
+    {
+      "detail": "No stale dbt refs remain.",
+      "evidence": [
+        "models/mart_orders.sql",
+        "models/stg_orders_v2.sql"
+      ],
+      "id": "C-5B64FCC1DA2D",
+      "metadata": {
+        "model_names": [
+          "mart_orders",
+          "stg_orders_v2"
+        ],
+        "refs": [
+          "stg_orders_v2"
+        ]
+      },
+      "rule_id": "R-16A81136654D",
+      "status": "pass",
+      "title": "All dbt model references resolve to observed models"
+    },
+    {
+      "detail": "Preserved field order_id remains a direct pass-through.",
+      "evidence": [
+        "models/mart_orders.sql"
+      ],
+      "id": "C-874261405A14",
+      "metadata": {
+        "expressions": [
+          "order_id"
+        ]
+      },
+      "rule_id": "R-F6DB984A3D13",
+      "status": "pass",
+      "title": "Unchanged contract field remains a pass-through"
+    },
+    {
+      "detail": "Preserved field customer_id remains a direct pass-through.",
+      "evidence": [
+        "models/mart_orders.sql"
+      ],
+      "id": "C-CCEAADAF69E7",
+      "metadata": {
+        "expressions": [
+          "customer_id"
+        ]
+      },
+      "rule_id": "R-BE2319C80449",
+      "status": "pass",
+      "title": "Unchanged contract field remains a pass-through"
+    },
+    {
+      "detail": "Preserved field amount remains a direct pass-through.",
+      "evidence": [
+        "models/mart_orders.sql"
+      ],
+      "id": "C-156EDFDCAA9B",
+      "metadata": {
+        "expressions": [
+          "amount"
+        ]
+      },
+      "rule_id": "R-EB34F86B9D9A",
+      "status": "pass",
+      "title": "Unchanged contract field remains a pass-through"
+    },
+    {
+      "detail": "No disabled or warning-only validation controls were found.",
+      "evidence": [
+        "models/schema.yml",
+        "models/sources.yml"
+      ],
+      "id": "C-3A141B290B9B",
+      "metadata": {
+        "suppression_signals": []
+      },
+      "rule_id": null,
+      "status": "pass",
+      "title": "Verification controls were not weakened"
+    }
+  ],
+  "consequential_action_taken": false,
+  "context_sha256": "b0bf4e1a92c8cc49707123c9fb125afa7a9f2b1dba314999c283c35730937e4d",
+  "contract": {
+    "context_sha256": "b0bf4e1a92c8cc49707123c9fb125afa7a9f2b1dba314999c283c35730937e4d",
+    "rules": [
+      {
+        "fields": [
+          "order_id",
+          "customer_id",
+          "amount"
+        ],
+        "id": "R-7EB5DBCDC415",
+        "kind": "public_contract",
+        "output": null,
+        "parameters": {},
+        "source_text": "The mart contract remains `order_id`, `customer_id`, `amount`."
+      },
+      {
+        "fields": [],
+        "id": "R-16A81136654D",
+        "kind": "dependency_exists",
+        "output": null,
+        "parameters": {},
+        "source_text": "The staging model was renamed during the refactor; use the current staging model rather than recreating the removed name."
+      },
+      {
+        "fields": [
+          "order_id"
+        ],
+        "id": "R-F6DB984A3D13",
+        "kind": "preserve_field",
+        "output": "order_id",
+        "parameters": {},
+        "source_text": "The mart contract remains `order_id`, `customer_id`, `amount`."
+      },
+      {
+        "fields": [
+          "customer_id"
+        ],
+        "id": "R-BE2319C80449",
+        "kind": "preserve_field",
+        "output": "customer_id",
+        "parameters": {},
+        "source_text": "The mart contract remains `order_id`, `customer_id`, `amount`."
+      },
+      {
+        "fields": [
+          "amount"
+        ],
+        "id": "R-EB34F86B9D9A",
+        "kind": "preserve_field",
+        "output": "amount",
+        "parameters": {},
+        "source_text": "The mart contract remains `order_id`, `customer_id`, `amount`."
+      }
+    ],
+    "unknown_sentences": []
+  },
+  "failed_check_ids": [],
+  "human_approval_required": true,
+  "inconclusive_check_ids": [],
+  "project_sha256": "184133e0bb1bb5d4a7826ad47d7ac491f8577276b733dacf0c4538c39f44ab33",
+  "schema_version": 1,
+  "summary": "Candidate built successfully and every compiled visible contract check passed. A qualified human must still authorize any merge or deployment.",
+  "trajectory_sha256": "986ca82526e22e8eedbc372bcd185ebd3879dcbfee3cbf1b6f1f083203983d51",
+  "verdict": "approve"
+}

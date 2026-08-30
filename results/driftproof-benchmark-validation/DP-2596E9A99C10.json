@@ -1,0 +1,32 @@
+{
+  "candidate_id": "DP-2596E9A99C10",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": true,
+  "external_evaluation": {
+    "case_id": "DD-009",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=0; actual=0",
+        "name": "customer_grain_unique",
+        "passed": true
+      },
+      {
+        "detail": "expected=[['C001', 'new@example.com'], ['C002', 'stable@example.com']]; actual=[['C001', 'new@example.com'], ['C002', 'stable@example.com']]",
+        "name": "recency_rule_preserved",
+        "passed": true
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:41:19  Running with dbt=1.11.14\n\u001b[0m02:41:19  Registered adapter: duckdb=1.11.0\n\u001b[0m02:41:19  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:41:21  Found 1 model, 2 data tests, 1 source, 500 macros\n\u001b[0m02:41:21  \n\u001b[0m02:41:21  Concurrency: 1 threads (target='dev')\n\u001b[0m02:41:21  \n\u001b[0m02:41:21  1 of 3 START sql table model analytics.current_customers ....................... [RUN]\n\u001b[0m02:41:21  1 of 3 OK created sql table model analytics.current_customers .................. [\u001b[32mOK\u001b[0m in 0.18s]\n\u001b[0m02:41:21  2 of 3 START test not_null_current_customers_customer_id ....................... [RUN]\n\u001b[0m02:41:21  2 of 3 PASS not_null_current_customers_customer_id ............................. [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:41:21  3 of 3 START test unique_current_customers_customer_id ......................... [RUN]\n\u001b[0m02:41:21  3 of 3 PASS unique_current_customers_customer_id ............................... [\u001b[32mPASS\u001b[0m in 0.02s]\n\u001b[0m02:41:21  \n\u001b[0m02:41:21  Finished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.32 seconds (0.32s).\n\u001b[0m02:41:21  \n\u001b[0m02:41:21  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:41:21  \n\u001b[0m02:41:21  Done. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "passed": true
+  },
+  "external_oracle_passed": true,
+  "failed_external_checks": [],
+  "upstream_case_id": "DD-009"
+}

@@ -1,0 +1,83 @@
+{
+  "advanced": {
+    "accuracy": 1.0,
+    "cases": 24,
+    "human_review_rate": 0.0,
+    "primary_metric": "safe_approval_macro_f1",
+    "runtime_ms": {
+      "median": 3640.5,
+      "p95": 13918,
+      "total": 133187
+    },
+    "safe_approval_macro_f1": 1.0,
+    "safe_class": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tp": 12
+    },
+    "schema_version": 1,
+    "unsafe_class": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tp": 12
+    },
+    "unsafe_repair_escape_rate": 0.0
+  },
+  "baseline": {
+    "accuracy": 0.5,
+    "cases": 24,
+    "human_review_rate": 0.0,
+    "primary_metric": "safe_approval_macro_f1",
+    "runtime_ms": {
+      "median": 3641.0,
+      "p95": 4402,
+      "total": 111556
+    },
+    "safe_approval_macro_f1": 0.3333333333333333,
+    "safe_class": {
+      "f1": 0.6666666666666666,
+      "fn": 0,
+      "fp": 12,
+      "precision": 0.5,
+      "recall": 1.0,
+      "tp": 12
+    },
+    "schema_version": 1,
+    "unsafe_class": {
+      "f1": 0.0,
+      "fn": 12,
+      "fp": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    },
+    "unsafe_repair_escape_rate": 1.0
+  },
+  "benchmark": "DriftProof green-but-wrong dbt approval benchmark",
+  "change": {
+    "accuracy": 0.5,
+    "safe_approval_macro_f1": 0.6666666666666667,
+    "unsafe_repair_escape_rate": -1.0
+  },
+  "fairness": {
+    "advanced_resources": "same inputs and dbt build plus deterministic context compilation, adversarial static checks, immutable worktree validation, and a hash-bound certificate",
+    "baseline_resources": "candidate files plus candidate-owned dbt build",
+    "gold_opened_after_predictions": true,
+    "same_candidates": true,
+    "same_context": true,
+    "same_dbt_command": true
+  },
+  "provenance": {
+    "benchmark_manifest_sha256": "d7ed77030088d7293e9fef2b603c3d6324ed1de4b93db2d4277e0987c20fb713",
+    "cases_sha256": "8148cdd147febb98573a9c83b0908551384dc9c6eac22063a937369d244ae261",
+    "gold_sha256": "d94858ed344230b21cbd6214d79c8b233713fcc1409025c0c4d7781d0e520089",
+    "runner_sha256": "75e7e137dca1793f5ab46891292ae49f3ec7257a0374ad32bba1bf1775db45ca"
+  },
+  "schema_version": 1
+}

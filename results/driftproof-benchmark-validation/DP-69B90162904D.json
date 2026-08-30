@@ -1,0 +1,40 @@
+{
+  "candidate_id": "DP-69B90162904D",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": false,
+  "external_evaluation": {
+    "case_id": "DD-006",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=0; actual=0",
+        "name": "required_identifier_not_null",
+        "passed": true
+      },
+      {
+        "detail": "expected=2; actual=3",
+        "name": "frozen_row_count",
+        "passed": false
+      },
+      {
+        "detail": "expected=[['C001'], ['C003']]; actual=[['C001'], ['C003'], ['UNKNOWN']]",
+        "name": "no_invented_identifiers",
+        "passed": false
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:42:23  Running with dbt=1.11.14\n\u001b[0m02:42:24  Registered adapter: duckdb=1.11.0\n\u001b[0m02:42:24  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:42:25  Found 1 model, 2 data tests, 1 source, 500 macros\n\u001b[0m02:42:25  \n\u001b[0m02:42:25  Concurrency: 1 threads (target='dev')\n\u001b[0m02:42:25  \n\u001b[0m02:42:25  1 of 3 START sql table model analytics.stg_customers ........................... [RUN]\n\u001b[0m02:42:25  1 of 3 OK created sql table model analytics.stg_customers ...................... [\u001b[32mOK\u001b[0m in 0.17s]\n\u001b[0m02:42:25  2 of 3 START test not_null_stg_customers_customer_id ........................... [RUN]\n\u001b[0m02:42:25  2 of 3 PASS not_null_stg_customers_customer_id ................................. [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:42:25  3 of 3 START test unique_stg_customers_customer_id ............................. [RUN]\n\u001b[0m02:42:25  3 of 3 PASS unique_stg_customers_customer_id ................................... [\u001b[32mPASS\u001b[0m in 0.01s]\n\u001b[0m02:42:25  \n\u001b[0m02:42:25  Finished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.31 seconds (0.31s).\n\u001b[0m02:42:25  \n\u001b[0m02:42:25  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:42:25  \n\u001b[0m02:42:25  Done. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "passed": false
+  },
+  "external_oracle_passed": false,
+  "failed_external_checks": [
+    "frozen_row_count",
+    "no_invented_identifiers"
+  ],
+  "upstream_case_id": "DD-006"
+}

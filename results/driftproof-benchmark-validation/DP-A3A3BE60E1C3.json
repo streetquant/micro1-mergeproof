@@ -1,0 +1,39 @@
+{
+  "candidate_id": "DP-A3A3BE60E1C3",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": false,
+  "external_evaluation": {
+    "case_id": "DD-005",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=0; actual=0",
+        "name": "fact_grain_unique",
+        "passed": true
+      },
+      {
+        "detail": "expected=300; actual=300",
+        "name": "frozen_total_revenue",
+        "passed": true
+      },
+      {
+        "detail": "expected=[[1, 10, 'gold', 100], [2, 20, 'silver', 200]]; actual=[[1, 10, 'silver', 100], [2, 20, 'silver', 200]]",
+        "name": "latest_dimension_value_selected",
+        "passed": false
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:43:03  Running with dbt=1.11.14\n\u001b[0m02:43:03  Registered adapter: duckdb=1.11.0\n\u001b[0m02:43:03  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:43:04  Found 1 model, 2 data tests, 2 sources, 500 macros\n\u001b[0m02:43:04  \n\u001b[0m02:43:04  Concurrency: 1 threads (target='dev')\n\u001b[0m02:43:04  \n\u001b[0m02:43:04  1 of 3 START sql table model analytics.fct_revenue ............................. [RUN]\n\u001b[0m02:43:07  1 of 3 OK created sql table model analytics.fct_revenue ........................ [\u001b[32mOK\u001b[0m in 3.13s]\n\u001b[0m02:43:07  2 of 3 START test not_null_fct_revenue_order_id ................................ [RUN]\n\u001b[0m02:43:07  2 of 3 PASS not_null_fct_revenue_order_id ...................................... [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:43:07  3 of 3 START test unique_fct_revenue_order_id .................................. [RUN]\n\u001b[0m02:43:07  3 of 3 PASS unique_fct_revenue_order_id ........................................ [\u001b[32mPASS\u001b[0m in 0.01s]\n\u001b[0m02:43:07  \n\u001b[0m02:43:07  Finished running 1 table model, 2 data tests in 0 hours 0 minutes and 3.26 seconds (3.26s).\n\u001b[0m02:43:07  \n\u001b[0m02:43:07  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:43:07  \n\u001b[0m02:43:07  Done. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "passed": false
+  },
+  "external_oracle_passed": false,
+  "failed_external_checks": [
+    "latest_dimension_value_selected"
+  ],
+  "upstream_case_id": "DD-005"
+}

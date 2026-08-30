@@ -1,0 +1,27 @@
+{
+  "candidate_id": "DP-DF8B15B5A6CC",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": true,
+  "external_evaluation": {
+    "case_id": "DD-011",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=[[150, 20, 130]]; actual=[[150, 20, 130]]",
+        "name": "accounting_rule",
+        "passed": true
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:43:49  Running with dbt=1.11.14\n\u001b[0m02:43:49  Registered adapter: duckdb=1.11.0\n\u001b[0m02:43:49  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:43:51  Found 1 model, 2 data tests, 1 source, 500 macros\n\u001b[0m02:43:51  \n\u001b[0m02:43:51  Concurrency: 1 threads (target='dev')\n\u001b[0m02:43:51  \n\u001b[0m02:43:51  1 of 3 START sql table model analytics.revenue_summary ......................... [RUN]\n\u001b[0m02:43:51  1 of 3 OK created sql table model analytics.revenue_summary .................... [\u001b[32mOK\u001b[0m in 0.17s]\n\u001b[0m02:43:51  2 of 3 START test not_null_revenue_summary_gross_sales ......................... [RUN]\n\u001b[0m02:43:51  2 of 3 PASS not_null_revenue_summary_gross_sales ............................... [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:43:51  3 of 3 START test not_null_revenue_summary_net_revenue ......................... [RUN]\n\u001b[0m02:43:51  3 of 3 PASS not_null_revenue_summary_net_revenue ............................... [\u001b[32mPASS\u001b[0m in 0.01s]\n\u001b[0m02:43:51  \n\u001b[0m02:43:51  Finished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.30 seconds (0.30s).\n\u001b[0m02:43:51  \n\u001b[0m02:43:51  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:43:51  \n\u001b[0m02:43:51  Done. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "passed": true
+  },
+  "external_oracle_passed": true,
+  "failed_external_checks": [],
+  "upstream_case_id": "DD-011"
+}

@@ -1,0 +1,146 @@
+{
+  "build": {
+    "command": [
+      "dbt",
+      "build",
+      "--project-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-445E0193A5BE",
+      "--profiles-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-445E0193A5BE",
+      "--no-use-colors"
+    ],
+    "duration_ms": 3546,
+    "isolation": "disposable_copy",
+    "passed": true,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 1 model, 3 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 4 START sql table model analytics.stg_order_status ........................ [RUN]\n1 of 4 OK created sql table model analytics.stg_order_status ................... [OK in <DURATION>]\n2 of 4 START test accepted_values_stg_order_status_business_status__revenue__refund__loss  [RUN]\n2 of 4 PASS accepted_values_stg_order_status_business_status__revenue__refund__loss  [PASS in <DURATION>]\n3 of 4 START test not_null_stg_order_status_order_id ........................... [RUN]\n3 of 4 PASS not_null_stg_order_status_order_id ................................. [PASS in <DURATION>]\n4 of 4 START test unique_stg_order_status_order_id ............................. [RUN]\n4 of 4 PASS unique_stg_order_status_order_id ................................... [PASS in <DURATION>]\nFinished running 1 table model, 3 data tests in 0 hours 0 minutes and 0.36 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=4 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=4\n",
+    "worktree_sha256": "14548b60f76f1752b03972a0ae29ff90eba64ed81cd88e7f351a8b4dc7fd5430"
+  },
+  "candidate_id": "DP-445E0193A5BE",
+  "certificate_sha256": "385eb81faea016f29d7824c6e26a5998d5fdc5ca18d902ca8edd5bd002096493",
+  "checks": [
+    {
+      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "evidence": [
+        "dbt build",
+        "14548b60f76f1752b03972a0ae29ff90eba64ed81cd88e7f351a8b4dc7fd5430"
+      ],
+      "id": "C-046C625A4D7B",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Candidate builds from the disposable review worktree"
+    },
+    {
+      "detail": "The source tree hash is unchanged.",
+      "evidence": [
+        "14548b60f76f1752b03972a0ae29ff90eba64ed81cd88e7f351a8b4dc7fd5430",
+        "14548b60f76f1752b03972a0ae29ff90eba64ed81cd88e7f351a8b4dc7fd5430"
+      ],
+      "id": "C-2EE4ED4DFCAA",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Original candidate project remained unchanged"
+    },
+    {
+      "detail": "Compiled 1 rules without using an external benchmark oracle.",
+      "evidence": [
+        "BUSINESS_CONTEXT.md",
+        "508b5af714676ab5d16ea0576cae8015864cf1b6b43d8784f85ac77f4cc131e7"
+      ],
+      "id": "C-AB2C57D37E34",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Visible business context compiled into executable checks"
+    },
+    {
+      "detail": "Mapping logic or accepted-values validation is incomplete or incorrect.",
+      "evidence": [
+        "models/schema.yml",
+        "models/sources.yml",
+        "models/stg_order_status.sql"
+      ],
+      "id": "C-A5A72F0D1591",
+      "metadata": {
+        "has_explicit_validation": true,
+        "missing_logic": [
+          {
+            "source": "chargeback",
+            "target": "loss"
+          }
+        ],
+        "missing_validation": []
+      },
+      "rule_id": "R-8061F5A1C387",
+      "status": "fail",
+      "title": "Categorical mapping and validation match the documented table"
+    },
+    {
+      "detail": "No disabled or warning-only validation controls were found.",
+      "evidence": [
+        "models/schema.yml",
+        "models/sources.yml"
+      ],
+      "id": "C-3A141B290B9B",
+      "metadata": {
+        "suppression_signals": []
+      },
+      "rule_id": null,
+      "status": "pass",
+      "title": "Verification controls were not weakened"
+    }
+  ],
+  "consequential_action_taken": false,
+  "context_sha256": "508b5af714676ab5d16ea0576cae8015864cf1b6b43d8784f85ac77f4cc131e7",
+  "contract": {
+    "context_sha256": "508b5af714676ab5d16ea0576cae8015864cf1b6b43d8784f85ac77f4cc131e7",
+    "rules": [
+      {
+        "fields": [
+          "paid",
+          "revenue",
+          "refunded",
+          "refund",
+          "chargeback",
+          "loss"
+        ],
+        "id": "R-8061F5A1C387",
+        "kind": "categorical_mapping",
+        "output": null,
+        "parameters": {
+          "pairs": [
+            {
+              "source": "paid",
+              "target": "revenue"
+            },
+            {
+              "source": "refunded",
+              "target": "refund"
+            },
+            {
+              "source": "chargeback",
+              "target": "loss"
+            }
+          ]
+        },
+        "source_text": "Business status mapping is: `paid -> revenue`, `refunded -> refund`, `chargeback -> loss`."
+      }
+    ],
+    "unknown_sentences": [
+      "Validation must explicitly allow exactly the mapped business statuses rather than being removed."
+    ]
+  },
+  "failed_check_ids": [
+    "C-A5A72F0D1591"
+  ],
+  "human_approval_required": true,
+  "inconclusive_check_ids": [],
+  "project_sha256": "14548b60f76f1752b03972a0ae29ff90eba64ed81cd88e7f351a8b4dc7fd5430",
+  "schema_version": 1,
+  "summary": "Candidate is not approval-ready; failed checks: C-A5A72F0D1591.",
+  "trajectory_sha256": "5cf521f6ad0ac24b6582b7cb2dacd5110545496e50b5da4ec7fef0d0d7443633",
+  "verdict": "reject"
+}

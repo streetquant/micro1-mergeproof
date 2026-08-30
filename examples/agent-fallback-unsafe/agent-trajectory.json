@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "producer": "synthetic repair agent",
+  "claim": "The dbt model builds successfully and is ready for review.",
+  "tool_calls": [
+    {
+      "tool": "dbt build",
+      "result": "expected exit code 0"
+    }
+  ],
+  "human_checkpoint": "No merge or deployment occurs before DriftProof and a qualified human approve."
+}

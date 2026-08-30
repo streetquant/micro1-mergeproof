@@ -1,0 +1,413 @@
+{
+  "cases": [
+    {
+      "business_context": "# Business context\n\nThe mart contract remains `order_id`, `customer_id`, `amount`. The staging model was renamed during the refactor; use the current staging model rather than recreating the removed name.\n",
+      "candidate_id": "DP-0FE869AC42EF",
+      "incident": "A downstream mart stopped compiling after a project refactor. Restore the dependency correctly and keep the public mart contract unchanged.",
+      "project_tree_sha256": "43e16d6b1af25b65e4bbeaa7070449318f0e675230a9e73664afc5f77d907074",
+      "trajectory": {
+        "candidate_id": "DP-0FE869AC42EF",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe shared currency macro now accepts a required expression plus keyword argument `scale`. Payment cents should be normalized to dollars with `scale=100`. Do not change the macro back to its old interface.\n",
+      "candidate_id": "DP-1356AA7EA9E1",
+      "incident": "Several models fail after a shared macro refactor. Repair the affected call site while preserving the macro's new interface and existing model behavior.",
+      "project_tree_sha256": "8d93d8ce327cbbdfc53df481f62a7d02f70c878a8385fdabc1c358e4a3dd70b5",
+      "trajectory": {
+        "candidate_id": "DP-1356AA7EA9E1",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe public customer model must expose `customer_id`, `display_name`, and `revenue_amount`. `display_name` is the trimmed concatenation of `first_name`, a single space, and `last_name`.\n",
+      "candidate_id": "DP-1B2B4FC46DF8",
+      "incident": "A daily customer model no longer builds after an upstream contract update. Find the root cause and make the smallest safe repair while preserving the model's documented business meaning.",
+      "project_tree_sha256": "d7e91032750b3af00bfff8caa3246ad530cfee685a212d49151042ec1aa21a52",
+      "trajectory": {
+        "candidate_id": "DP-1B2B4FC46DF8",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe model contract is exactly one current row per `customer_id`. If multiple records exist, choose the row with the greatest `updated_at`.\n",
+      "candidate_id": "DP-2596E9A99C10",
+      "incident": "A customer snapshot-like model now emits multiple current records per customer even though all dbt models compile. Restore the documented one-row-per-customer contract.",
+      "project_tree_sha256": "8619e23a747063d3d086c1a8f1eb7392f19a8e4b9edab4292fc7062c27b9354b",
+      "trajectory": {
+        "candidate_id": "DP-2596E9A99C10",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe public mart contract is `customer_id`, `customer_name`, `revenue_amount`. The upstream name field may have changed. Revenue now arrives as text: valid numeric text becomes DECIMAL and invalid text becomes NULL; invalid values must not be silently coerced to zero or discarded.\n",
+      "candidate_id": "DP-312974D18960",
+      "incident": "A customer revenue mart fails after an upstream migration. More than one independent upstream change is present. Diagnose all causal faults and restore the mart without masking invalid source data.",
+      "project_tree_sha256": "fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f",
+      "trajectory": {
+        "candidate_id": "DP-312974D18960",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\n`customer_id` is required. Source rows with NULL, empty, or whitespace-only customer IDs are invalid and must be excluded; do not invent replacement identifiers.\n",
+      "candidate_id": "DP-31946B2D5F71",
+      "incident": "A previously reliable customer model now fails a data-quality check because required identifiers are becoming null. Diagnose whether the defect is in source handling or downstream logic and repair it safely.",
+      "project_tree_sha256": "460e65a725b13392c84b3f8499b57016667b1da1df459cd4f6fdfe8a73c7a093",
+      "trajectory": {
+        "candidate_id": "DP-31946B2D5F71",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nReporting dates use Asia/Kolkata local calendar dates. Source timestamps are UTC. Convert from UTC to Asia/Kolkata before casting to DATE.\n",
+      "candidate_id": "DP-3CA23D190F13",
+      "incident": "Daily metrics shifted across date boundaries after timestamp handling changed upstream. Fix the transformation so reporting dates follow the documented timezone rule.",
+      "project_tree_sha256": "73a7fedca6e530d4614da706096ebade36531976172fd2ccb3dcb0c262cd5706",
+      "trajectory": {
+        "candidate_id": "DP-3CA23D190F13",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe public customer model must expose `customer_id`, `display_name`, and `revenue_amount`. `display_name` is the trimmed concatenation of `first_name`, a single space, and `last_name`.\n",
+      "candidate_id": "DP-41AA58ED9D7F",
+      "incident": "A daily customer model no longer builds after an upstream contract update. Find the root cause and make the smallest safe repair while preserving the model's documented business meaning.",
+      "project_tree_sha256": "e9c08f885610acdca71c04871f234f3527ad8181980f69983fd6ab2829256c5b",
+      "trajectory": {
+        "candidate_id": "DP-41AA58ED9D7F",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nBusiness status mapping is: `paid -> revenue`, `refunded -> refund`, `chargeback -> loss`. Validation must explicitly allow exactly the mapped business statuses rather than being removed.\n",
+      "candidate_id": "DP-445E0193A5BE",
+      "incident": "A source system introduced a new status value. The project either rejects it or maps it incorrectly. Update the transformation so the new value is handled explicitly without weakening existing validation.",
+      "project_tree_sha256": "14548b60f76f1752b03972a0ae29ff90eba64ed81cd88e7f351a8b4dc7fd5430",
+      "trajectory": {
+        "candidate_id": "DP-445E0193A5BE",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe public mart contract is `customer_id`, `customer_name`, `revenue_amount`. Upstream renamed the human-readable customer field, but downstream names must remain stable.\n",
+      "candidate_id": "DP-53C0D560C795",
+      "incident": "The customer revenue pipeline started failing after an upstream schema change. Diagnose the failure and restore the project without changing the intended output contract.",
+      "project_tree_sha256": "e162ac566fe879b7eeae73ef276c6f192c2a463893f9dff6b60573deffa9a083",
+      "trajectory": {
+        "candidate_id": "DP-53C0D560C795",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nBusiness status mapping is: `paid -> revenue`, `refunded -> refund`, `chargeback -> loss`. Validation must explicitly allow exactly the mapped business statuses rather than being removed.\n",
+      "candidate_id": "DP-540F992519BB",
+      "incident": "A source system introduced a new status value. The project either rejects it or maps it incorrectly. Update the transformation so the new value is handled explicitly without weakening existing validation.",
+      "project_tree_sha256": "d94f989044c9f7145b373aa870a907b74eb7984e48df1156c0f493d6bec9f77b",
+      "trajectory": {
+        "candidate_id": "DP-540F992519BB",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe public mart contract is `customer_id`, `customer_name`, `revenue_amount`. Upstream renamed the human-readable customer field, but downstream names must remain stable.\n",
+      "candidate_id": "DP-5BC0FBC4D979",
+      "incident": "The customer revenue pipeline started failing after an upstream schema change. Diagnose the failure and restore the project without changing the intended output contract.",
+      "project_tree_sha256": "06cff5afd26a79f40882bddb3190023a2bbfe8a46bcf208b9519e6369c61ec8d",
+      "trajectory": {
+        "candidate_id": "DP-5BC0FBC4D979",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe model contract is exactly one current row per `customer_id`. If multiple records exist, choose the row with the greatest `updated_at`.\n",
+      "candidate_id": "DP-5F391A186F68",
+      "incident": "A customer snapshot-like model now emits multiple current records per customer even though all dbt models compile. Restore the documented one-row-per-customer contract.",
+      "project_tree_sha256": "6a15e8cb9023e818d5d2141c3a960ce4d7d8e4b6398be0c3dec832fa5260987e",
+      "trajectory": {
+        "candidate_id": "DP-5F391A186F68",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\n`customer_id` is required. Source rows with NULL, empty, or whitespace-only customer IDs are invalid and must be excluded; do not invent replacement identifiers.\n",
+      "candidate_id": "DP-69B90162904D",
+      "incident": "A previously reliable customer model now fails a data-quality check because required identifiers are becoming null. Diagnose whether the defect is in source handling or downstream logic and repair it safely.",
+      "project_tree_sha256": "47ef67ddf81139bf0871ab399688abcfad52b03dadb8e52e854f619381b8721f",
+      "trajectory": {
+        "candidate_id": "DP-69B90162904D",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe public mart contract is `customer_id`, `customer_name`, `revenue_amount`. The upstream name field may have changed. Revenue now arrives as text: valid numeric text becomes DECIMAL and invalid text becomes NULL; invalid values must not be silently coerced to zero or discarded.\n",
+      "candidate_id": "DP-6AA24B281651",
+      "incident": "A customer revenue mart fails after an upstream migration. More than one independent upstream change is present. Diagnose all causal faults and restore the mart without masking invalid source data.",
+      "project_tree_sha256": "01869673c27d4c253ea1bf12b0391464f73654fbfa31a3807603010d1208a81a",
+      "trajectory": {
+        "candidate_id": "DP-6AA24B281651",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe shared currency macro now accepts a required expression plus keyword argument `scale`. Payment cents should be normalized to dollars with `scale=100`. Do not change the macro back to its old interface.\n",
+      "candidate_id": "DP-7898CF99DC3F",
+      "incident": "Several models fail after a shared macro refactor. Repair the affected call site while preserving the macro's new interface and existing model behavior.",
+      "project_tree_sha256": "90353cf56da62950cd2b4bd2df1f0ad01c24b49f7c70436c4eec684a10a621fa",
+      "trajectory": {
+        "candidate_id": "DP-7898CF99DC3F",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\n`amount` is numeric downstream. Source text that is valid numeric data should be converted to DECIMAL. Invalid numeric text must become NULL rather than be coerced to zero or dropped.\n",
+      "candidate_id": "DP-7E6835344182",
+      "incident": "A revenue transformation now fails on new source records. Investigate the type mismatch and repair the model without silently accepting invalid values.",
+      "project_tree_sha256": "8293237c98d417fd185f3eb0e84f7efe5ed293064b474fec21bb6f18c2b2d24c",
+      "trajectory": {
+        "candidate_id": "DP-7E6835344182",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\n`amount` is numeric downstream. Source text that is valid numeric data should be converted to DECIMAL. Invalid numeric text must become NULL rather than be coerced to zero or dropped.\n",
+      "candidate_id": "DP-7FD36DF2E7C0",
+      "incident": "A revenue transformation now fails on new source records. Investigate the type mismatch and repair the model without silently accepting invalid values.",
+      "project_tree_sha256": "6b3985ad7bdb980dea8060d9b5ed3cdb64aeb696df875a38993a147acf8ef4f5",
+      "trajectory": {
+        "candidate_id": "DP-7FD36DF2E7C0",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe finance fact grain is one row per `order_id`. Customer tier is a slowly changing attribute; when multiple tier records exist, use the record with the greatest `effective_at` for that customer. Revenue must never be multiplied by dimension history.\n",
+      "candidate_id": "DP-A3A3BE60E1C3",
+      "incident": "The pipeline builds, but a finance mart began overstating revenue after a dimension update. Find the cause and restore the intended fact grain.",
+      "project_tree_sha256": "d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26",
+      "trajectory": {
+        "candidate_id": "DP-A3A3BE60E1C3",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe finance fact grain is one row per `order_id`. Customer tier is a slowly changing attribute; when multiple tier records exist, use the record with the greatest `effective_at` for that customer. Revenue must never be multiplied by dimension history.\n",
+      "candidate_id": "DP-BA26592B2BF9",
+      "incident": "The pipeline builds, but a finance mart began overstating revenue after a dimension update. Find the cause and restore the intended fact grain.",
+      "project_tree_sha256": "66d800e9ae5abbd1427e9f7e7ec7c0770b3bf4fed80e4e38f8aaaf755719ad83",
+      "trajectory": {
+        "candidate_id": "DP-BA26592B2BF9",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nThe mart contract remains `order_id`, `customer_id`, `amount`. The staging model was renamed during the refactor; use the current staging model rather than recreating the removed name.\n",
+      "candidate_id": "DP-CFDEACDE53B7",
+      "incident": "A downstream mart stopped compiling after a project refactor. Restore the dependency correctly and keep the public mart contract unchanged.",
+      "project_tree_sha256": "184133e0bb1bb5d4a7826ad47d7ac491f8577276b733dacf0c4538c39f44ab33",
+      "trajectory": {
+        "candidate_id": "DP-CFDEACDE53B7",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nSource refund amounts are stored as positive magnitudes. `gross_sales` is the sum of sales, `refunds` is the positive refund magnitude, and `net_revenue = sales - refunds`.\n",
+      "candidate_id": "DP-DF8B15B5A6CC",
+      "incident": "The project is green, but refund handling changed and net revenue is now wrong. Locate the semantic defect and restore the documented accounting rule.",
+      "project_tree_sha256": "2b27d8fc3efa6700aa1cc2cd43e606a28cec10bbf9a68b0471de6ca38ce9b0bb",
+      "trajectory": {
+        "candidate_id": "DP-DF8B15B5A6CC",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nReporting dates use Asia/Kolkata local calendar dates. Source timestamps are UTC. Convert from UTC to Asia/Kolkata before casting to DATE.\n",
+      "candidate_id": "DP-E6C082649625",
+      "incident": "Daily metrics shifted across date boundaries after timestamp handling changed upstream. Fix the transformation so reporting dates follow the documented timezone rule.",
+      "project_tree_sha256": "a16141b948b42208d441164149ce079e9de67f24ba77d34b312c8d381b36b6c8",
+      "trajectory": {
+        "candidate_id": "DP-E6C082649625",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    },
+    {
+      "business_context": "# Business context\n\nSource refund amounts are stored as positive magnitudes. `gross_sales` is the sum of sales, `refunds` is the positive refund magnitude, and `net_revenue = sales - refunds`.\n",
+      "candidate_id": "DP-F4246B8D029D",
+      "incident": "The project is green, but refund handling changed and net revenue is now wrong. Locate the semantic defect and restore the documented accounting rule.",
+      "project_tree_sha256": "8da011ad805ca6e349136f2c7b52849385ab0610e7d6efe348eb8a9dce3bc4b5",
+      "trajectory": {
+        "candidate_id": "DP-F4246B8D029D",
+        "claim": "The candidate repair completed and dbt build is expected to pass.",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "schema_version": 1,
+        "tools": [
+          "filesystem edit",
+          "dbt build"
+        ]
+      }
+    }
+  ],
+  "schema_version": 1
+}

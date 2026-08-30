@@ -1,0 +1,32 @@
+{
+  "candidate_id": "DP-41AA58ED9D7F",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": true,
+  "external_evaluation": {
+    "case_id": "DD-002",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=[[1, 'Ada Lovelace', 100], [2, 'Grace Hopper', 250]]; actual=[[1, 'Ada Lovelace', 100], [2, 'Grace Hopper', 250]]",
+        "name": "derived_display_name_business_invariant",
+        "passed": true
+      },
+      {
+        "detail": "expected=2; actual=2",
+        "name": "row_count_preserved",
+        "passed": true
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:41:42  Running with dbt=1.11.14\n\u001b[0m02:41:42  Registered adapter: duckdb=1.11.0\n\u001b[0m02:41:42  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:41:43  Found 2 models, 3 data tests, 1 source, 500 macros\n\u001b[0m02:41:43  \n\u001b[0m02:41:43  Concurrency: 1 threads (target='dev')\n\u001b[0m02:41:43  \n\u001b[0m02:41:43  1 of 5 START sql table model analytics.stg_customers ........................... [RUN]\n\u001b[0m02:41:43  1 of 5 OK created sql table model analytics.stg_customers ...................... [\u001b[32mOK\u001b[0m in 0.20s]\n\u001b[0m02:41:43  2 of 5 START sql table model analytics.mart_customers .......................... [RUN]\n\u001b[0m02:41:43  2 of 5 OK created sql table model analytics.mart_customers ..................... [\u001b[32mOK\u001b[0m in 0.11s]\n\u001b[0m02:41:43  3 of 5 START test not_null_mart_customers_customer_id .......................... [RUN]\n\u001b[0m02:41:43  3 of 5 PASS not_null_mart_customers_customer_id ................................ [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:41:43  4 of 5 START test not_null_mart_customers_display_name ......................... [RUN]\n\u001b[0m02:41:43  4 of 5 PASS not_null_mart_customers_display_name ............................... [\u001b[32mPASS\u001b[0m in 0.02s]\n\u001b[0m02:41:43  5 of 5 START test unique_mart_customers_customer_id ............................ [RUN]\n\u001b[0m02:41:43  5 of 5 PASS unique_mart_customers_customer_id .................................. [\u001b[32mPASS\u001b[0m in 0.02s]\n\u001b[0m02:41:43  \n\u001b[0m02:41:43  Finished running 2 table models, 3 data tests in 0 hours 0 minutes and 0.48 seconds (0.48s).\n\u001b[0m02:41:44  \n\u001b[0m02:41:44  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:41:44  \n\u001b[0m02:41:44  Done. PASS=5 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=5\n",
+    "passed": true
+  },
+  "external_oracle_passed": true,
+  "failed_external_checks": [],
+  "upstream_case_id": "DD-002"
+}

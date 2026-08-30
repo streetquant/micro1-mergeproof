@@ -1,0 +1,32 @@
+{
+  "candidate_id": "DP-7FD36DF2E7C0",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": true,
+  "external_evaluation": {
+    "case_id": "DD-003",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=[[1, 100.5], [2, None], [3, 25.0]]; actual=[[1, 100.5], [2, None], [3, 25.0]]",
+        "name": "safe_numeric_conversion",
+        "passed": true
+      },
+      {
+        "detail": "expected=1; actual=1",
+        "name": "invalid_numeric_is_not_silently_coerced",
+        "passed": true
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:42:47  Running with dbt=1.11.14\n\u001b[0m02:42:48  Registered adapter: duckdb=1.11.0\n\u001b[0m02:42:48  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:42:49  Found 1 model, 2 data tests, 1 source, 500 macros\n\u001b[0m02:42:49  \n\u001b[0m02:42:49  Concurrency: 1 threads (target='dev')\n\u001b[0m02:42:49  \n\u001b[0m02:42:49  1 of 3 START sql table model analytics.stg_orders .............................. [RUN]\n\u001b[0m02:42:49  1 of 3 OK created sql table model analytics.stg_orders ......................... [\u001b[32mOK\u001b[0m in 0.17s]\n\u001b[0m02:42:49  2 of 3 START test not_null_stg_orders_order_id ................................. [RUN]\n\u001b[0m02:42:49  2 of 3 PASS not_null_stg_orders_order_id ....................................... [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:42:49  3 of 3 START test unique_stg_orders_order_id ................................... [RUN]\n\u001b[0m02:42:49  3 of 3 PASS unique_stg_orders_order_id ......................................... [\u001b[32mPASS\u001b[0m in 0.01s]\n\u001b[0m02:42:49  \n\u001b[0m02:42:49  Finished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.30 seconds (0.30s).\n\u001b[0m02:42:49  \n\u001b[0m02:42:49  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:42:49  \n\u001b[0m02:42:49  Done. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "passed": true
+  },
+  "external_oracle_passed": true,
+  "failed_external_checks": [],
+  "upstream_case_id": "DD-003"
+}

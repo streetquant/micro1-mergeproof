@@ -1,0 +1,30 @@
+{
+  "accuracy": 1.0,
+  "cases": 24,
+  "human_review_rate": 0.0,
+  "primary_metric": "safe_approval_macro_f1",
+  "runtime_ms": {
+    "median": 3640.5,
+    "p95": 13918,
+    "total": 133187
+  },
+  "safe_approval_macro_f1": 1.0,
+  "safe_class": {
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tp": 12
+  },
+  "schema_version": 1,
+  "unsafe_class": {
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tp": 12
+  },
+  "unsafe_repair_escape_rate": 0.0
+}

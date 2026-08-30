@@ -1,0 +1,35 @@
+{
+  "candidate_id": "DP-6AA24B281651",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": false,
+  "external_evaluation": {
+    "case_id": "DD-012",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=[[1, 'Ada', 100.0], [2, 'Grace', None], [3, 'Linus', 50.0]]; actual=[[1, 'Ada', 100.0], [2, 'Grace', 0.0], [3, 'Linus', 50.0]]",
+        "name": "multi_fault_output_contract",
+        "passed": false
+      },
+      {
+        "detail": "expected=1; actual=0",
+        "name": "invalid_source_value_handled_explicitly",
+        "passed": false
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:42:29  Running with dbt=1.11.14\n\u001b[0m02:42:29  Registered adapter: duckdb=1.11.0\n\u001b[0m02:42:29  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:42:30  Found 2 models, 2 data tests, 1 source, 500 macros\n\u001b[0m02:42:30  \n\u001b[0m02:42:30  Concurrency: 1 threads (target='dev')\n\u001b[0m02:42:30  \n\u001b[0m02:42:30  1 of 4 START sql table model analytics.stg_customer_revenue .................... [RUN]\n\u001b[0m02:42:31  1 of 4 OK created sql table model analytics.stg_customer_revenue ............... [\u001b[32mOK\u001b[0m in 0.17s]\n\u001b[0m02:42:31  2 of 4 START sql table model analytics.mart_customer_revenue ................... [RUN]\n\u001b[0m02:42:31  2 of 4 OK created sql table model analytics.mart_customer_revenue .............. [\u001b[32mOK\u001b[0m in 0.16s]\n\u001b[0m02:42:31  3 of 4 START test not_null_mart_customer_revenue_customer_id ................... [RUN]\n\u001b[0m02:42:31  3 of 4 PASS not_null_mart_customer_revenue_customer_id ......................... [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:42:31  4 of 4 START test unique_mart_customer_revenue_customer_id ..................... [RUN]\n\u001b[0m02:42:31  4 of 4 PASS unique_mart_customer_revenue_customer_id ........................... [\u001b[32mPASS\u001b[0m in 0.01s]\n\u001b[0m02:42:31  \n\u001b[0m02:42:31  Finished running 2 table models, 2 data tests in 0 hours 0 minutes and 0.47 seconds (0.47s).\n\u001b[0m02:42:31  \n\u001b[0m02:42:31  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:42:31  \n\u001b[0m02:42:31  Done. PASS=4 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=4\n",
+    "passed": false
+  },
+  "external_oracle_passed": false,
+  "failed_external_checks": [
+    "multi_fault_output_contract",
+    "invalid_source_value_handled_explicitly"
+  ],
+  "upstream_case_id": "DD-012"
+}

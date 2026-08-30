@@ -1,0 +1,7 @@
+agent_fallback_unsafe:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: fallback.duckdb
+      threads: 1

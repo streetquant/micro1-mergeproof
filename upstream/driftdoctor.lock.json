@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "name": "DriftDoctor",
+  "repository": "https://github.com/AaryaMody1301/DriftDoctor",
+  "commit": "0760ce3772678fdb7309b467f41f0371c1c10feb",
+  "commit_timestamp": "2026-08-29T16:07:47Z",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2026 Aarya Mody",
+  "tree": "cf5c2a93c91a0d4a296b907260fcde6d38e1b209",
+  "archive_sha256": "693d2e7f448c0c594a6b3445700f6f908463e56a9fe034ec98c091a6312646ee",
+  "license_sha256": "124449f47e57919e96d73db7838d2030d462ef05eb4f2d18384bcde73481a825",
+  "requirements_sha256": "6a20c24b42342090d788ca5d1462082abf1af8cb1fb61ca1306c9e199a3faff3",
+  "role": "credited external repair producer and evaluation substrate",
+  "runtime_import_policy": "DriftProof runtime must not import benchmark.oracles or benchmark.reference_repairs",
+  "source_inclusion": "not vendored; fetched into an ignored cache by reproducibility tooling",
+  "verified_locally": {
+    "unit_tests": "40/40 passed",
+    "benchmark_contract": "valid, 12 cases, DD-012 challenge case",
+    "smoke": "all broken fixtures failed and all evaluator-only reference repairs passed",
+    "primary": "12/12 verified repairs, 12/12 root-cause classes, zero model calls",
+    "fresh_mean_elapsed_seconds": 9.711416666666667,
+    "checked_in_mean_elapsed_seconds": 6.640333333333333,
+    "runtime_difference_policy": "timing is host-dependent; correctness fields reproduced exactly",
+    "submission_preflight": "passed"
+  }
+}

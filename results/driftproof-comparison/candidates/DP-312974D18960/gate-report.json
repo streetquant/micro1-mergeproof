@@ -1,0 +1,185 @@
+{
+  "build": {
+    "command": [
+      "dbt",
+      "build",
+      "--project-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-312974D18960",
+      "--profiles-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-312974D18960",
+      "--no-use-colors"
+    ],
+    "duration_ms": 3764,
+    "isolation": "disposable_copy",
+    "passed": true,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 2 models, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 4 START sql table model analytics.stg_customer_revenue .................... [RUN]\n1 of 4 OK created sql table model analytics.stg_customer_revenue ............... [OK in <DURATION>]\n2 of 4 START sql table model analytics.mart_customer_revenue ................... [RUN]\n2 of 4 OK created sql table model analytics.mart_customer_revenue .............. [OK in <DURATION>]\n3 of 4 START test not_null_mart_customer_revenue_customer_id ................... [RUN]\n3 of 4 PASS not_null_mart_customer_revenue_customer_id ......................... [PASS in <DURATION>]\n4 of 4 START test unique_mart_customer_revenue_customer_id ..................... [RUN]\n4 of 4 PASS unique_mart_customer_revenue_customer_id ........................... [PASS in <DURATION>]\nFinished running 2 table models, 2 data tests in 0 hours 0 minutes and 0.60 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=4 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=4\n",
+    "worktree_sha256": "fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f"
+  },
+  "candidate_id": "DP-312974D18960",
+  "certificate_sha256": "8527b2c82ac306e66be7b624398e4c8ccc180a13f0d62a2df477fc589b039564",
+  "checks": [
+    {
+      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "evidence": [
+        "dbt build",
+        "fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f"
+      ],
+      "id": "C-046C625A4D7B",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Candidate builds from the disposable review worktree"
+    },
+    {
+      "detail": "The source tree hash is unchanged.",
+      "evidence": [
+        "fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f",
+        "fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f"
+      ],
+      "id": "C-2EE4ED4DFCAA",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Original candidate project remained unchanged"
+    },
+    {
+      "detail": "Compiled 3 rules without using an external benchmark oracle.",
+      "evidence": [
+        "BUSINESS_CONTEXT.md",
+        "d3de6def201fb1f45a368fb635c81036488fb7ff4da089daf306c6e2d34b7d39"
+      ],
+      "id": "C-829C865DC1D5",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Visible business context compiled into executable checks"
+    },
+    {
+      "detail": "All documented fields are projected by the candidate.",
+      "evidence": [
+        "models/mart_customer_revenue.sql",
+        "models/stg_customer_revenue.sql"
+      ],
+      "id": "C-E7A37014CC66",
+      "metadata": {
+        "missing": [],
+        "observed_outputs": [
+          "customer_id",
+          "customer_name",
+          "revenue_amount"
+        ]
+      },
+      "rule_id": "R-626688F98AA7",
+      "status": "pass",
+      "title": "Public output contract is represented"
+    },
+    {
+      "detail": "client_name is visibly aliased to customer_name.",
+      "evidence": [
+        "models/stg_customer_revenue.sql"
+      ],
+      "id": "C-8FA8B51E5395",
+      "metadata": {
+        "matching_expressions": [
+          {
+            "expression": "client_name",
+            "path": "models/stg_customer_revenue.sql",
+            "source": "client_name"
+          }
+        ],
+        "source_candidates": [
+          "client_name"
+        ]
+      },
+      "rule_id": "R-CD72C5C28B55",
+      "status": "pass",
+      "title": "Renamed source field is preserved through an alias"
+    },
+    {
+      "detail": "Invalid numeric text remains NULL after an explicit DECIMAL try_cast.",
+      "evidence": [
+        "models/stg_customer_revenue.sql"
+      ],
+      "id": "C-2508236DFBEB",
+      "metadata": {
+        "all_expressions": [
+          "try_cast(revenue_text as decimal(12, 2))"
+        ],
+        "unsafe_expressions": [],
+        "valid_expressions": [
+          "try_cast(revenue_text as decimal(12, 2))"
+        ]
+      },
+      "rule_id": "R-553C6652E7F9",
+      "status": "pass",
+      "title": "Invalid numeric input follows the documented NULL policy"
+    },
+    {
+      "detail": "No disabled or warning-only validation controls were found.",
+      "evidence": [
+        "models/schema.yml",
+        "models/sources.yml"
+      ],
+      "id": "C-3A141B290B9B",
+      "metadata": {
+        "suppression_signals": []
+      },
+      "rule_id": null,
+      "status": "pass",
+      "title": "Verification controls were not weakened"
+    }
+  ],
+  "consequential_action_taken": false,
+  "context_sha256": "d3de6def201fb1f45a368fb635c81036488fb7ff4da089daf306c6e2d34b7d39",
+  "contract": {
+    "context_sha256": "d3de6def201fb1f45a368fb635c81036488fb7ff4da089daf306c6e2d34b7d39",
+    "rules": [
+      {
+        "fields": [
+          "customer_id",
+          "customer_name",
+          "revenue_amount"
+        ],
+        "id": "R-626688F98AA7",
+        "kind": "public_contract",
+        "output": null,
+        "parameters": {},
+        "source_text": "The public mart contract is `customer_id`, `customer_name`, `revenue_amount`."
+      },
+      {
+        "fields": [],
+        "id": "R-CD72C5C28B55",
+        "kind": "source_alias",
+        "output": "customer_name",
+        "parameters": {
+          "require_unique_source_candidate": true,
+          "semantic_token": "name"
+        },
+        "source_text": "The upstream name field may have changed."
+      },
+      {
+        "fields": [],
+        "id": "R-553C6652E7F9",
+        "kind": "numeric_null_policy",
+        "output": "revenue_amount",
+        "parameters": {
+          "invalid_policy": "null",
+          "required_conversion": "try_cast",
+          "target_type": "decimal"
+        },
+        "source_text": "Revenue now arrives as text: valid numeric text becomes DECIMAL and invalid text becomes NULL; invalid values must not be silently coerced to zero or discarded."
+      }
+    ],
+    "unknown_sentences": []
+  },
+  "failed_check_ids": [],
+  "human_approval_required": true,
+  "inconclusive_check_ids": [],
+  "project_sha256": "fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f",
+  "schema_version": 1,
+  "summary": "Candidate built successfully and every compiled visible contract check passed. A qualified human must still authorize any merge or deployment.",
+  "trajectory_sha256": "868da4086515a1b8b5cb4084aba558a9025d9a1f09e14c9c806f01ed3fdb6f07",
+  "verdict": "approve"
+}

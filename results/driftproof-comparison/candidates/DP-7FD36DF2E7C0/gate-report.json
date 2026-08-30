@@ -1,0 +1,121 @@
+{
+  "build": {
+    "command": [
+      "dbt",
+      "build",
+      "--project-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-7FD36DF2E7C0",
+      "--profiles-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-7FD36DF2E7C0",
+      "--no-use-colors"
+    ],
+    "duration_ms": 25402,
+    "isolation": "disposable_copy",
+    "passed": true,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 1 model, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 3 START sql table model analytics.stg_orders .............................. [RUN]\n1 of 3 OK created sql table model analytics.stg_orders ......................... [OK in <DURATION>]\n2 of 3 START test not_null_stg_orders_order_id ................................. [RUN]\n2 of 3 PASS not_null_stg_orders_order_id ....................................... [PASS in <DURATION>]\n3 of 3 START test unique_stg_orders_order_id ................................... [RUN]\n3 of 3 PASS unique_stg_orders_order_id ......................................... [PASS in <DURATION>]\nFinished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.39 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "worktree_sha256": "6b3985ad7bdb980dea8060d9b5ed3cdb64aeb696df875a38993a147acf8ef4f5"
+  },
+  "candidate_id": "DP-7FD36DF2E7C0",
+  "certificate_sha256": "b16e3d4fbe10e68c55c88ed8cc25853fac963c77e7bfe924f4b7aa58603e380f",
+  "checks": [
+    {
+      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "evidence": [
+        "dbt build",
+        "6b3985ad7bdb980dea8060d9b5ed3cdb64aeb696df875a38993a147acf8ef4f5"
+      ],
+      "id": "C-046C625A4D7B",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Candidate builds from the disposable review worktree"
+    },
+    {
+      "detail": "The source tree hash is unchanged.",
+      "evidence": [
+        "6b3985ad7bdb980dea8060d9b5ed3cdb64aeb696df875a38993a147acf8ef4f5",
+        "6b3985ad7bdb980dea8060d9b5ed3cdb64aeb696df875a38993a147acf8ef4f5"
+      ],
+      "id": "C-2EE4ED4DFCAA",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Original candidate project remained unchanged"
+    },
+    {
+      "detail": "Compiled 1 rules without using an external benchmark oracle.",
+      "evidence": [
+        "BUSINESS_CONTEXT.md",
+        "732f7c4b698ecb118aa8926c623a9c91922c2a7655e1d340c64aef1e4c2ff856"
+      ],
+      "id": "C-AB2C57D37E34",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Visible business context compiled into executable checks"
+    },
+    {
+      "detail": "Invalid numeric text remains NULL after an explicit DECIMAL try_cast.",
+      "evidence": [
+        "models/stg_orders.sql"
+      ],
+      "id": "C-88B26083405B",
+      "metadata": {
+        "all_expressions": [
+          "try_cast(amount_text as decimal(12, 2))"
+        ],
+        "unsafe_expressions": [],
+        "valid_expressions": [
+          "try_cast(amount_text as decimal(12, 2))"
+        ]
+      },
+      "rule_id": "R-A8F67D835778",
+      "status": "pass",
+      "title": "Invalid numeric input follows the documented NULL policy"
+    },
+    {
+      "detail": "No disabled or warning-only validation controls were found.",
+      "evidence": [
+        "models/schema.yml",
+        "models/sources.yml"
+      ],
+      "id": "C-3A141B290B9B",
+      "metadata": {
+        "suppression_signals": []
+      },
+      "rule_id": null,
+      "status": "pass",
+      "title": "Verification controls were not weakened"
+    }
+  ],
+  "consequential_action_taken": false,
+  "context_sha256": "732f7c4b698ecb118aa8926c623a9c91922c2a7655e1d340c64aef1e4c2ff856",
+  "contract": {
+    "context_sha256": "732f7c4b698ecb118aa8926c623a9c91922c2a7655e1d340c64aef1e4c2ff856",
+    "rules": [
+      {
+        "fields": [],
+        "id": "R-A8F67D835778",
+        "kind": "numeric_null_policy",
+        "output": "amount",
+        "parameters": {
+          "invalid_policy": "null",
+          "required_conversion": "try_cast",
+          "target_type": "decimal"
+        },
+        "source_text": "`amount` is numeric downstream. Source text that is valid numeric data should be converted to DECIMAL. Invalid numeric text must become NULL rather than be coerced to zero or dropped."
+      }
+    ],
+    "unknown_sentences": []
+  },
+  "failed_check_ids": [],
+  "human_approval_required": true,
+  "inconclusive_check_ids": [],
+  "project_sha256": "6b3985ad7bdb980dea8060d9b5ed3cdb64aeb696df875a38993a147acf8ef4f5",
+  "schema_version": 1,
+  "summary": "Candidate built successfully and every compiled visible contract check passed. A qualified human must still authorize any merge or deployment.",
+  "trajectory_sha256": "2940056cce870df799cbcf161fb6a92c6bf8fb2ded5eac6399b5a511e35f0aaa",
+  "verdict": "approve"
+}

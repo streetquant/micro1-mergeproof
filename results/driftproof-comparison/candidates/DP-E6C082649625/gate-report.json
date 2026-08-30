@@ -1,0 +1,120 @@
+{
+  "build": {
+    "command": [
+      "dbt",
+      "build",
+      "--project-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-E6C082649625",
+      "--profiles-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-E6C082649625",
+      "--no-use-colors"
+    ],
+    "duration_ms": 3427,
+    "isolation": "disposable_copy",
+    "passed": true,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 1 model, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 3 START sql table model analytics.daily_events ............................ [RUN]\n1 of 3 OK created sql table model analytics.daily_events ....................... [OK in <DURATION>]\n2 of 3 START test not_null_daily_events_event_id ............................... [RUN]\n2 of 3 PASS not_null_daily_events_event_id ..................................... [PASS in <DURATION>]\n3 of 3 START test unique_daily_events_event_id ................................. [RUN]\n3 of 3 PASS unique_daily_events_event_id ....................................... [PASS in <DURATION>]\nFinished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.35 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "worktree_sha256": "a16141b948b42208d441164149ce079e9de67f24ba77d34b312c8d381b36b6c8"
+  },
+  "candidate_id": "DP-E6C082649625",
+  "certificate_sha256": "ff68d52ba424fd9d1135e45137fc1670266d42719db431fc53420684dfebd0d9",
+  "checks": [
+    {
+      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "evidence": [
+        "dbt build",
+        "a16141b948b42208d441164149ce079e9de67f24ba77d34b312c8d381b36b6c8"
+      ],
+      "id": "C-046C625A4D7B",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Candidate builds from the disposable review worktree"
+    },
+    {
+      "detail": "The source tree hash is unchanged.",
+      "evidence": [
+        "a16141b948b42208d441164149ce079e9de67f24ba77d34b312c8d381b36b6c8",
+        "a16141b948b42208d441164149ce079e9de67f24ba77d34b312c8d381b36b6c8"
+      ],
+      "id": "C-2EE4ED4DFCAA",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Original candidate project remained unchanged"
+    },
+    {
+      "detail": "Compiled 1 rules without using an external benchmark oracle.",
+      "evidence": [
+        "BUSINESS_CONTEXT.md",
+        "3c4d26bc7bfff61c208e7cf969543a42820b914ecf6a6552a41cce3b1db2d3d5"
+      ],
+      "id": "C-AB2C57D37E34",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Visible business context compiled into executable checks"
+    },
+    {
+      "detail": "Observed UTC to Asia/Kolkata before DATE casting.",
+      "evidence": [
+        "models/daily_events.sql"
+      ],
+      "id": "C-651BBF8C0EBB",
+      "metadata": {
+        "cast_after": true,
+        "correct_direction": true,
+        "has_conversion": true
+      },
+      "rule_id": "R-C5F8ED92B4FE",
+      "status": "pass",
+      "title": "Timezone conversion occurs before DATE truncation in the documented direction"
+    },
+    {
+      "detail": "No disabled or warning-only validation controls were found.",
+      "evidence": [
+        "models/schema.yml",
+        "models/sources.yml"
+      ],
+      "id": "C-3A141B290B9B",
+      "metadata": {
+        "suppression_signals": []
+      },
+      "rule_id": null,
+      "status": "pass",
+      "title": "Verification controls were not weakened"
+    }
+  ],
+  "consequential_action_taken": false,
+  "context_sha256": "3c4d26bc7bfff61c208e7cf969543a42820b914ecf6a6552a41cce3b1db2d3d5",
+  "contract": {
+    "context_sha256": "3c4d26bc7bfff61c208e7cf969543a42820b914ecf6a6552a41cce3b1db2d3d5",
+    "rules": [
+      {
+        "fields": [],
+        "id": "R-C5F8ED92B4FE",
+        "kind": "timezone_date",
+        "output": null,
+        "parameters": {
+          "cast_after_conversion": true,
+          "source_timezone": "UTC",
+          "target_timezone": "Asia/Kolkata"
+        },
+        "source_text": "Reporting dates use Asia/Kolkata local calendar dates."
+      }
+    ],
+    "unknown_sentences": [
+      "Source timestamps are UTC.",
+      "Convert from UTC to Asia/Kolkata before casting to DATE."
+    ]
+  },
+  "failed_check_ids": [],
+  "human_approval_required": true,
+  "inconclusive_check_ids": [],
+  "project_sha256": "a16141b948b42208d441164149ce079e9de67f24ba77d34b312c8d381b36b6c8",
+  "schema_version": 1,
+  "summary": "Candidate built successfully and every compiled visible contract check passed. A qualified human must still authorize any merge or deployment.",
+  "trajectory_sha256": "2bc1e8da7cf77e8795fe70e3b882ea3eb37c6dabe35b448a716400b9150c3085",
+  "verdict": "approve"
+}

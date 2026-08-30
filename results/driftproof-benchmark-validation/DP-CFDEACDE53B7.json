@@ -1,0 +1,32 @@
+{
+  "candidate_id": "DP-CFDEACDE53B7",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": true,
+  "external_evaluation": {
+    "case_id": "DD-004",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=[[1, 10, 100], [2, 20, 50]]; actual=[[1, 10, 100], [2, 20, 50]]",
+        "name": "renamed_ref_output_contract",
+        "passed": true
+      },
+      {
+        "detail": "old model ref must not remain",
+        "name": "no_stale_ref",
+        "passed": true
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:43:35  Running with dbt=1.11.14\n\u001b[0m02:43:35  Registered adapter: duckdb=1.11.0\n\u001b[0m02:43:35  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:43:37  Found 2 models, 2 data tests, 1 source, 500 macros\n\u001b[0m02:43:37  \n\u001b[0m02:43:37  Concurrency: 1 threads (target='dev')\n\u001b[0m02:43:37  \n\u001b[0m02:43:37  1 of 4 START sql table model analytics.stg_orders_v2 ........................... [RUN]\n\u001b[0m02:43:38  1 of 4 OK created sql table model analytics.stg_orders_v2 ...................... [\u001b[32mOK\u001b[0m in 1.02s]\n\u001b[0m02:43:38  2 of 4 START sql table model analytics.mart_orders ............................. [RUN]\n\u001b[0m02:43:38  2 of 4 OK created sql table model analytics.mart_orders ........................ [\u001b[32mOK\u001b[0m in 0.65s]\n\u001b[0m02:43:38  3 of 4 START test not_null_mart_orders_order_id ................................ [RUN]\n\u001b[0m02:43:38  3 of 4 PASS not_null_mart_orders_order_id ...................................... [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:43:38  4 of 4 START test unique_mart_orders_order_id .................................. [RUN]\n\u001b[0m02:43:38  4 of 4 PASS unique_mart_orders_order_id ........................................ [\u001b[32mPASS\u001b[0m in 0.01s]\n\u001b[0m02:43:38  \n\u001b[0m02:43:38  Finished running 2 table models, 2 data tests in 0 hours 0 minutes and 1.81 seconds (1.81s).\n\u001b[0m02:43:39  \n\u001b[0m02:43:39  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:43:39  \n\u001b[0m02:43:39  Done. PASS=4 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=4\n",
+    "passed": true
+  },
+  "external_oracle_passed": true,
+  "failed_external_checks": [],
+  "upstream_case_id": "DD-004"
+}

@@ -1,0 +1,52 @@
+{
+  "agent": "contract_clarifier",
+  "model": "openai/gpt-oss-20b",
+  "provider": "groq",
+  "request": {
+    "system_preview": "You are DriftProof's bounded Contract Clarifier Agent.\nYour only task is to translate supplied unresolved business-contract sentences into typed rules.\nYou cannot approve a repair, run code, modify files, create SQL, weaken a check, or use hidden facts.\nUse only identifiers listed in OBSERVED_IDENTIFIERS or explicitly written in the source sentence.\nEvery proposed source_text must be copied exactly from UNRESOLVED_SENTENCES.\nReturn one JSON object with keys rules and unresolved_sentences. Do not add prose outside JSON.\n\nAllowed rule kinds and required shapes:\n- public_contract: fields=[documented output columns]\n- source_alias: output=<downstream column>, parameters.semantic_token=<source-name token>\n- derived_concat: output=<output>, fields=[first,last], parameters={separator:\" \",trim:true}\n- numeric_null_policy: output=<output>, parameters={invalid_policy:\"null\",required_conversion:\"try_cast\",target_type:\"decimal\"}\n- latest_record: fields=[entity_key,order_field], parameters={order_f",
+    "system_sha256": "4a1dfb95bc86213b645ad499991e66b0aea94f1059759f2fc03fba51a7f1c8bc",
+    "user_preview": "{\"EXISTING_RULES\":[],\"OBSERVED_IDENTIFIERS\":[\"net_revenue\",\"refunds\",\"revenue\",\"sales\"],\"OUTPUT_SCHEMA\":{\"rules\":[{\"fields\":[\"identifiers\"],\"kind\":\"allowed rule kind\",\"output\":\"identifier or null\",\"parameters\":{},\"rationale\":\"one sentence\",\"source_text\":\"exact unresolved sentence\"}],\"unresolved_sentences\":[\"exact unresolved sentences not converted\"]},\"UNRESOLVED_SENTENCES\":[\"Finance policy treats refunded cash as a deduction from booked sales.\",\"The published columns are `sales`, `refunds`, and `net_revenue`.\"]}",
+    "user_sha256": "c9de05d5ca1360616c40a5fa00791e95b526351c99e178dddf7ba9d3097e22b7"
+  },
+  "request_hash": "8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080",
+  "response": {
+    "data": {
+      "rules": [
+        {
+          "fields": [
+            "sales",
+            "refunds",
+            "net_revenue"
+          ],
+          "kind": "public_contract"
+        },
+        {
+          "fields": [
+            "sales",
+            "refunds"
+          ],
+          "output": "net_revenue",
+          "parameters": {
+            "operator": "subtract"
+          }
+        }
+      ],
+      "unresolved_sentences": []
+    },
+    "raw_text": "{\"rules\":[{\"kind\":\"public_contract\",\"fields\":[\"sales\",\"refunds\",\"net_revenue\"]},{\"output\":\"net_revenue\",\"fields\":[\"sales\",\"refunds\"],\"parameters\":{\"operator\":\"subtract\"}}],\"unresolved_sentences\":[]}",
+    "usage": {
+      "agent": "contract_clarifier",
+      "estimated_cost_usd": null,
+      "http_attempts": 1,
+      "input_tokens": 564,
+      "latency_ms": 2203,
+      "model": "openai/gpt-oss-20b",
+      "output_tokens": 612,
+      "provider": "groq",
+      "rate_limit_wait_ms": 0,
+      "request_hash": "8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080",
+      "total_tokens": 1176
+    }
+  },
+  "schema_version": 1
+}

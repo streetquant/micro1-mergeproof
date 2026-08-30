@@ -1,0 +1,32 @@
+{
+  "candidate_id": "DP-53C0D560C795",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": true,
+  "external_evaluation": {
+    "case_id": "DD-001",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "['customer_id', 'customer_name', 'revenue_amount']",
+        "name": "downstream_contract_preserved",
+        "passed": true
+      },
+      {
+        "detail": "expected=[[1, 'Ada Lovelace', 100], [2, 'Grace Hopper', 250]]; actual=[[1, 'Ada Lovelace', 100], [2, 'Grace Hopper', 250]]",
+        "name": "renamed_source_field_regression",
+        "passed": true
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:41:54  Running with dbt=1.11.14\n\u001b[0m02:41:54  Registered adapter: duckdb=1.11.0\n\u001b[0m02:41:54  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:41:55  Found 2 models, 2 data tests, 1 source, 500 macros\n\u001b[0m02:41:55  \n\u001b[0m02:41:55  Concurrency: 1 threads (target='dev')\n\u001b[0m02:41:55  \n\u001b[0m02:41:55  1 of 4 START sql table model analytics.stg_customers ........................... [RUN]\n\u001b[0m02:41:56  1 of 4 OK created sql table model analytics.stg_customers ...................... [\u001b[32mOK\u001b[0m in 0.17s]\n\u001b[0m02:41:56  2 of 4 START sql table model analytics.mart_customer_revenue ................... [RUN]\n\u001b[0m02:41:56  2 of 4 OK created sql table model analytics.mart_customer_revenue .............. [\u001b[32mOK\u001b[0m in 0.14s]\n\u001b[0m02:41:56  3 of 4 START test not_null_mart_customer_revenue_customer_id ................... [RUN]\n\u001b[0m02:41:56  3 of 4 PASS not_null_mart_customer_revenue_customer_id ......................... [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:41:56  4 of 4 START test unique_mart_customer_revenue_customer_id ..................... [RUN]\n\u001b[0m02:41:56  4 of 4 PASS unique_mart_customer_revenue_customer_id ........................... [\u001b[32mPASS\u001b[0m in 0.02s]\n\u001b[0m02:41:56  \n\u001b[0m02:41:56  Finished running 2 table models, 2 data tests in 0 hours 0 minutes and 0.49 seconds (0.49s).\n\u001b[0m02:41:56  \n\u001b[0m02:41:56  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:41:56  \n\u001b[0m02:41:56  Done. PASS=4 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=4\n",
+    "passed": true
+  },
+  "external_oracle_passed": true,
+  "failed_external_checks": [],
+  "upstream_case_id": "DD-001"
+}

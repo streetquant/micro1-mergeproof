@@ -1,0 +1,123 @@
+{
+  "build": {
+    "command": [
+      "dbt",
+      "build",
+      "--project-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-5F391A186F68",
+      "--profiles-dir",
+      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-5F391A186F68",
+      "--no-use-colors"
+    ],
+    "duration_ms": 3425,
+    "isolation": "disposable_copy",
+    "passed": true,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 1 model, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 3 START sql table model analytics.current_customers ....................... [RUN]\n1 of 3 OK created sql table model analytics.current_customers .................. [OK in <DURATION>]\n2 of 3 START test not_null_current_customers_customer_id ....................... [RUN]\n2 of 3 PASS not_null_current_customers_customer_id ............................. [PASS in <DURATION>]\n3 of 3 START test unique_current_customers_customer_id ......................... [RUN]\n3 of 3 PASS unique_current_customers_customer_id ............................... [PASS in <DURATION>]\nFinished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.36 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "worktree_sha256": "6a15e8cb9023e818d5d2141c3a960ce4d7d8e4b6398be0c3dec832fa5260987e"
+  },
+  "candidate_id": "DP-5F391A186F68",
+  "certificate_sha256": "09503a02722a8f425776d1ebcb76529b326b36f0dc57be0109e667029f69f5ef",
+  "checks": [
+    {
+      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "evidence": [
+        "dbt build",
+        "6a15e8cb9023e818d5d2141c3a960ce4d7d8e4b6398be0c3dec832fa5260987e"
+      ],
+      "id": "C-046C625A4D7B",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Candidate builds from the disposable review worktree"
+    },
+    {
+      "detail": "The source tree hash is unchanged.",
+      "evidence": [
+        "6a15e8cb9023e818d5d2141c3a960ce4d7d8e4b6398be0c3dec832fa5260987e",
+        "6a15e8cb9023e818d5d2141c3a960ce4d7d8e4b6398be0c3dec832fa5260987e"
+      ],
+      "id": "C-2EE4ED4DFCAA",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Original candidate project remained unchanged"
+    },
+    {
+      "detail": "Compiled 1 rules without using an external benchmark oracle.",
+      "evidence": [
+        "BUSINESS_CONTEXT.md",
+        "c8d19fa781c89ba0b30e3ecaa493097053be051155b3cfb5a219734b0e4bee0d"
+      ],
+      "id": "C-AB2C57D37E34",
+      "metadata": {},
+      "rule_id": null,
+      "status": "pass",
+      "title": "Visible business context compiled into executable checks"
+    },
+    {
+      "detail": "Expected a latest-record operator ordered by updated_at DESC.",
+      "evidence": [
+        "models/current_customers.sql"
+      ],
+      "id": "C-4ADCF4AB36B0",
+      "metadata": {
+        "has_ascending_order": true,
+        "has_descending_order": false,
+        "has_latest_operator": true
+      },
+      "rule_id": "R-3AE7216508EE",
+      "status": "fail",
+      "title": "Latest-record selection follows the greatest documented timestamp"
+    },
+    {
+      "detail": "No disabled or warning-only validation controls were found.",
+      "evidence": [
+        "models/schema.yml",
+        "models/sources.yml"
+      ],
+      "id": "C-3A141B290B9B",
+      "metadata": {
+        "suppression_signals": []
+      },
+      "rule_id": null,
+      "status": "pass",
+      "title": "Verification controls were not weakened"
+    }
+  ],
+  "consequential_action_taken": false,
+  "context_sha256": "c8d19fa781c89ba0b30e3ecaa493097053be051155b3cfb5a219734b0e4bee0d",
+  "contract": {
+    "context_sha256": "c8d19fa781c89ba0b30e3ecaa493097053be051155b3cfb5a219734b0e4bee0d",
+    "rules": [
+      {
+        "fields": [
+          "customer_id",
+          "updated_at"
+        ],
+        "id": "R-3AE7216508EE",
+        "kind": "latest_record",
+        "output": null,
+        "parameters": {
+          "direction": "desc",
+          "order_field": "updated_at"
+        },
+        "source_text": "If multiple records exist, choose the row with the greatest `updated_at`."
+      }
+    ],
+    "unknown_sentences": [
+      "The model contract is exactly one current row per `customer_id`."
+    ]
+  },
+  "failed_check_ids": [
+    "C-4ADCF4AB36B0"
+  ],
+  "human_approval_required": true,
+  "inconclusive_check_ids": [],
+  "project_sha256": "6a15e8cb9023e818d5d2141c3a960ce4d7d8e4b6398be0c3dec832fa5260987e",
+  "schema_version": 1,
+  "summary": "Candidate is not approval-ready; failed checks: C-4ADCF4AB36B0.",
+  "trajectory_sha256": "eb87e1b017984c97cc9dfe5aeea40c04a54b830e84fe397d55fe52f1a4703c5b",
+  "verdict": "reject"
+}

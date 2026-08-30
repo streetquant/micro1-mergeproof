@@ -1,0 +1,6 @@
+name: agent_fallback_unsafe
+version: 1.0.0
+profile: agent_fallback_unsafe
+model-paths: [models]
+target-path: target
+clean-targets: [target, logs]

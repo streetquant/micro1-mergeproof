@@ -1,0 +1,23 @@
+{
+  "build_worktree_sha256": "47ef67ddf81139bf0871ab399688abcfad52b03dadb8e52e854f619381b8721f",
+  "candidate_id": "DP-69B90162904D",
+  "certificate_type": "driftproof.approval-certificate.v1",
+  "consequential_action_taken": false,
+  "context_sha256": "61c151c84cfae4cb348b7372e28ee5339e1ce373b610124139d962a8372fbf9f",
+  "failed_check_ids": [
+    "C-2037A54A2115"
+  ],
+  "human_approval_required": true,
+  "inconclusive_check_ids": [],
+  "passed_check_ids": [
+    "C-046C625A4D7B",
+    "C-2EE4ED4DFCAA",
+    "C-AB2C57D37E34",
+    "C-3A141B290B9B"
+  ],
+  "project_sha256": "47ef67ddf81139bf0871ab399688abcfad52b03dadb8e52e854f619381b8721f",
+  "report_sha256": "4e665e94ec1271cfbf30a3c410c693a83a3b861110d319f83576c30e4db68131",
+  "schema_version": 1,
+  "self_sha256": "fd6b82bcd91eefbba0a7692039cbac53959ff5e036f737bcb17473c620b67387",
+  "verdict": "reject"
+}

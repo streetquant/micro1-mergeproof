@@ -3,9 +3,9 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mergeproof"
+name = "driftproof"
 version = "0.1.0"
-description = "Evidence-grounded release gate for agent-authored code changes"
+description = "Independent adversarial release gate for agent-authored dbt repairs"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -19,6 +19,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dbt = [
+  "dbt-core==1.11.14",
+  "dbt-duckdb==1.11.0",
+  "duckdb==1.5.5",
+]
 dev = [
   "hypothesis>=6.130,<7",
   "mypy>=1.15,<2",
@@ -28,10 +33,11 @@ dev = [
 ]
 
 [project.scripts]
+driftproof = "driftproof.cli:app"
 mergeproof = "mergeproof.cli:app"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mergeproof"]
+packages = ["src/driftproof", "src/mergeproof"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-config --strict-markers"
@@ -48,7 +54,7 @@ ignore = ["E501"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
-packages = ["mergeproof"]
+packages = ["driftproof", "mergeproof"]
 
 [tool.coverage.run]
 branch = true

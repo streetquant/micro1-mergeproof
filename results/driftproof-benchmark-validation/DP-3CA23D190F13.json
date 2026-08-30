@@ -1,0 +1,35 @@
+{
+  "candidate_id": "DP-3CA23D190F13",
+  "dbt_build_passed": true,
+  "expected_safe_to_approve": false,
+  "external_evaluation": {
+    "case_id": "DD-010",
+    "checks": [
+      {
+        "detail": "returncode=0",
+        "name": "dbt_build_succeeds",
+        "passed": true
+      },
+      {
+        "detail": "expected=[[1, '2026-08-28', 10], [2, '2026-08-29', 20], [3, '2026-08-29', 30]]; actual=[[1, '2026-08-28', 10], [2, '2026-08-28', 20], [3, '2026-08-29', 30]]",
+        "name": "reporting_timezone_boundaries",
+        "passed": false
+      },
+      {
+        "detail": "expected=[['2026-08-28', 10], ['2026-08-29', 50]]; actual=[['2026-08-28', 30], ['2026-08-29', 30]]",
+        "name": "daily_aggregate_totals",
+        "passed": false
+      }
+    ],
+    "dbt_returncode": 0,
+    "dbt_stderr": "",
+    "dbt_stdout": "\u001b[0m02:41:36  Running with dbt=1.11.14\n\u001b[0m02:41:37  Registered adapter: duckdb=1.11.0\n\u001b[0m02:41:37  Unable to do partial parsing because saved manifest not found. Starting full parse.\n\u001b[0m02:41:38  Found 1 model, 2 data tests, 1 source, 500 macros\n\u001b[0m02:41:38  \n\u001b[0m02:41:38  Concurrency: 1 threads (target='dev')\n\u001b[0m02:41:38  \n\u001b[0m02:41:38  1 of 3 START sql table model analytics.daily_events ............................ [RUN]\n\u001b[0m02:41:38  1 of 3 OK created sql table model analytics.daily_events ....................... [\u001b[32mOK\u001b[0m in 0.17s]\n\u001b[0m02:41:38  2 of 3 START test not_null_daily_events_event_id ............................... [RUN]\n\u001b[0m02:41:38  2 of 3 PASS not_null_daily_events_event_id ..................................... [\u001b[32mPASS\u001b[0m in 0.03s]\n\u001b[0m02:41:38  3 of 3 START test unique_daily_events_event_id ................................. [RUN]\n\u001b[0m02:41:38  3 of 3 PASS unique_daily_events_event_id ....................................... [\u001b[32mPASS\u001b[0m in 0.02s]\n\u001b[0m02:41:38  \n\u001b[0m02:41:38  Finished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.31 seconds (0.31s).\n\u001b[0m02:41:38  \n\u001b[0m02:41:38  \u001b[32mCompleted successfully\u001b[0m\n\u001b[0m02:41:38  \n\u001b[0m02:41:38  Done. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "passed": false
+  },
+  "external_oracle_passed": false,
+  "failed_external_checks": [
+    "reporting_timezone_boundaries",
+    "daily_aggregate_totals"
+  ],
+  "upstream_case_id": "DD-010"
+}

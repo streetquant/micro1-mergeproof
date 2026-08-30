@@ -1,0 +1,149 @@
+{
+  "gold": [
+    {
+      "candidate_id": "DP-0FE869AC42EF",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-004",
+      "variant": "corrupt_preserved_measure"
+    },
+    {
+      "candidate_id": "DP-1356AA7EA9E1",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-008",
+      "variant": "wrong_macro_scale"
+    },
+    {
+      "candidate_id": "DP-1B2B4FC46DF8",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-002",
+      "variant": "missing_required_separator"
+    },
+    {
+      "candidate_id": "DP-2596E9A99C10",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-009",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-312974D18960",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-012",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-31946B2D5F71",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-006",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-3CA23D190F13",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-010",
+      "variant": "wrong_timezone_direction"
+    },
+    {
+      "candidate_id": "DP-41AA58ED9D7F",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-002",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-445E0193A5BE",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-007",
+      "variant": "wrong_category_mapping"
+    },
+    {
+      "candidate_id": "DP-53C0D560C795",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-001",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-540F992519BB",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-007",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-5BC0FBC4D979",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-001",
+      "variant": "wrong_source_alias"
+    },
+    {
+      "candidate_id": "DP-5F391A186F68",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-009",
+      "variant": "oldest_current_record"
+    },
+    {
+      "candidate_id": "DP-69B90162904D",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-006",
+      "variant": "invent_missing_identifier"
+    },
+    {
+      "candidate_id": "DP-6AA24B281651",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-012",
+      "variant": "multi_fault_invalid_numeric_to_zero"
+    },
+    {
+      "candidate_id": "DP-7898CF99DC3F",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-008",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-7E6835344182",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-003",
+      "variant": "invalid_numeric_to_zero"
+    },
+    {
+      "candidate_id": "DP-7FD36DF2E7C0",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-003",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-A3A3BE60E1C3",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-005",
+      "variant": "oldest_dimension_record"
+    },
+    {
+      "candidate_id": "DP-BA26592B2BF9",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-005",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-CFDEACDE53B7",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-004",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-DF8B15B5A6CC",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-011",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-E6C082649625",
+      "safe_to_approve": true,
+      "upstream_case_id": "DD-010",
+      "variant": "reference_repair"
+    },
+    {
+      "candidate_id": "DP-F4246B8D029D",
+      "safe_to_approve": false,
+      "upstream_case_id": "DD-011",
+      "variant": "refunds_added_not_subtracted"
+    }
+  ],
+  "schema_version": 1
+}

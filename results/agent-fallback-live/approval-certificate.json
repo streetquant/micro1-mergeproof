@@ -1,0 +1,22 @@
+{
+  "build_worktree_sha256": "1107fbbc6ab00b861f65007aaee5d66ed0010b205beeb959604111ddeafcf735",
+  "candidate_id": "DP-AGENT-FALLBACK-UNSAFE",
+  "certificate_type": "driftproof.approval-certificate.v1",
+  "consequential_action_taken": false,
+  "context_sha256": "fe3ec5bb473225fad8be26266ab80d538e2d195b329b129a978adaeb13744865",
+  "failed_check_ids": [],
+  "human_approval_required": true,
+  "inconclusive_check_ids": [
+    "C-C5E319B947B9",
+    "C-19CFACF0103C"
+  ],
+  "passed_check_ids": [
+    "C-046C625A4D7B",
+    "C-2EE4ED4DFCAA"
+  ],
+  "project_sha256": "1107fbbc6ab00b861f65007aaee5d66ed0010b205beeb959604111ddeafcf735",
+  "report_sha256": "ee058aa32b9b5637ca737fc7f50885f96ddbc4f8c248b01f87498dbc5332af05",
+  "schema_version": 1,
+  "self_sha256": "e50744d319dc84d3714c9caa4254635d337ee47d7bce55e1e18254054699c348",
+  "verdict": "human_review"
+}

@@ -7,7 +7,7 @@ from pydantic import Field, ValidationError
 
 from mergeproof.models import StrictModel
 from mergeproof.providers import LLMProvider, ProviderError
-from mergeproof.utils import canonical_json, stable_request_hash
+from mergeproof.utils import canonical_json, sha256_text, stable_request_hash
 
 from .contracts import build_contract_rule
 from .models import AgentTrace, ContractRule, ContractSpec, RuleKind
@@ -135,6 +135,23 @@ def _normalize_raw_proposal(
     normalized.setdefault("parameters", {})
     normalized.setdefault("output", None)
     return normalized
+
+
+def _trace_output_sha256(
+    *,
+    accepted_rule_ids: list[str],
+    rejected_proposals: list[str],
+    unresolved_sentences: list[str],
+) -> str:
+    return sha256_text(
+        canonical_json(
+            {
+                "accepted_rule_ids": accepted_rule_ids,
+                "rejected_proposals": rejected_proposals,
+                "unresolved_sentences": unresolved_sentences,
+            }
+        )
+    )
 
 
 class ContractClarifier:

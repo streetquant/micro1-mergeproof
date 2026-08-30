@@ -74,9 +74,12 @@ class BuildResult(StrictModel):
 
 
 class AgentTrace(StrictModel):
+    schema_version: Literal[1] = 1
+    agent: Literal["contract_clarifier"] = "contract_clarifier"
     provider: str
     model: str
     request_hash: str
+    output_sha256: str = ""
     input_tokens: int = 0
     output_tokens: int = 0
     total_tokens: int = 0
@@ -86,7 +89,7 @@ class AgentTrace(StrictModel):
 
 
 class GateReport(StrictModel):
-    schema_version: int = 1
+    schema_version: Literal[1] = 1
     candidate_id: str
     verdict: Verdict
     summary: str
@@ -99,13 +102,13 @@ class GateReport(StrictModel):
     checks: list[CheckResult]
     failed_check_ids: list[str] = Field(default_factory=list)
     inconclusive_check_ids: list[str] = Field(default_factory=list)
-    human_approval_required: bool = True
-    consequential_action_taken: bool = False
+    human_approval_required: Literal[True] = True
+    consequential_action_taken: Literal[False] = False
     certificate_sha256: str | None = None
 
 
 class ApprovalCertificate(StrictModel):
-    schema_version: int = 1
+    schema_version: Literal[1] = 1
     certificate_type: Literal["driftproof.approval-certificate.v1"] = (
         "driftproof.approval-certificate.v1"
     )
@@ -118,6 +121,6 @@ class ApprovalCertificate(StrictModel):
     passed_check_ids: list[str]
     failed_check_ids: list[str]
     inconclusive_check_ids: list[str]
-    human_approval_required: bool = True
-    consequential_action_taken: bool = False
+    human_approval_required: Literal[True] = True
+    consequential_action_taken: Literal[False] = False
     self_sha256: str = ""

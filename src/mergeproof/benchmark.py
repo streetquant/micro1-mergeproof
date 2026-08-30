@@ -1,14 +1,37 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import statistics
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 from .models import AuditResult, CaseInput, Decision, GoldCase
-from .pipeline import run_baseline
+from .pipeline import run_advanced, run_baseline, run_verified
 from .providers import LLMProvider
 from .utils import canonical_json, write_json
+
+_SUPPORTED_MODES = {"baseline", "verified", "advanced"}
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _source_tree_sha256(root: Path = Path(".")) -> str:
+    candidates = [
+        *sorted((root / "src" / "mergeproof").glob("**/*.py")),
+        root / "pyproject.toml",
+        root / "uv.lock",
+    ]
+    records: list[bytes] = []
+    for path in candidates:
+        if not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix().encode()
+        records.extend((relative, b"\0", hashlib.sha256(path.read_bytes()).digest(), b"\n"))
+    return hashlib.sha256(b"".join(records)).hexdigest()
 
 
 def load_cases(path: Path) -> list[CaseInput]:
@@ -34,10 +57,13 @@ def compute_metrics(results: list[AuditResult], gold: dict[str, GoldCase]) -> di
         raise ValueError("cannot score an empty result set")
     tp = fp = tn = fn = 0
     category_tp = category_fp = category_fn = 0
+    exact_issue_sets = 0
+    human_reviews = 0
     for result in results:
         expected = gold[result.case_id]
         actual_block = result.decision != Decision.APPROVE
         expected_block = not expected.safe_to_merge
+        human_reviews += result.decision == Decision.HUMAN_REVIEW
         if actual_block and expected_block:
             tp += 1
         elif actual_block and not expected_block:
@@ -52,6 +78,7 @@ def compute_metrics(results: list[AuditResult], gold: dict[str, GoldCase]) -> di
             for finding in result.findings
             if finding.status.value == "verified"
         }
+        exact_issue_sets += predicted_categories == expected_categories
         category_tp += len(expected_categories & predicted_categories)
         category_fp += len(predicted_categories - expected_categories)
         category_fn += len(expected_categories - predicted_categories)
@@ -75,30 +102,26 @@ def compute_metrics(results: list[AuditResult], gold: dict[str, GoldCase]) -> di
     evidence_rates = [result.valid_evidence_rate for result in results]
     approvals = [result for result in results if result.decision == Decision.APPROVE]
     safe_approvals = sum(gold[result.case_id].safe_to_merge for result in approvals)
-    return {
-        "schema_version": 1,
-        "cases": len(results),
-        "primary_metric": "unsafe_change_decision_f1",
-        "unsafe_change_decision": {
-            "tp": tp,
-            "fp": fp,
-            "tn": tn,
-            "fn": fn,
-            "precision": precision,
-            "recall": recall,
-            "f1": f1,
-            "accuracy": accuracy,
-        },
-        "safe_approval_precision": safe_approvals / len(approvals) if approvals else 0.0,
-        "issue_category_micro": {
-            "tp": category_tp,
-            "fp": category_fp,
-            "fn": category_fn,
-            "precision": category_precision,
-            "recall": category_recall,
-            "f1": category_f1,
-        },
-        "evidence_reference_validity": sum(evidence_rates) / len(evidence_rates),
+    decision_metrics = {
+        "tp": tp,
+        "fp": fp,
+        "tn": tn,
+        "fn": fn,
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+        "accuracy": accuracy,
+    }
+    diagnosis_metrics = {
+        "tp": category_tp,
+        "fp": category_fp,
+        "fn": category_fn,
+        "precision": category_precision,
+        "recall": category_recall,
+        "f1": category_f1,
+        "exact_issue_set_rate": exact_issue_sets / len(results),
+    }
+    operational_metrics = {
         "runtime_ms": {
             "median": statistics.median(durations),
             "p95": sorted(durations)[max(0, round(0.95 * len(durations)) - 1)],
@@ -114,20 +137,59 @@ def compute_metrics(results: list[AuditResult], gold: dict[str, GoldCase]) -> di
             "estimated_cost_usd": sum(item.estimated_cost_usd or 0 for item in usages),
         },
     }
+    return {
+        "schema_version": 2,
+        "cases": len(results),
+        "primary_metric": "unsafe_change_decision_f1",
+        "unsafe_change_decision": decision_metrics,
+        "safe_approval_precision": safe_approvals / len(approvals) if approvals else 0.0,
+        "issue_category_micro": diagnosis_metrics,
+        "evidence_reference_validity": sum(evidence_rates) / len(evidence_rates),
+        "human_review_rate": human_reviews / len(results),
+        "runtime_ms": operational_metrics["runtime_ms"],
+        "model_usage": operational_metrics["model_usage"],
+        "metric_groups": {
+            "safety": {
+                "unsafe_change_decision": decision_metrics,
+                "safe_approval_precision": safe_approvals / len(approvals) if approvals else 0.0,
+                "human_review_rate": human_reviews / len(results),
+            },
+            "diagnosis": diagnosis_metrics,
+            "evidence": {
+                "reference_validity": sum(evidence_rates) / len(evidence_rates),
+            },
+            "operational": operational_metrics,
+        },
+    }
+
+
+def _runner_for_mode(
+    mode: str,
+    provider: LLMProvider | None,
+) -> tuple[Callable[[CaseInput], AuditResult], str, str]:
+    if mode == "verified":
+        return run_verified, "deterministic", "collector+bubblewrap-v1"
+    if provider is None:
+        raise ValueError(f"mode {mode!r} requires a model provider")
+    if mode == "baseline":
+        return lambda case: run_baseline(case, provider), provider.name, provider.model
+    if mode == "advanced":
+        return lambda case: run_advanced(case, provider), provider.name, provider.model
+    raise ValueError(f"unsupported mode: {mode}")
 
 
 def run_benchmark(
     *,
     mode: str,
-    provider: LLMProvider,
+    provider: LLMProvider | None,
     cases_path: Path,
     gold_path: Path,
     output_dir: Path,
     only_case: str | None = None,
     limit: int | None = None,
 ) -> tuple[list[AuditResult], dict[str, Any]]:
-    if mode != "baseline":
-        raise ValueError(f"mode is not implemented yet: {mode}")
+    if mode not in _SUPPORTED_MODES:
+        raise ValueError(f"unsupported mode: {mode}; choose one of {sorted(_SUPPORTED_MODES)}")
     cases = load_cases(cases_path)
     if only_case is not None:
         cases = [case for case in cases if case.id == only_case]
@@ -139,26 +201,36 @@ def run_benchmark(
     missing_gold = sorted({case.id for case in cases} - set(gold))
     if missing_gold:
         raise ValueError(f"missing gold labels: {missing_gold}")
+
+    runner, provider_name, model_name = _runner_for_mode(mode, provider)
     output_dir.mkdir(parents=True, exist_ok=True)
     results: list[AuditResult] = []
     raw_path = output_dir / "raw-results.jsonl"
     with raw_path.open("w", encoding="utf-8") as handle:
         for case in cases:
-            result = run_baseline(case, provider)
+            result = runner(case)
             results.append(result)
             handle.write(canonical_json(result.model_dump(mode="json")) + "\n")
+
     metrics = compute_metrics(results, gold)
-    metrics.update({"mode": mode, "provider": provider.name, "model": provider.model})
-    write_json(output_dir / "metrics.json", metrics)
+    metrics.update({"mode": mode, "provider": provider_name, "model": model_name})
+    metrics_path = output_dir / "metrics.json"
+    write_json(metrics_path, metrics)
+    manifest_path = output_dir / "manifest.json"
     write_json(
-        output_dir / "manifest.json",
+        manifest_path,
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "mode": mode,
-            "provider": provider.name,
-            "model": provider.model,
+            "provider": provider_name,
+            "model": model_name,
             "case_ids": [case.id for case in cases],
-            "raw_results": str(raw_path),
+            "cases_sha256": _sha256_file(cases_path),
+            "gold_sha256": _sha256_file(gold_path),
+            "source_tree_sha256": _source_tree_sha256(),
+            "raw_results": raw_path.name,
+            "raw_results_sha256": _sha256_file(raw_path),
+            "metrics_sha256": _sha256_file(metrics_path),
         },
     )
     return results, metrics

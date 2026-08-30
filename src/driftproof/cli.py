@@ -38,6 +38,15 @@ def review(
     work_root: Annotated[Path, typer.Option()] = Path(".work/driftproof-runs"),
     timeout_seconds: Annotated[int, typer.Option(min=1, max=900)] = 120,
     isolation: Annotated[Literal["auto", "disposable_copy", "bubblewrap"], typer.Option()] = "auto",
+    allow_unconfined: Annotated[
+        bool,
+        typer.Option(
+            help=(
+                "Explicitly permit the weaker disposable-copy runner for a trusted project. "
+                "Never use this for untrusted candidate code."
+            )
+        ),
+    ] = False,
     agent_provider: Annotated[
         str | None,
         typer.Option(help="Optional bounded clarifier provider: groq, openrouter, or replay."),
@@ -63,6 +72,7 @@ def review(
             work_root=work_root,
             timeout_seconds=timeout_seconds,
             isolation=isolation,
+            allow_unconfined=allow_unconfined,
             clarifier=clarifier,
         )
     except (GateExecutionError, ProviderError) as exc:

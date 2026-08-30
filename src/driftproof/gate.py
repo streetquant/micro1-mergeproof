@@ -7,7 +7,7 @@ from typing import Literal
 from mergeproof.utils import canonical_json, sha256_text
 
 from .agent import ContractClarifier
-from .certificate import build_certificate, verify_certificate, write_bundle
+from .certificate import build_certificate, verify_certificate
 from .checks import verify_contract
 from .contracts import compile_contract
 from .models import (
@@ -18,6 +18,7 @@ from .models import (
     Verdict,
 )
 from .project import ProjectValidationError, snapshot_project
+from .reporting import write_gate_bundle
 from .runner import BuildExecutionError, run_dbt_build
 
 
@@ -92,6 +93,7 @@ def review_project(
     output_dir: Path | None = None,
     timeout_seconds: int = 120,
     isolation: Literal["auto", "disposable_copy", "bubblewrap"] = "auto",
+    allow_unconfined: bool = False,
     clarifier: ContractClarifier | None = None,
 ) -> tuple[GateReport, ApprovalCertificate]:
     project = project.resolve()
@@ -108,6 +110,7 @@ def review_project(
             candidate_id=_candidate_id(project, before.tree_sha256),
             timeout_seconds=timeout_seconds,
             isolation=isolation,
+            allow_unconfined=allow_unconfined,
         )
         after = snapshot_project(project)
     except (ProjectValidationError, BuildExecutionError) as exc:
@@ -187,7 +190,7 @@ def review_project(
     if certificate_errors:
         raise GateExecutionError(f"certificate verification failed: {certificate_errors}")
     if output_dir is not None:
-        write_bundle(output_dir, report, certificate)
+        write_gate_bundle(output_dir, report, certificate)
     return report, certificate
 
 
@@ -197,6 +200,7 @@ def baseline_green_gate(
     work_root: Path,
     timeout_seconds: int = 120,
     isolation: Literal["auto", "disposable_copy", "bubblewrap"] = "auto",
+    allow_unconfined: bool = False,
 ) -> Verdict:
     project = project.resolve()
     try:
@@ -207,6 +211,7 @@ def baseline_green_gate(
             candidate_id=f"baseline-{snapshot.tree_sha256[:12]}",
             timeout_seconds=timeout_seconds,
             isolation=isolation,
+            allow_unconfined=allow_unconfined,
         )
     except (ProjectValidationError, BuildExecutionError):
         return Verdict.HUMAN_REVIEW

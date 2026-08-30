@@ -1,13 +1,18 @@
 {
   "case_count": 24,
+  "cases_sha256": "15e27e91e0f5a2340305b5cac8ff904a9a9ca8ef3391dbee6d68809994a4788b",
   "fixture_count": 24,
   "fixture_directory_sha256": "a99fc38725b2897ff8aedc218d9b49cd1f2a46a394e24b5259d366bbdac8bedc",
+  "gold_sha256": "fbe7ef38b9b9d93867f4f77b08fa862f772d0616aaefdd1abac67b272f6126ec",
   "live_metrics_sha256": "406aa14a04fe84faf2fca794fbaa5ad38f422a3a8325c066be1b8e0335e3b8b1",
   "live_raw_results_sha256": "edd9be617235ce4bf79ccbad86eaf3d2ede4592c69bcbe319997b3adf1fe1302",
   "model": "openai/gpt-oss-20b",
-  "replay_metrics_sha256": "cdd3114b567b2a1bb08bc9f88c0ff500996f34775b74227f7c0f97327deadbad",
-  "replay_raw_results_sha256": "c3b210191b3f8123601b26a26aa7cdab76808c6e4385e916cf8d7519e314911b",
+  "pyproject_sha256": "927ff68da0d976103f8763606ef4be27538fc80b0cfcf5060db730ef32707e4a",
+  "replay_metrics_sha256": "d7d025e7a9d0d453b42869093d34e8a9b5def0eb9dc15d9c7161c9e37e839d96",
+  "replay_raw_results_sha256": "a58a18712dd314baa5a22560511f9775c2ad228cb3fa689a3a8c22857afcccf2",
   "schema_version": 1,
-  "semantic_comparison": "All fields except provider identity and measured runtime/latency are identical.",
+  "scope": "Replay verifies deterministic processing of recorded model responses. It is not an unseen-input or model-generalization test.",
+  "semantic_comparison": "Frozen schema-v1 decision semantics are identical; the schema-v2 human-boundary and trace envelope is independently validated.",
+  "uv_lock_sha256": "2889c6bfb0cb3cda408c2271b9653462440301ef1bd2d0de5c9d27187241882d",
   "verified": true
 }

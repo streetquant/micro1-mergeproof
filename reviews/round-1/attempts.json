@@ -1,0 +1,33 @@
+{
+  "failed_attempts": [
+    {
+      "model": "openai/gpt-oss-120b",
+      "packet_sha256": "b815f12c4fd8073094e67fec1a6c4b318df6583bcc1845ea32b56c4101f1e790",
+      "provider": "groq",
+      "result": "HTTP 413 Payload Too Large",
+      "reviewer": "security"
+    },
+    {
+      "model": "anthropic/claude-sonnet-5",
+      "packet_sha256": "25f3e913c82a2561e5d0b80e0d2414ec79bc4dfa41f593ecbc4370ade6edf36a",
+      "provider": "openrouter",
+      "result": "HTTP 402 Payment Required",
+      "reviewer": "rubric"
+    },
+    {
+      "model": "google/gemini-3.1-pro-preview",
+      "packet_sha256": "c549f14e0aaf597249f7c4125e9c73a660999a65e131b43719cde32222b6335d",
+      "provider": "openrouter",
+      "result": "HTTP 402 Payment Required",
+      "reviewer": "repro"
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "provider": "gemini",
+      "result": "HTTP 403 Forbidden",
+      "reviewer": "provider_probe"
+    }
+  ],
+  "reroute_policy": "Use compact focused packets and distinct working Groq model families; never count failed attempts as completed reviews.",
+  "schema_version": 1
+}

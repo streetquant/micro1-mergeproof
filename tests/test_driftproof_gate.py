@@ -40,6 +40,7 @@ def test_green_baseline_and_advanced_approval(tmp_path: Path) -> None:
             project,
             work_root=tmp_path / "baseline-work",
             isolation="disposable_copy",
+            allow_unconfined=True,
         )
         == Verdict.APPROVE
     )
@@ -48,6 +49,7 @@ def test_green_baseline_and_advanced_approval(tmp_path: Path) -> None:
         work_root=tmp_path / "advanced-work",
         output_dir=tmp_path / "bundle",
         isolation="disposable_copy",
+        allow_unconfined=True,
     )
 
     assert report.verdict == Verdict.APPROVE
@@ -73,6 +75,7 @@ def test_invalid_build_is_rejected(tmp_path: Path) -> None:
         project,
         work_root=tmp_path / "work",
         isolation="disposable_copy",
+        allow_unconfined=True,
     )
     assert report.verdict == Verdict.REJECT
     assert not report.build.passed
@@ -89,6 +92,7 @@ def test_unsupported_context_escalates_to_human(tmp_path: Path) -> None:
         project,
         work_root=tmp_path / "work",
         isolation="disposable_copy",
+        allow_unconfined=True,
     )
     assert report.verdict == Verdict.HUMAN_REVIEW
     assert report.inconclusive_check_ids

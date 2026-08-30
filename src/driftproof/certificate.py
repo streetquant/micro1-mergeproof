@@ -36,6 +36,28 @@ def build_certificate(report: GateReport) -> ApprovalCertificate:
 
 def verify_certificate(report: GateReport, certificate: ApprovalCertificate) -> list[str]:
     errors: list[str] = []
+    check_ids = [check.id for check in report.checks]
+    if len(check_ids) != len(set(check_ids)):
+        errors.append("duplicate report check IDs")
+    passed = [check.id for check in report.checks if check.status == CheckStatus.PASS]
+    failed = [check.id for check in report.checks if check.status == CheckStatus.FAIL]
+    inconclusive = [check.id for check in report.checks if check.status == CheckStatus.INCONCLUSIVE]
+    if report.failed_check_ids != failed:
+        errors.append("report failed-check index mismatch")
+    if report.inconclusive_check_ids != inconclusive:
+        errors.append("report inconclusive-check index mismatch")
+    if certificate.passed_check_ids != passed:
+        errors.append("certificate passed-check index mismatch")
+    if certificate.failed_check_ids != failed:
+        errors.append("certificate failed-check index mismatch")
+    if certificate.inconclusive_check_ids != inconclusive:
+        errors.append("certificate inconclusive-check index mismatch")
+    if report.certificate_sha256 != certificate.self_sha256:
+        errors.append("report certificate reference mismatch")
+    if not report.human_approval_required or report.consequential_action_taken:
+        errors.append("report human approval boundary mismatch")
+    if not certificate.human_approval_required or certificate.consequential_action_taken:
+        errors.append("certificate human approval boundary mismatch")
     expected_report = sha256_text(canonical_json(_report_payload(report)))
     if certificate.report_sha256 != expected_report:
         errors.append("report hash mismatch")

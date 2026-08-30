@@ -1,5 +1,6 @@
 .ai-bridge/
 .cache/
+.work/
 .env
 .env.*
 !.env.example
@@ -16,4 +17,9 @@ build/
 *.egg-info/
 outputs/live/
 artifacts/private/
+mergeproof-review/
+mergeproof-request.json
+results/**/work/
+results/verified-current/
+reviews/**/raw/
 *.log

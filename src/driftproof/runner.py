@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import os
+import math
 import re
+import resource
 import shutil
 import subprocess
 import time
@@ -14,6 +15,15 @@ from .project import snapshot_project
 _ANSI = re.compile(r"\x1b\[[0-9;]*m")
 _CLOCK = re.compile(r"(?m)^\s*\d{2}:\d{2}:\d{2}\s+")
 _DURATION = re.compile(r"\b\d+(?:\.\d+)?s\b")
+_BWRAP_UNAVAILABLE = (
+    "operation not permitted",
+    "creating new namespace failed",
+    "permission denied",
+    "no permissions to creating new namespace",
+)
+_TMPFS_BYTES = 128 * 1024 * 1024
+_FILE_SIZE_BYTES = 128 * 1024 * 1024
+_OPEN_FILES = 256
 
 
 class BuildExecutionError(RuntimeError):
@@ -21,6 +31,8 @@ class BuildExecutionError(RuntimeError):
 
 
 def _copy_project(project: Path, destination: Path) -> None:
+    if destination.is_symlink():
+        raise BuildExecutionError(f"review worktree may not be a symlink: {destination}")
     if destination.exists():
         shutil.rmtree(destination)
 
@@ -40,10 +52,22 @@ def _normalize_output(value: str, *, project: Path, worktree: Path) -> str:
     normalized = normalized.replace(str(project), "<PROJECT>").replace(str(worktree), "<WORKTREE>")
     normalized = _CLOCK.sub("", normalized)
     normalized = _DURATION.sub("<DURATION>", normalized)
-    return normalized[-20000:]
+    return normalized[-20_000:]
 
 
-def _dbt_command(dbt: str, worktree: Path) -> list[str]:
+def _display_command() -> list[str]:
+    return [
+        "dbt",
+        "build",
+        "--project-dir",
+        "<WORKTREE>",
+        "--profiles-dir",
+        "<WORKTREE>",
+        "--no-use-colors",
+    ]
+
+
+def _direct_command(dbt: str, worktree: Path) -> list[str]:
     return [
         dbt,
         "build",
@@ -55,40 +79,115 @@ def _dbt_command(dbt: str, worktree: Path) -> list[str]:
     ]
 
 
-def _bubblewrap_command(dbt_command: list[str], worktree: Path) -> list[str]:
+def _runtime_bindings() -> list[str]:
+    arguments: list[str] = []
+    for path in ("/usr", "/bin", "/lib", "/lib64"):
+        if Path(path).exists():
+            arguments.extend(("--ro-bind", path, path))
+    return arguments
+
+
+def _runtime_venv(dbt: str) -> Path:
+    venv = Path(dbt).resolve().parent.parent
+    if not (venv / "bin" / "python").exists() or not (venv / "bin" / "dbt").is_file():
+        raise BuildExecutionError(f"dbt is not installed in a usable Python environment: {dbt}")
+    return venv
+
+
+def _bubblewrap_command(dbt: str, worktree: Path) -> list[str]:
     bwrap = shutil.which("bwrap")
     if bwrap is None:
         raise BuildExecutionError("bubblewrap is not installed")
+    venv = _runtime_venv(dbt)
     return [
-        bwrap,
+        str(Path(bwrap).resolve()),
         "--die-with-parent",
         "--new-session",
-        "--unshare-net",
-        "--unshare-pid",
-        "--unshare-uts",
-        "--unshare-ipc",
+        "--unshare-all",
+        *_runtime_bindings(),
         "--ro-bind",
-        "/",
-        "/",
+        str(venv),
+        "/runtime-venv",
         "--bind",
         str(worktree),
-        str(worktree),
+        "/workspace",
+        "--size",
+        str(_TMPFS_BYTES),
         "--tmpfs",
         "/tmp",
         "--proc",
         "/proc",
         "--dev",
         "/dev",
+        "--chdir",
+        "/workspace",
+        "--clearenv",
+        "--setenv",
+        "PATH",
+        "/runtime-venv/bin:/usr/bin:/bin",
         "--setenv",
         "HOME",
-        str(worktree / ".home"),
+        "/workspace/.home",
+        "--setenv",
+        "NO_COLOR",
+        "1",
         "--setenv",
         "DBT_SEND_ANONYMOUS_USAGE_STATS",
         "false",
-        "--chdir",
-        str(worktree),
-        *dbt_command,
+        "--setenv",
+        "PYTHONHASHSEED",
+        "0",
+        "--setenv",
+        "PYTHONNOUSERSITE",
+        "1",
+        "--setenv",
+        "PYTHONPYCACHEPREFIX",
+        "/tmp/pycache",
+        "--setenv",
+        "LANG",
+        "C.UTF-8",
+        "--setenv",
+        "LC_ALL",
+        "C.UTF-8",
+        "/runtime-venv/bin/python",
+        "/runtime-venv/bin/dbt",
+        "build",
+        "--project-dir",
+        "/workspace",
+        "--profiles-dir",
+        "/workspace",
+        "--no-use-colors",
     ]
+
+
+def _apply_resource_limits(timeout_seconds: int) -> None:
+    # RLIMIT_AS is unsafe for DuckDB and other native runtimes that reserve large virtual
+    # address ranges. RLIMIT_NPROC is per host UID on Linux, so applying it here can deny
+    # threads based on unrelated processes owned by the caller. Bubblewrap supplies the
+    # process, network, and filesystem boundary; these limits bound CPU, output, file
+    # descriptors, and core dumps without creating host-load-dependent false failures.
+    cpu_seconds = max(1, math.ceil(timeout_seconds) + 5)
+    for resource_id, value in (
+        (resource.RLIMIT_CORE, 0),
+        (resource.RLIMIT_FSIZE, _FILE_SIZE_BYTES),
+        (resource.RLIMIT_NOFILE, _OPEN_FILES),
+        (resource.RLIMIT_CPU, cpu_seconds),
+    ):
+        resource.setrlimit(resource_id, (value, value))
+
+
+def _safe_environment(home: Path) -> dict[str, str]:
+    return {
+        "PATH": "/usr/bin:/bin",
+        "HOME": str(home),
+        "NO_COLOR": "1",
+        "DBT_SEND_ANONYMOUS_USAGE_STATS": "false",
+        "PYTHONHASHSEED": "0",
+        "PYTHONNOUSERSITE": "1",
+        "PYTHONPYCACHEPREFIX": str(home / ".pycache"),
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+    }
 
 
 def run_dbt_build(
@@ -98,6 +197,7 @@ def run_dbt_build(
     candidate_id: str,
     timeout_seconds: int = 120,
     isolation: Literal["auto", "disposable_copy", "bubblewrap"] = "auto",
+    allow_unconfined: bool = False,
 ) -> BuildResult:
     project = project.resolve()
     work_root = work_root.resolve()
@@ -105,7 +205,8 @@ def run_dbt_build(
     safe_id = re.sub(r"[^A-Za-z0-9_.-]+", "_", candidate_id)[:80] or "candidate"
     worktree = work_root / safe_id
     _copy_project(project, worktree)
-    (worktree / ".home").mkdir(exist_ok=True)
+    home = worktree / ".home"
+    home.mkdir(exist_ok=True)
     snapshot = snapshot_project(worktree)
 
     dbt = shutil.which("dbt")
@@ -114,24 +215,25 @@ def run_dbt_build(
             "dbt is not available on PATH; install the pinned dbt optional dependencies"
         )
     dbt = str(Path(dbt).resolve())
-    direct_command = _dbt_command(dbt, worktree)
-    selected: Literal["disposable_copy", "bubblewrap"] = "disposable_copy"
-    command = direct_command
-    if isolation in {"auto", "bubblewrap"} and shutil.which("bwrap"):
-        command = _bubblewrap_command(direct_command, worktree)
-        selected = "bubblewrap"
-    elif isolation == "bubblewrap":
-        raise BuildExecutionError("bubblewrap isolation was required but is unavailable")
 
-    environment = {
-        "PATH": os.environ.get("PATH", ""),
-        "HOME": str(worktree / ".home"),
-        "NO_COLOR": "1",
-        "DBT_SEND_ANONYMOUS_USAGE_STATS": "false",
-        "PYTHONHASHSEED": "0",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-    }
+    selected: Literal["disposable_copy", "bubblewrap"]
+    if isolation in {"auto", "bubblewrap"}:
+        if shutil.which("bwrap") is None:
+            raise BuildExecutionError(
+                "bubblewrap isolation is unavailable; DriftProof refused to execute candidate code. "
+                "Use disposable_copy only with an explicit allow_unconfined acknowledgment for a trusted fixture."
+            )
+        selected = "bubblewrap"
+        command = _bubblewrap_command(dbt, worktree)
+    else:
+        if not allow_unconfined:
+            raise BuildExecutionError(
+                "disposable_copy is not a security sandbox; pass allow_unconfined only for a trusted fixture"
+            )
+        selected = "disposable_copy"
+        command = _direct_command(dbt, worktree)
+
+    environment = _safe_environment(home)
     started = time.perf_counter()
     try:
         completed = subprocess.run(
@@ -142,6 +244,7 @@ def run_dbt_build(
             text=True,
             timeout=timeout_seconds,
             check=False,
+            preexec_fn=lambda: _apply_resource_limits(timeout_seconds),
         )
         returncode = completed.returncode
         stdout = completed.stdout
@@ -153,42 +256,23 @@ def run_dbt_build(
         stderr += f"\nDriftProof timeout after {timeout_seconds} seconds."
     duration_ms = round((time.perf_counter() - started) * 1000)
 
-    if selected == "bubblewrap" and returncode != 0 and isolation == "auto":
-        bwrap_error = _normalize_output(stderr, project=project, worktree=worktree)
-        if any(
-            token in bwrap_error.lower()
-            for token in (
-                "operation not permitted",
-                "creating new namespace failed",
-                "permission denied",
-            )
-        ):
-            selected = "disposable_copy"
-            command = direct_command
-            started = time.perf_counter()
-            completed = subprocess.run(
-                command,
-                cwd=worktree,
-                env=environment,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
-                check=False,
-            )
-            returncode = completed.returncode
-            stdout = completed.stdout
-            stderr = (
-                "bubblewrap unavailable in this environment; used an isolated disposable copy.\n"
-                + completed.stderr
-            )
-            duration_ms = round((time.perf_counter() - started) * 1000)
+    normalized_stderr = _normalize_output(stderr, project=project, worktree=worktree)
+    if (
+        selected == "bubblewrap"
+        and returncode != 0
+        and any(token in normalized_stderr.lower() for token in _BWRAP_UNAVAILABLE)
+    ):
+        raise BuildExecutionError(
+            "bubblewrap could not establish the required namespace; DriftProof refused to fall back "
+            "to unconfined candidate execution"
+        )
 
     return BuildResult(
-        command=["dbt", *direct_command[1:]],
+        command=_display_command(),
         returncode=returncode,
         passed=returncode == 0,
         stdout=_normalize_output(stdout, project=project, worktree=worktree),
-        stderr=_normalize_output(stderr, project=project, worktree=worktree),
+        stderr=normalized_stderr,
         duration_ms=duration_ms,
         isolation=selected,
         worktree_sha256=snapshot.tree_sha256,

@@ -1,0 +1,116 @@
+{
+  "model": "qwen/qwen3.8-27b",
+  "packet_sha256": "cc77d5eac03891439f762568a633ce8efcd5c82156067966296e322ad3e54633",
+  "provider": "groq",
+  "review": {
+    "clean_room_blockers": [
+      "The replay fixtures are derived from the live run, not independent.",
+      "The Python environment is not verified or reset."
+    ],
+    "confidence": "high",
+    "findings": [
+      {
+        "area": "replay_integrity",
+        "claim": "Replay verification proves that the replayed execution is semantically identical to the live execution.",
+        "evidence": "The script compares `normalize_result(live_results)` against `normalize_result(replay_results)`. `normalize_result` strips `duration_ms`, `provider`, and `latency_ms`. It does not strip `usage` fields like `input_tokens`, `output_tokens`, or `estimated_cost_usd`. If the `ReplayProvider` does not perfectly replicate the token counting logic of the live provider (e.g., due to different tokenizer versions or prompt formatting differences in the replay path), the comparison will fail or, worse, if the replay provider hardcodes token counts from the live run, it creates a circular dependency where the replay is only 'verified' because it was copied from the live run, not because it is an independent reproduction of the inference process.",
+        "fix": "Explicitly define which fields are expected to be identical. If token counts are expected to be identical, ensure the ReplayProvider uses the exact same tokenizer and prompt construction. If not, strip token counts from the comparison or verify them separately with a tolerance.",
+        "id": "F-001",
+        "impact": "The replay verification may be tautological or brittle. If token counts are not identical, the script fails. If they are hardcoded, the verification does not prove that the model inference is reproducible, only that the data was copied correctly.",
+        "line_or_symbol": "main",
+        "path": "scripts/verify_replay.py",
+        "severity": "high",
+        "validation": "Run the replay verification with a modified ReplayProvider that alters token counts by 1. The script should fail if token counts are part of the semantic comparison. If the intent is to verify only the decision logic, strip token counts from `normalize_result`."
+      },
+      {
+        "area": "benchmark_independence",
+        "claim": "The benchmark metrics are independent of the specific model provider.",
+        "evidence": "The `compute_metrics` function calculates `model_usage` including `estimated_cost_usd`. This metric is provider-specific and model-specific. Including it in the primary metrics output without clear separation from the core safety metrics (precision, recall, F1) can lead to confusion about what is being measured. The `primary_metric` is `unsafe_change_decision_f1`, which is good, but the presence of cost metrics in the same JSON structure can obscure the core safety performance.",
+        "fix": "Separate `model_usage` and cost metrics into a distinct section or file, clearly labeled as operational metrics rather than safety metrics.",
+        "id": "F-002",
+        "impact": "Users may misinterpret the metrics, thinking cost is a primary safety metric. It also makes the metrics file less portable across different model providers.",
+        "line_or_symbol": "compute_metrics",
+        "path": "src/mergeproof/benchmark.py",
+        "severity": "medium",
+        "validation": "Review the metrics JSON structure to ensure safety metrics are clearly distinguished from operational metrics."
+      },
+      {
+        "area": "upstream_pinning",
+        "claim": "The DriftDoctor upstream is cryptographically verified and immutable.",
+        "evidence": "The script verifies the commit, tree, archive SHA256, license SHA256, and requirements SHA256. However, it does not verify the integrity of the Python environment or the specific versions of dependencies installed in the `.venv` directory. The `git clean` command excludes `.venv/`, which means the virtual environment is not reset or verified. If the `.venv` contains outdated or different versions of dependencies, the benchmark results may not be reproducible.",
+        "fix": "Include a `requirements.lock` or `poetry.lock` file in the verification process. Verify the SHA256 of the lock file and ensure the installed packages match the lock file.",
+        "id": "F-003",
+        "impact": "The benchmark may not be reproducible if the Python environment is not consistent. The lock file does not cover the Python environment.",
+        "line_or_symbol": "fetch_and_verify",
+        "path": "scripts/fetch_driftdoctor.py",
+        "severity": "medium",
+        "validation": "Run the fetch script with a modified `.venv` that has a different version of a dependency. The script should fail if the environment is not verified."
+      },
+      {
+        "area": "clean_room_setup",
+        "claim": "The replay verification is a clean-room test.",
+        "evidence": "The script uses `FIXTURE_DIR` which contains replay fixtures. These fixtures are derived from the live run. This is not a clean-room test because the fixtures are not independent of the live run. A clean-room test would use a separate set of inputs that are not derived from the live run.",
+        "fix": "Create a separate set of test cases that are not derived from the live run. Use these cases to verify that the system can handle new inputs correctly.",
+        "id": "F-004",
+        "impact": "The replay verification does not prove that the system can handle new, unseen inputs. It only proves that the system can reproduce the live run.",
+        "line_or_symbol": "main",
+        "path": "scripts/verify_replay.py",
+        "severity": "low",
+        "validation": "Run the replay verification with a new set of test cases that are not derived from the live run. The script should pass if the system can handle new inputs correctly."
+      },
+      {
+        "area": "hash_coverage",
+        "claim": "The hash coverage is sufficient to ensure the integrity of the replay verification.",
+        "evidence": "The script calculates the SHA256 of the live and replay raw results, metrics, and fixture directory. However, it does not calculate the SHA256 of the `cases.json` and `gold.json` files. If these files are modified, the replay verification may not detect the change.",
+        "fix": "Include the SHA256 of `cases.json` and `gold.json` in the verification output.",
+        "id": "F-005",
+        "impact": "The replay verification may not detect changes to the benchmark cases or gold labels.",
+        "line_or_symbol": "main",
+        "path": "scripts/verify_replay.py",
+        "severity": "low",
+        "validation": "Modify `cases.json` or `gold.json` and run the replay verification. The script should fail if the hash of these files is not verified."
+      }
+    ],
+    "highest_leverage_changes": [
+      "Explicitly define which fields are expected to be identical in the replay verification and ensure the ReplayProvider uses the exact same tokenizer and prompt construction.",
+      "Separate `model_usage` and cost metrics into a distinct section or file, clearly labeled as operational metrics rather than safety metrics.",
+      "Include a `requirements.lock` or `poetry.lock` file in the verification process and verify the SHA256 of the lock file.",
+      "Create a separate set of test cases that are not derived from the live run to verify that the system can handle new inputs correctly.",
+      "Include the SHA256 of `cases.json` and `gold.json` in the verification output."
+    ],
+    "leakage_or_overfitting_risks": [
+      "The replay verification may be tautological if the ReplayProvider hardcodes token counts from the live run.",
+      "The benchmark cases and gold labels are not verified for integrity, which could lead to leakage or overfitting."
+    ],
+    "metric_claims_that_are_currently_supported": [
+      "The baseline result/replay artifacts are committed and can be verified for semantic identity.",
+      "The DriftDoctor upstream is pinned to a specific commit and tree, with cryptographic verification of the archive, license, and requirements.",
+      "The benchmark metrics include precision, recall, F1, and accuracy for unsafe change decisions."
+    ],
+    "strengths": [
+      "The baseline result/replay artifacts are committed and can be verified for semantic identity.",
+      "The DriftDoctor upstream is pinned to a specific commit and tree, with cryptographic verification.",
+      "The benchmark metrics include standard safety metrics (precision, recall, F1, accuracy)."
+    ],
+    "unsupported_metric_claims": [
+      "The replay verification is a clean-room test.",
+      "The benchmark metrics are independent of the specific model provider.",
+      "The Python environment is verified and consistent."
+    ],
+    "verdict": "conditional"
+  },
+  "reviewer": "reproducibility",
+  "schema_version": 1,
+  "usage": {
+    "agent": "round1_repro_reviewer",
+    "estimated_cost_usd": null,
+    "http_attempts": 1,
+    "input_tokens": 6263,
+    "latency_ms": 5603,
+    "model": "qwen/qwen3.8-27b",
+    "output_tokens": 1959,
+    "provider": "groq",
+    "rate_limit_wait_ms": 0,
+    "request_hash": "2aa0ec790a6b4f6b74293aa63776292332b58131e0ce08f0ecf6231380f791b7",
+    "total_tokens": 8222
+  }
+}

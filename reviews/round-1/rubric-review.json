@@ -1,0 +1,121 @@
+{
+  "model": "qwen/qwen3.8-27b",
+  "packet_sha256": "859c088bfe5b6c1f2af4ea93197a26bf91145d663398d507c338f86f9914376c",
+  "provider": "groq",
+  "review": {
+    "estimated_score_100": 18,
+    "findings": [
+      {
+        "area": "measured_improvement",
+        "claim": "The advanced workflow must achieve a verified issue-category micro-F1 of at least 0.850 and a +0.250 absolute improvement over the baseline.",
+        "evidence": "The provided repository text contains no results for the advanced workflow. The only measured results are for the baseline (F1 1.0, issue-category F1 0.5). The 'advanced tree' is explicitly stated to be uncommitted and no remote advanced commit exists.",
+        "fix": "Commit the advanced workflow implementation and run the benchmark to generate the required results. If the target is not met, report the actual results honestly as per the protocol.",
+        "id": "F-001",
+        "impact": "The core value proposition of the hackathon entry (improving upon the baseline) is unproven. The submission fails the primary acceptance criteria for measured improvement.",
+        "line_or_symbol": "0020-0028",
+        "path": "docs/evaluation-protocol-v2.md",
+        "severity": "critical",
+        "validation": "Check for the presence of `results/advanced-*/` directories and verify the metrics against the preregistered thresholds."
+      },
+      {
+        "area": "reproducibility",
+        "claim": "Complete setup, benchmark evidence, trajectories, changelog, and video materials will be added before the final submission.",
+        "evidence": "The README is a placeholder. The problem brief (oracle/problem-brief.md:0053) requires the repository to contain complete code, prompts, improvement changelog, reproduction guide, representative trajectories, evaluation evidence, and a video-ready demo package. None of these are present in the provided text.",
+        "fix": "Populate the repository with the complete implementation, documentation, and evidence artifacts before submission.",
+        "id": "F-002",
+        "impact": "The submission is incomplete and cannot be reproduced or evaluated by judges. It fails the 'clean-room run' and 'video-ready demo' acceptance criteria.",
+        "line_or_symbol": "0005",
+        "path": "README.md",
+        "severity": "critical",
+        "validation": "Verify the existence of all required deliverables listed in the problem brief."
+      },
+      {
+        "area": "originality_risks",
+        "claim": "The original contribution is DriftProof, an independent adversarial release gate for agent-authored dbt repairs.",
+        "evidence": "The document describes a pivot from 'MergeProof' (general code changes) to 'DriftProof' (dbt repairs) using DriftDoctor as a substrate. However, the main README and problem brief still describe 'MergeProof' for general code changes. There is no evidence in the provided text that the 'DriftProof' implementation exists or is distinct from the 'MergeProof' baseline.",
+        "fix": "Clarify the final product scope. If DriftProof is the final product, update the README and problem brief to reflect this. If MergeProof is the final product, remove the DriftProof references. Ensure the implementation matches the described product.",
+        "id": "F-003",
+        "impact": "Conflicting product stories. The submission appears to be a mix of two different projects (MergeProof and DriftProof) without a clear, coherent final product. This raises originality concerns and suggests the submission is not a finished, coherent product.",
+        "line_or_symbol": "0032-0042",
+        "path": "docs/driftdoctor-upstream.md",
+        "severity": "high",
+        "validation": "Review the codebase to determine which product is actually implemented and ensure all documentation aligns with it."
+      },
+      {
+        "area": "agent_solution_engineering",
+        "claim": "The advanced workflow includes specialized agents (contract, evidence reviewer, skeptical reviewer, synthesizer).",
+        "evidence": "No code or prompts for these agents are provided in the text. The 'advanced tree' is uncommitted. There is no evidence that these agents are implemented or functional.",
+        "fix": "Implement and commit the advanced workflow agents and their prompts.",
+        "id": "F-004",
+        "impact": "The core engineering contribution (the agentic workflow) is missing. The submission is just a baseline and a plan.",
+        "line_or_symbol": "0019-0026",
+        "path": "oracle/problem-brief.md",
+        "severity": "high",
+        "validation": "Inspect the codebase for the implementation of the described agents."
+      },
+      {
+        "area": "end_to_end_quality",
+        "claim": "E002 was removed and remediated due to a security issue with Gemini API key handling.",
+        "evidence": "The changelog documents a security incident where an API key was exposed in logs. While it claims remediation, the fact that this happened during development is a negative signal for the robustness of the engineering process.",
+        "fix": "Ensure all security issues are resolved and documented. Provide evidence of the remediation (e.g., code changes, tests).",
+        "id": "F-005",
+        "impact": "Indicates potential weaknesses in the development and security practices of the team.",
+        "line_or_symbol": "0020-0026",
+        "path": "CHANGELOG.md",
+        "severity": "medium",
+        "validation": "Review the code for proper credential handling and check for any remaining security vulnerabilities."
+      }
+    ],
+    "highest_leverage_changes": [
+      "Commit the advanced workflow implementation and run the benchmark to generate the required results.",
+      "Resolve the conflicting product stories (MergeProof vs. DriftProof) and ensure all documentation aligns with the final product.",
+      "Populate the repository with all required deliverables (README, reproduction guide, trajectories, evidence, video).",
+      "Ensure the advanced workflow meets the preregistered performance targets or report the actual results honestly."
+    ],
+    "missing_deliverables": [
+      "Advanced workflow implementation (code and prompts)",
+      "Benchmark results for the advanced workflow",
+      "Complete README with setup and usage instructions",
+      "Reproduction guide",
+      "Representative trajectories",
+      "Evaluation evidence (raw JSONL, metrics)",
+      "Video-ready demo package",
+      "Clean-room run verification"
+    ],
+    "originality_risks": [
+      "The submission appears to be a hybrid of two different projects (MergeProof and DriftProof) without a clear final product.",
+      "The use of DriftDoctor as a substrate raises questions about the originality of the 'DriftProof' component, although it is credited.",
+      "The lack of a complete implementation makes it difficult to assess the originality of the core agentic workflow."
+    ],
+    "rubric_scores": {
+      "agent_solution_engineering": 10,
+      "end_to_end_quality": 5,
+      "hot_take": 1,
+      "measured_improvement": 0,
+      "problem_user_value": 12,
+      "reproducibility": 5
+    },
+    "strengths": [
+      "Clear and well-defined problem brief and evaluation protocol.",
+      "Honest reporting of baseline results and metric saturation.",
+      "Preregistration of the v2 evaluation protocol to prevent metric gaming.",
+      "Proper crediting of upstream dependencies (DriftDoctor)."
+    ],
+    "verdict": "block"
+  },
+  "reviewer": "rubric",
+  "schema_version": 1,
+  "usage": {
+    "agent": "round1_rubric_reviewer",
+    "estimated_cost_usd": null,
+    "http_attempts": 1,
+    "input_tokens": 5240,
+    "latency_ms": 61175,
+    "model": "qwen/qwen3.8-27b",
+    "output_tokens": 1714,
+    "provider": "groq",
+    "rate_limit_wait_ms": 0,
+    "request_hash": "6443ee33297afebef3686f4a2a5dfb541fea56268325e1d50f38f5efaf8bb4e6",
+    "total_tokens": 6954
+  }
+}

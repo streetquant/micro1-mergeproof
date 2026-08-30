@@ -25,9 +25,14 @@
     "C023",
     "C024"
   ],
+  "cases_sha256": "15e27e91e0f5a2340305b5cac8ff904a9a9ca8ef3391dbee6d68809994a4788b",
+  "gold_sha256": "fbe7ef38b9b9d93867f4f77b08fa862f772d0616aaefdd1abac67b272f6126ec",
+  "metrics_sha256": "d7d025e7a9d0d453b42869093d34e8a9b5def0eb9dc15d9c7161c9e37e839d96",
   "mode": "baseline",
   "model": "openai/gpt-oss-20b",
   "provider": "replay",
-  "raw_results": "/storage/cash/hakerearth-micro1/results/baseline-replay-gpt-oss-20b/raw-results.jsonl",
-  "schema_version": 1
+  "raw_results": "raw-results.jsonl",
+  "raw_results_sha256": "a58a18712dd314baa5a22560511f9775c2ad228cb3fa689a3a8c22857afcccf2",
+  "schema_version": 2,
+  "source_tree_sha256": "67c355baa0554388fd488b4f15f14abac26ccafbb1873da1a7fa58bba070dbb7"
 }

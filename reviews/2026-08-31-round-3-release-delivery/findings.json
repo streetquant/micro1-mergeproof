@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "round": "release_security_and_submission_delivery",
+  "findings": [
+    {
+      "id": "R3-CLAIM-001",
+      "severity": "critical",
+      "status": "fixed",
+      "finding": "The README claimed 1.000 macro-F1, 100% accuracy, and 12/12 safe approvals, while the committed authoritative comparison measured 0.681 macro-F1, 70.8% accuracy, and 5/12 safe automatic approvals.",
+      "repair": "Generate the README metric block and all submission entry points from results/driftproof-comparison/comparison.json; make submission-check fail on any drift.",
+      "validation": [
+        "exact metric regression test",
+        "comparison mutation causes submission-check failure",
+        "README no longer contains the unsupported values in the generated block"
+      ]
+    },
+    {
+      "id": "R3-EVIDENCE-002",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "The evidence-only archive selected zero of 29 tracked adversarial-review files, including the qualified human and AI-agent rounds.",
+      "repair": "Include reviews/ and submission/ in the evidence selector and require every current qualification artifact.",
+      "validation": [
+        "selector regression test",
+        "downloaded evidence archive contains every attested qualification path",
+        "all three archives contain identical human/browser/machine entry points"
+      ]
+    },
+    {
+      "id": "R3-PRIVACY-003",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "A historical review packet retained a private /storage host path and caused the release content audit to fail.",
+      "repair": "Replace the machine-local destination with the explicit portable placeholder <UPSTREAM_CACHE> while retaining the historical review content.",
+      "validation": [
+        "complete tracked-content privacy scan",
+        "release packaging content audit"
+      ]
+    },
+    {
+      "id": "R3-REQUIREMENTS-004",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "Release packaging required reviews/continuation-round-4/operator-adjudication.json, a stale path that did not exist in the qualified GitHub commit.",
+      "repair": "Replace the impossible requirement with the recovery, replay, round-one, round-two, round-three, and submission-manifest qualification set.",
+      "validation": [
+        "missing-evidence diagnostics test",
+        "required artifact hashing test",
+        "clean exact-main release build"
+      ]
+    },
+    {
+      "id": "R3-ARCHIVE-005",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "ZIP validation trusted metadata and extracted only the full archive; corrupted compressed content in source or evidence archives could escape the release gate.",
+      "repair": "Fully read and CRC-verify every bounded member, reject encrypted/excessive archives, and safely extract and inspect all three archives.",
+      "validation": [
+        "corrupted compressed-payload rejection",
+        "deterministic double ZIP test",
+        "all-archive extraction and entry-point equality"
+      ]
+    },
+    {
+      "id": "R3-OUTPUT-006",
+      "severity": "medium",
+      "status": "fixed",
+      "finding": "The release output directory preserved and checksummed unrelated files, allowing accidental delivery pollution.",
+      "repair": "Refuse any unrelated entry without deleting it; permit replacement only of recognizable prior release assets.",
+      "validation": [
+        "unrelated sentinel is preserved and packaging fails closed",
+        "owned-symlink rejection"
+      ]
+    },
+    {
+      "id": "R3-ENTRYPOINT-007",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "A downloaded release exposed archives and hashes but no obvious human, browser, or machine starting point.",
+      "repair": "Generate START_HERE.md, self-contained START_HERE.html, and a strict machine manifest; copy them beside and inside every archive.",
+      "validation": [
+        "deterministic renderer",
+        "relative-link documentation check",
+        "root-versus-archive byte equality"
+      ]
+    },
+    {
+      "id": "R3-VERIFY-008",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "There was no independent command for a recipient to verify a downloaded release directory and embedded repository bundle.",
+      "repair": "Add scripts/verify_release.py and make release-verify to validate the exact file set, SHA256SUMS, manifests, all archives, entry points, review evidence, and bundled main commit.",
+      "validation": [
+        "complete release round trip",
+        "byte-identical independent packaging",
+        "tampered root entry rejection"
+      ]
+    }
+  ]
+}

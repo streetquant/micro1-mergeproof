@@ -1,0 +1,129 @@
+{
+  "benchmark": "DriftProof green-but-wrong dbt approval benchmark",
+  "commands": {
+    "agent_capabilities": [
+      "driftproof",
+      "capabilities"
+    ],
+    "agent_schema": [
+      "driftproof",
+      "schema",
+      "agent-response"
+    ],
+    "judge_demo": [
+      "make",
+      "judge-demo"
+    ],
+    "release_package": [
+      "make",
+      "release"
+    ],
+    "source_qualification": [
+      "make",
+      "check"
+    ],
+    "submission_drift_check": [
+      "make",
+      "submission-check"
+    ]
+  },
+  "consequential_action_taken": false,
+  "entry_points": {
+    "browser": "submission/START_HERE.html",
+    "human": "submission/START_HERE.md",
+    "machine": "submission/manifest.json"
+  },
+  "generated_files": {
+    "START_HERE.html": {
+      "bytes": 3300,
+      "sha256": "15f0ca3d9249df0051bd61e7d243a34dbb240f10f33242b308f376d5635947af"
+    },
+    "START_HERE.md": {
+      "bytes": 4061,
+      "sha256": "37500cb5c149922db239debff7f4f5a87803b6f48cc3bc2ba7f5cc0bce5c53cd"
+    }
+  },
+  "human_approval_required": true,
+  "limitations": [
+    "The benchmark is balanced, synthetic, and project-authored.",
+    "Zero measured unsafe escapes does not establish universal correctness or formal verification.",
+    "Only 5 of 12 safe candidates were automatically approved; 7 cases were escalated.",
+    "Replay verifies processing of recorded provider responses, not unseen-input generalization."
+  ],
+  "metrics": {
+    "accuracy_change": 0.20833333333333337,
+    "advanced_accuracy": 0.7083333333333334,
+    "advanced_human_review_rate": 0.2916666666666667,
+    "advanced_human_reviews": 7,
+    "advanced_macro_f1": 0.6812144212523719,
+    "advanced_safe_approved": 5,
+    "advanced_unsafe_blocked": 12,
+    "advanced_unsafe_escape_rate": 0.0,
+    "baseline_accuracy": 0.5,
+    "baseline_macro_f1": 0.3333333333333333,
+    "baseline_safe_approved": 12,
+    "baseline_unsafe_blocked": 0,
+    "baseline_unsafe_escape_rate": 1.0,
+    "benchmark": "DriftProof green-but-wrong dbt approval benchmark",
+    "cases": 24,
+    "fairness": {
+      "advanced_resources": "same inputs and dbt build plus deterministic context compilation, adversarial static checks, immutable worktree validation, and a hash-bound certificate",
+      "baseline_resources": "candidate files plus candidate-owned dbt build",
+      "gold_opened_after_predictions": true,
+      "same_candidates": true,
+      "same_context": true,
+      "same_dbt_command": true
+    },
+    "macro_f1_change": 0.34788108791903855,
+    "provenance": {
+      "benchmark_manifest_sha256": "0ffdddcb4c596fe55a8aec19ba8d1be8368f57ca054ac2eb28673531c490185b",
+      "cases_sha256": "8148cdd147febb98573a9c83b0908551384dc9c6eac22063a937369d244ae261",
+      "gold_sha256": "d94858ed344230b21cbd6214d79c8b233713fcc1409025c0c4d7781d0e520089",
+      "runner_sha256": "75e7e137dca1793f5ab46891292ae49f3ec7257a0374ad32bba1bf1775db45ca"
+    },
+    "safe_total": 12,
+    "unsafe_escape_rate_change": -1.0,
+    "unsafe_total": 12
+  },
+  "product": "DriftProof",
+  "protocol": "driftproof.submission-manifest.v1",
+  "schema_version": 1,
+  "source_artifacts": {
+    "benchmark_dbt/manifest.json": {
+      "bytes": 1165,
+      "sha256": "0ffdddcb4c596fe55a8aec19ba8d1be8368f57ca054ac2eb28673531c490185b"
+    },
+    "results/baseline-replay-gpt-oss-20b/replay-verification.json": {
+      "bytes": 6463,
+      "sha256": "f1a85a4698ad28d68177c154a010c90d875c5e1b725293ac87e8b35e81466825"
+    },
+    "results/driftproof-comparison/comparison.json": {
+      "bytes": 2359,
+      "sha256": "5b06acae698b3a98a22b3cc263403a6085eca569de16a0b0ed1f1dbc3b37846c"
+    },
+    "reviews/2026-08-31-round-1-human-judge/qualification.json": {
+      "bytes": 2057,
+      "sha256": "70748edf12b3ca52780a6d9e339b8433e0e843f5be748342f592dd4f223fbd8f"
+    },
+    "reviews/2026-08-31-round-2-agent-sdk/qualification.json": {
+      "bytes": 2242,
+      "sha256": "13a4a7fa4264ae5d211d6fa68af578e9f675799592dfd73e913793f0763c1c8a"
+    },
+    "reviews/2026-08-31-round-3-release-delivery/qualification.json": {
+      "bytes": 2952,
+      "sha256": "0120515cd5df161831a9fc9ffcd7302841f38b4abb4f2e324b8c0c48cab36c7f"
+    },
+    "reviews/recovery-promotion/qualification.json": {
+      "bytes": 1660,
+      "sha256": "92c27fd4f637e3cab2028d42d5418122af8690e128810b0198af54c39b4c3053"
+    },
+    "reviews/replay-nonmutating/qualification.json": {
+      "bytes": 1485,
+      "sha256": "342c5ec039c6189f3052f2f228ef10c2b584ea2d3056310737ae2a990b61e1bd"
+    },
+    "schemas/manifest.json": {
+      "bytes": 3808,
+      "sha256": "22557e7f179fc7b94a3e6eddeca94664e7ab2d0445bc4eb8a6c9049780c551e0"
+    }
+  }
+}

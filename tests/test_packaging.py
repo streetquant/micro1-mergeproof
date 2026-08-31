@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import subprocess
 import sys
 import zipfile
@@ -38,6 +39,35 @@ def initialized_repo(tmp_path: Path) -> Path:
     (repo / "README.md").write_text("release fixture\n", encoding="utf-8")
     git(repo, "add", "README.md")
     git(repo, "commit", "-q", "-m", "baseline")
+    return repo
+
+
+def initialized_release_repo(tmp_path: Path) -> Path:
+    repo = initialized_repo(tmp_path)
+    git(repo, "branch", "-M", "main")
+    for relative in PACKAGING._REQUIRED_EVIDENCE_ARTIFACTS:
+        path = repo / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload: object = {"fixture": relative}
+        if relative == "submission/manifest.json":
+            payload = {
+                "schema_version": 1,
+                "protocol": "driftproof.submission-manifest.v1",
+                "human_approval_required": True,
+                "consequential_action_taken": False,
+            }
+        path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (repo / "submission/START_HERE.md").write_text("# Start here\n", encoding="utf-8")
+    (repo / "submission/START_HERE.html").write_text(
+        "<!doctype html><title>Start here</title>\n", encoding="utf-8"
+    )
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "release evidence")
+
+    remote = tmp_path / "remote.git"
+    subprocess.run(["git", "init", "--bare", "-q", str(remote)], check=True)
+    git(repo, "remote", "add", "origin", str(remote))
+    git(repo, "push", "-q", "-u", "origin", "main")
     return repo
 
 
@@ -90,24 +120,19 @@ def test_verify_zip_rejects_parent_traversal(tmp_path: Path) -> None:
         PACKAGING.verify_zip(archive)
 
 
-def test_output_cleanup_preserves_unrelated_files(tmp_path: Path) -> None:
+def test_output_cleanup_refuses_unrelated_files_without_deleting_them(tmp_path: Path) -> None:
     output = tmp_path / "release"
     output.mkdir()
     unrelated = output / "judge-notes.json"
     unrelated.write_text('{"keep": true}\n', encoding="utf-8")
-    owned = [
-        output / "mergeproof-final-source-old.zip",
-        output / "release-manifest.json",
-        output / "final-release-attestation.json",
-        output / "SHA256SUMS",
-    ]
-    for path in owned:
-        path.write_text("old\n", encoding="utf-8")
+    owned = output / "release-manifest.json"
+    owned.write_text("old\n", encoding="utf-8")
 
-    PACKAGING._prepare_output_directory(output)
+    with pytest.raises(PackagingError, match="contains unrelated entries"):
+        PACKAGING._prepare_output_directory(output)
 
     assert unrelated.read_text(encoding="utf-8") == '{"keep": true}\n'
-    assert not any(path.exists() for path in owned)
+    assert owned.read_text(encoding="utf-8") == "old\n"
 
 
 def test_output_cleanup_refuses_owned_symlink(tmp_path: Path) -> None:
@@ -140,7 +165,8 @@ def test_required_evidence_preflight_lists_missing_head_artifacts(tmp_path: Path
         PACKAGING._required_evidence_hashes(repo, tracked)
 
     assert "results/driftproof-comparison/comparison.json" in str(exc.value)
-    assert "reviews/continuation-round-4/operator-adjudication.json" in str(exc.value)
+    assert "submission/manifest.json" in str(exc.value)
+    assert "reviews/2026-08-31-round-3-release-delivery/qualification.json" in str(exc.value)
 
 
 def test_required_evidence_preflight_hashes_actual_head_artifacts(tmp_path: Path) -> None:
@@ -195,3 +221,77 @@ def test_release_content_audit_accepts_portable_content(tmp_path: Path) -> None:
         "credential_shape_hits": 0,
         "passed": True,
     }
+
+
+def test_evidence_selection_contains_reviews_and_submission_entry_points() -> None:
+    assert PACKAGING._is_evidence("reviews/2026-08-31-round-2-agent-sdk/qualification.json")
+    assert PACKAGING._is_evidence("submission/START_HERE.md")
+    assert PACKAGING._is_source("submission/START_HERE.html")
+    assert set(PACKAGING._REVIEW_QUALIFICATION_ARTIFACTS).issubset(
+        PACKAGING._REQUIRED_EVIDENCE_ARTIFACTS
+    )
+
+
+def test_deterministic_zip_is_crc_verified(tmp_path: Path) -> None:
+    source = tmp_path / "payload.txt"
+    source.write_text("verified payload\n" * 100, encoding="utf-8")
+    first = tmp_path / "first.zip"
+    second = tmp_path / "second.zip"
+    members = [Member("payload.txt", source)]
+
+    PACKAGING._write_zip(first, prefix="mergeproof-test", members=members)
+    PACKAGING._write_zip(second, prefix="mergeproof-test", members=members)
+
+    assert first.read_bytes() == second.read_bytes()
+    verification = PACKAGING.verify_zip(first)
+    assert verification["crc_verified"] is True
+    assert verification["members"] == 1
+
+
+def test_verify_zip_rejects_corrupted_compressed_payload(tmp_path: Path) -> None:
+    source = tmp_path / "payload.txt"
+    source.write_text("compressible payload\n" * 1_000, encoding="utf-8")
+    archive = tmp_path / "corrupt.zip"
+    PACKAGING._write_zip(
+        archive,
+        prefix="mergeproof-test",
+        members=[Member("payload.txt", source)],
+    )
+
+    with zipfile.ZipFile(archive) as handle:
+        info = handle.infolist()[0]
+    payload = bytearray(archive.read_bytes())
+    data_offset = info.header_offset + 30 + len(info.filename.encode("utf-8")) + len(info.extra)
+    payload[data_offset + max(0, info.compress_size // 2)] ^= 0xFF
+    archive.write_bytes(payload)
+
+    with pytest.raises(PackagingError, match=r"CRC|invalid or unreadable"):
+        PACKAGING.verify_zip(archive)
+
+
+def test_complete_release_is_deterministic_and_independently_verifiable(
+    tmp_path: Path,
+) -> None:
+    repo = initialized_release_repo(tmp_path)
+    first_output = tmp_path / "first-release"
+    second_output = tmp_path / "second-release"
+
+    first = PACKAGING.package(repo, first_output)
+    second = PACKAGING.package(repo, second_output)
+
+    assert first["verification"]["verified"] is True
+    assert second["verification"]["verified"] is True
+    first_files = {
+        path.name: path.read_bytes() for path in first_output.iterdir() if path.is_file()
+    }
+    second_files = {
+        path.name: path.read_bytes() for path in second_output.iterdir() if path.is_file()
+    }
+    assert first_files == second_files
+    assert PACKAGING.verify_release_directory(first_output)["verified"] is True
+    assert (first_output / "START_HERE.md").read_text(encoding="utf-8") == "# Start here\n"
+
+    start_here = first_output / "START_HERE.md"
+    start_here.write_text("tampered\n", encoding="utf-8")
+    with pytest.raises(PackagingError, match="checksum mismatch"):
+        PACKAGING.verify_release_directory(first_output)

@@ -6,17 +6,26 @@ DriftProof is an independent release gate for data engineers reviewing agent-aut
 
 ## Result on the frozen benchmark
 
-The project-authored benchmark contains 24 paired candidates: 12 externally correct repairs and 12 green-but-semantically-wrong repairs. Both the build-only baseline and DriftProof receive the same candidate, business context, trajectory, and `dbt build` command. Gold labels are opened only after predictions are written.
+<!-- DRIFTPROOF-METRICS:START -->
+The frozen, balanced benchmark contains 24 project-authored candidates: 12 externally safe and 12 green-but-semantically-wrong. Both workflows receive the same candidate, visible business context, trajectory, and `dbt build` command; gold labels are opened only after predictions are written.
 
 | Metric | Build-only baseline | DriftProof | Change |
 |---|---:|---:|---:|
-| Safe-approval macro-F1 | 0.333 | **1.000** | **+0.667** |
-| Accuracy | 50% | **100%** | **+50 pp** |
-| Unsafe-repair escape rate | 100% | **0%** | **−100 pp** |
-| Safe repairs approved | 12/12 | **12/12** | — |
-| Unsafe repairs rejected | 0/12 | **12/12** | **+12** |
+| Safe-approval macro-F1 | 0.333 | **0.681** | **+0.348** |
+| Accuracy | 50.0% | **70.8%** | **+20.8 pp** |
+| Unsafe-repair escape rate | 100.0% | **0.0%** | **-100.0 pp** |
+| Safe candidates automatically approved | 12/12 | **5/12** | -7 |
+| Unsafe candidates blocked from automatic approval | 0/12 | **12/12** | **+12** |
+| Qualified-human escalations | 0/24 | **7/24** | +7 |
 
-The raw predictions, per-candidate evidence, manifests, and exact metric computation are in [`results/driftproof-comparison/`](results/driftproof-comparison/). This is a balanced synthetic benchmark authored for this project; it is not evidence of universal correctness or formal verification.
+The measured trade-off is deliberate and visible: DriftProof reduced unsafe escapes from 100.0% to 0.0%, while automatically approving 5 of 12 safe candidates and escalating 7 cases to a qualified human. It does not claim universal correctness or formal verification.
+
+The authoritative comparison, raw predictions, candidate bundles, and exact metric inputs are in [`results/driftproof-comparison/`](results/driftproof-comparison/).
+<!-- DRIFTPROOF-METRICS:END -->
+
+## Submission entry point
+
+Start with [`submission/START_HERE.md`](submission/START_HERE.md), open the self-contained [`submission/START_HERE.html`](submission/START_HERE.html), or consume the exact machine contract in [`submission/manifest.json`](submission/manifest.json). These files and the README metric table are regenerated from the committed comparison; `make submission-check` rejects claim drift.
 
 ## Credential-free judge demonstration
 
@@ -238,10 +247,12 @@ The complete reproduction verifies the pinned DriftDoctor boundary, regenerates 
 After the final qualified commit is pushed to private `main`, deterministic source, evidence, and full archives are built with:
 
 ```bash
+make submission-check
 make release
+make release-verify
 ```
 
-Release packaging fails closed unless the worktree is clean, local `HEAD` equals private `origin/main`, required evidence exists in the commit, tracked objects are ordinary files, archive members are bounded and traversal-safe, and the embedded Git bundle verifies.
+Release packaging fails closed unless the worktree is clean, local `HEAD` equals private `origin/main`, required evidence and every qualified adversarial review exist in the commit, tracked objects are ordinary files, and the output directory contains no unrelated entries. It fully reads and CRC-verifies all three deterministic archives, safely extracts each one, verifies the embedded Git bundle, and confirms that the human/browser/machine submission entry points are byte-identical at the release root and inside every archive. `make release-verify` independently repeats those checks for a downloaded delivery.
 
 ## Evidence map
 

@@ -1,0 +1,56 @@
+{
+  "artifact_sha256": {
+    "Makefile": "3f98b6f98064fcb9d776b81d34a96a0ba5f50e029b2202e9dc54e12548a1942d",
+    "README.md": "e5a4ebd8ba0c76c25bcb838cf3e5cdc004491db0366a3eb648327a3494b76bfd",
+    "findings.json": "d44b26b51a57268942e195050743a8720f71c66291ecab5f953ee908c70517f6",
+    "git_fsck_log": "e17499fb261350a0c9885fd50d02317898b506aeeaf1e12e0c126a27d26878f5",
+    "make_check_log": "f16d5ca3ba017f04770586ffab6cdd8365afe19d67bda1b2a0c2f8e96a0b58a5",
+    "scripts/package_final_release.py": "8e337c7e5881959c140f96c221fd95dd24163b886bd5153c97763c15d759b9a9",
+    "scripts/render_submission.py": "c541f07985cff2b940d76f0ebc176e5bed9fbbcbf8e39167a617d2e430028027",
+    "scripts/verify_docs.py": "610e10acf9453d10911f6a902e55a8eab63d4f032dd79c67e1615ec76676e716",
+    "scripts/verify_release.py": "316775740c2d1e7483a70b51f1ffcab575c70ad3cabe3ebc08c89ed26c6996b7",
+    "tests/test_packaging.py": "b61d92f4a46c65baa7d8258749ac7efaef76cc521b6cdd2e0c4b8954691f2e6c",
+    "tests/test_submission_renderer.py": "f6ddbe98f963c65d6ae91b47db7e24324567635959839c781ddfbe146d9392cd"
+  },
+  "consequential_action_taken": false,
+  "finding_count": 8,
+  "human_approval_required": true,
+  "limitations": [
+    "The benchmark is balanced, synthetic, and project-authored.",
+    "Zero measured unsafe escapes does not establish universal correctness or formal verification.",
+    "The release verifier establishes internal integrity and Git-bundle consistency; repository access policy remains externally administered.",
+    "Approval remains advisory and requires a qualified human decision."
+  ],
+  "measured_claims": {
+    "advanced_accuracy": 0.7083333333333334,
+    "advanced_qualified_human_escalations": 7,
+    "advanced_safe_approval_macro_f1": 0.6812144212523719,
+    "advanced_safe_candidates_automatically_approved": 5,
+    "advanced_unsafe_repair_escape_rate": 0.0,
+    "baseline_safe_approval_macro_f1": 0.3333333333333333,
+    "comparison_sha256": "5b06acae698b3a98a22b3cc263403a6085eca569de16a0b0ed1f1dbc3b37846c"
+  },
+  "parent_commit": "cb1a395970e59ae98f6a5818aace24934bfb80ae",
+  "qualification": {
+    "corrupted_archive_rejected": true,
+    "deterministic_double_packaging_test": true,
+    "documentation_verification": true,
+    "downloaded_release_verifier_test": true,
+    "evidence_archive_review_coverage_test": true,
+    "frozen_replay_verified": true,
+    "git_diff_check": true,
+    "git_fsck": true,
+    "make_check_status_hash_unchanged": true,
+    "mypy_strict": true,
+    "pytest_passed": 190,
+    "ruff_format": true,
+    "ruff_lint": true,
+    "runtime_schema_check": true,
+    "source_and_wheel_builds": true,
+    "submission_claim_drift_check": true,
+    "unrelated_output_refused_without_deletion": true
+  },
+  "review_method": "hostile claim-fidelity, evidence-selection, privacy, archive-corruption, output-pollution, downloaded-delivery, and deterministic packaging audit",
+  "schema_version": 1,
+  "status": "passed"
+}

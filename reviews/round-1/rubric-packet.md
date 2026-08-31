@@ -570,7 +570,7 @@ Act as a hostile micro1 judge. Score the current evidence against Problem/User V
 0012:   "upstream": {
 0013:     "archive_sha256": "693d2e7f448c0c594a6b3445700f6f908463e56a9fe034ec98c091a6312646ee",
 0014:     "commit": "0760ce3772678fdb7309b467f41f0371c1c10feb",
-0015:     "destination": "/storage/cash/hakerearth-micro1/.cache/driftdoctor-upstream",
+0015:     "destination": "<UPSTREAM_CACHE>",
 0016:     "license_sha256": "124449f47e57919e96d73db7838d2030d462ef05eb4f2d18384bcde73481a825",
 0017:     "repository": "https://github.com/AaryaMody1301/DriftDoctor",
 0018:     "requirements_sha256": "6a20c24b42342090d788ca5d1462082abf1af8cb1fb61ca1306c9e199a3faff3",

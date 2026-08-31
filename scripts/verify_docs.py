@@ -31,6 +31,7 @@ def _markdown_files(root: Path) -> list[Path]:
         if path.is_file()
     ]
     files.extend(sorted((root / "docs").glob("*.md")))
+    files.extend(sorted((root / "submission").glob("*.md")))
     return files
 
 

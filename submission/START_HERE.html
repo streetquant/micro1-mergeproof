@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DriftProof submission — start here</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;max-width:1040px;margin:0 auto;padding:2rem;color:#171717}
+h1,h2{line-height:1.2} code,pre{font-family:ui-monospace,SFMono-Regular,monospace} pre{padding:1rem;background:#f4f4f4;overflow:auto;border-radius:.5rem} table{border-collapse:collapse;width:100%} th,td{border:1px solid #bbb;padding:.55rem;text-align:left} th{background:#eee} .boundary{border:2px solid #333;padding:1rem;border-radius:.5rem} a{color:#0645ad}
+</style>
+</head>
+<body>
+<h1>DriftProof submission — start here</h1>
+<p>Independent, fail-closed release gate for agent-authored dbt repairs. It verifies a visible business contract and publishes a self-verifying bundle for a qualified human. It never merges or deploys code.</p>
+<h2>60-second judge path</h2>
+<pre>uv sync --locked --extra dev --extra dbt
+make judge-demo</pre>
+<p>Both fixtures pass the same build-only <code>dbt build</code>. DriftProof approves the contract-preserving fixture and rejects the green-but-wrong fixture, verifies both bundles, and prints the report paths.</p>
+<h2>Measured result</h2>
+<table><thead><tr><th>Metric</th><th>Build-only baseline</th><th>DriftProof</th><th>Change</th></tr></thead><tbody><tr><td>Safe-approval macro-F1</td><td>0.333</td><td>0.681</td><td>+0.348</td></tr><tr><td>Accuracy</td><td>50.0%</td><td>70.8%</td><td>+20.8 pp</td></tr><tr><td>Unsafe-repair escape rate</td><td>100.0%</td><td>0.0%</td><td>-100.0 pp</td></tr><tr><td>Safe candidates automatically approved</td><td>12/12</td><td>5/12</td><td>-7</td></tr><tr><td>Unsafe candidates blocked</td><td>0/12</td><td>12/12</td><td>+12</td></tr><tr><td>Qualified-human escalations</td><td>0/24</td><td>7/24</td><td>+7</td></tr></tbody></table>
+<p><strong>Trade-off:</strong> measured unsafe escapes fell to 0.0%, while only 5 of 12 safe candidates were automatically approved and 7 cases were escalated. This is a balanced, synthetic, project-authored benchmark—not universal correctness or formal verification.</p>
+<h2>Human workflow</h2>
+<pre>uv run driftproof doctor --json
+uv run driftproof onboard /absolute/path/to/dbt-project --run-id reviewer-1 --json
+uv run driftproof preflight /absolute/path/to/dbt-project --json
+uv run driftproof review /absolute/path/to/dbt-project --run-id reviewer-1
+uv run driftproof verify-report /path/to/bundle</pre>
+<h2>AI-agent workflow</h2>
+<pre>from pathlib import Path
+from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_for_agent
+request = ReviewRequest(project="candidate", context="candidate/BUSINESS_CONTEXT.md")
+identity = fingerprint_for_agent(request, base_dir=Path.cwd())
+response = review_for_agent(request, base_dir=Path.cwd())
+assert response.request_sha256 == identity.configuration_request_sha256</pre>
+<p>See <a href="../schemas/driftproof/">machine schemas</a>, the <a href="../results/driftproof-comparison/comparison.json">authoritative comparison</a>, and the <a href="manifest.json">submission manifest</a>.</p>
+<div class="boundary"><strong>Fixed boundary:</strong> human approval is always required; no consequential action is taken.</div>
+</body>
+</html>

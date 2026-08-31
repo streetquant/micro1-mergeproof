@@ -260,7 +260,13 @@ make release
 make release-verify
 ```
 
-Release packaging fails closed unless the worktree is clean, local `HEAD` equals private `origin/main`, required evidence and every qualified adversarial review exist in the commit, tracked objects are ordinary files, and the output directory contains no unrelated entries. It fully reads and CRC-verifies all three deterministic archives, safely extracts each one, verifies the embedded Git bundle, and confirms that the human/browser/machine submission entry points are byte-identical at the release root and inside every archive. `make release-verify` independently repeats those checks for a downloaded delivery.
+Release packaging fails closed unless the worktree is clean, local `HEAD` equals private `origin/main`, required evidence and every qualified adversarial review exist in the commit, tracked objects are ordinary files, and the output directory contains no unrelated entries. It fully reads and CRC-verifies all three deterministic archives, safely extracts each one, verifies the embedded Git bundle, and confirms that all eight human/browser/machine/judge entry points are byte-identical at the release root and inside every archive. `make release-verify` repeats those checks from the source checkout. A downloaded delivery is independently verifiable without installing DriftProof or retaining the checkout:
+
+```bash
+python verify-release.pyz .
+```
+
+The deterministic zipapp uses only Python's standard library and Git, emits exactly one JSON object, validates the complete checksum set and archive contents, cross-binds the trajectory packet, claim ledger, rubric map, and submission manifest, binds its own source to the source/full archives, and verifies the embedded Git bundle.
 
 ## Evidence map
 

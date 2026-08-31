@@ -205,6 +205,14 @@ make submission-check
 make release
 ```
 
+A recipient can verify the downloaded release without installing DriftProof or retaining the source checkout:
+
+```bash
+python verify-release.pyz .
+```
+
+The standalone verifier uses only Python's standard library and Git, emits one JSON object, validates every checksum and archive, cross-binds the judge packet, and verifies the embedded Git bundle.
+
 ## Measured result
 
 | Metric | Build-only baseline | DriftProof | Change |
@@ -264,6 +272,7 @@ The typed SDK validates the one-object protocol, rejects malformed output and pr
 - Installed demo and runtime-recovery review: [`../reviews/2026-08-31-round-5-installed-demo/`](../reviews/2026-08-31-round-5-installed-demo/)
 - Response authenticity and retry-semantics review: [`../reviews/2026-08-31-round-6-response-binding/`](../reviews/2026-08-31-round-6-response-binding/)
 - Hostile judge-packet and evidence-binding review: [`../reviews/2026-08-31-round-7-judge-packet/`](../reviews/2026-08-31-round-7-judge-packet/)
+- Standalone downloaded-release verifier review: [`../reviews/2026-08-31-round-8-standalone-verifier/`](../reviews/2026-08-31-round-8-standalone-verifier/)
 - Machine-readable submission manifest: [`manifest.json`](manifest.json)
 - Full product and trust-boundary documentation: [`../README.md`](../README.md)
 
@@ -344,6 +353,9 @@ uv run driftproof demo</pre>
 <li><a href="AGENT_TRAJECTORIES.json">Representative trajectories for every workflow agent</a></li>
 <li><a href="TRACE_INDEX.json">Content-addressed trace index</a></li>
 </ul>
+<h2>Downloaded release verification</h2>
+<pre>python verify-release.pyz .</pre>
+<p>The standalone verifier requires only Python's standard library and Git. It validates checksums, archives, the judge packet, and the embedded Git bundle, then emits one JSON object.</p>
 <h2>Measured result</h2>
 <table><thead><tr><th>Metric</th><th>Build-only baseline</th><th>DriftProof</th><th>Change</th></tr></thead><tbody>{table_rows}</tbody></table>
 <p><strong>Trade-off:</strong> measured unsafe escapes fell to {_percentage(metrics["advanced_unsafe_escape_rate"])}, while only {metrics["advanced_safe_approved"]} of {metrics["safe_total"]} safe candidates were automatically approved and {metrics["advanced_human_reviews"]} cases were escalated. This is a balanced, synthetic, project-authored benchmark—not universal correctness or formal verification.</p>
@@ -404,6 +416,7 @@ def _manifest(
             "source_qualification": ["make", "check"],
             "submission_drift_check": ["make", "submission-check"],
             "release_package": ["make", "release"],
+            "downloaded_release_verify": ["python", "verify-release.pyz", "."],
             "agent_capabilities": ["driftproof", "capabilities"],
             "agent_schema": ["driftproof", "schema", "agent-response"],
             "response_verification_schema": [

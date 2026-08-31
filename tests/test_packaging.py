@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import zipfile
@@ -151,6 +153,10 @@ def initialized_release_repo(tmp_path: Path) -> Path:
     }
     (repo / "submission/manifest.json").write_text(
         json.dumps(submission_manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    (repo / "scripts").mkdir(parents=True, exist_ok=True)
+    (repo / "scripts/standalone_release_verifier.py").write_bytes(
+        (ROOT / "scripts/standalone_release_verifier.py").read_bytes()
     )
     git(repo, "add", ".")
     git(repo, "commit", "-q", "-m", "release evidence")
@@ -393,6 +399,29 @@ def test_complete_release_is_deterministic_and_independently_verifiable(
         timeout=120,
     )
     assert json.loads(completed.stdout)["verified"] is True
+    verifier = first_output / "verify-release.pyz"
+    with zipfile.ZipFile(verifier) as archive:
+        assert archive.namelist() == ["__main__.py"]
+        assert archive.testzip() is None
+    outside = tmp_path / "outside-repository"
+    outside.mkdir()
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = ""
+    environment["PYTHONNOUSERSITE"] = "1"
+    standalone = subprocess.run(
+        [sys.executable, str(verifier), str(first_output)],
+        cwd=outside,
+        env=environment,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    standalone_payload = json.loads(standalone.stdout)
+    assert standalone.stderr == ""
+    assert standalone_payload["protocol"] == ("driftproof.standalone-release-verification.v1")
+    assert standalone_payload["verified"] is True
+    assert standalone_payload["commit"] == first["manifest"]["commit"]
     assert (first_output / "START_HERE.md").read_text(encoding="utf-8") == "# Start here\n"
     for name, source in PACKAGING._DELIVERY_SOURCES.items():
         assert (first_output / name).read_bytes() == (repo / source).read_bytes()
@@ -426,3 +455,91 @@ def test_release_verifier_rejects_rehashed_trajectory_substitution(tmp_path: Pat
 
     with pytest.raises(PackagingError, match=r"trajectory|trace index"):
         PACKAGING.verify_release_directory(output)
+
+    outside = tmp_path / "outside-repository"
+    outside.mkdir()
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = ""
+    environment["PYTHONNOUSERSITE"] = "1"
+    completed = subprocess.run(
+        [sys.executable, str(output / "verify-release.pyz"), str(output)],
+        cwd=outside,
+        env=environment,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    payload = json.loads(completed.stdout)
+    assert completed.returncode == 30
+    assert completed.stderr == ""
+    assert payload["verified"] is False
+    assert payload["error_code"] == "release_invalid"
+    assert "trajectory" in payload["detail"] or "trace index" in payload["detail"]
+
+
+def test_standalone_verifier_rejects_rehashed_source_substitution(tmp_path: Path) -> None:
+    repo = initialized_release_repo(tmp_path)
+    output = tmp_path / "release"
+    PACKAGING.package(repo, output)
+
+    verifier = output / "verify-release.pyz"
+    with zipfile.ZipFile(verifier) as archive:
+        replacement_source = archive.read("__main__.py") + b"\n# substituted verifier\n"
+    with zipfile.ZipFile(
+        verifier,
+        "w",
+        compression=zipfile.ZIP_DEFLATED,
+        compresslevel=9,
+    ) as archive:
+        archive.writestr(PACKAGING._zip_info("__main__.py", 0o755), replacement_source)
+
+    manifest_path = output / "release-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    metadata = manifest["standalone_verifier"]
+    metadata["bytes"] = verifier.stat().st_size
+    metadata["sha256"] = PACKAGING._sha256(verifier)
+    metadata["member_sha256"] = hashlib.sha256(replacement_source).hexdigest()
+    metadata["source_sha256"] = metadata["member_sha256"]
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+    checksum_path = output / "SHA256SUMS"
+    replacements = {
+        "verify-release.pyz": PACKAGING._sha256(verifier),
+        "release-manifest.json": PACKAGING._sha256(manifest_path),
+    }
+    lines = checksum_path.read_text(encoding="utf-8").splitlines()
+    checksum_path.write_text(
+        "\n".join(
+            f"{replacements.get(name, digest)}  {name}"
+            for digest, name in (line.split("  ", 1) for line in lines)
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(PackagingError, match="archive does not bind"):
+        PACKAGING.verify_release_directory(output)
+
+    outside = tmp_path / "outside-repository"
+    outside.mkdir()
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = ""
+    environment["PYTHONNOUSERSITE"] = "1"
+    completed = subprocess.run(
+        [sys.executable, str(verifier), str(output)],
+        cwd=outside,
+        env=environment,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    payload = json.loads(completed.stdout)
+    assert completed.returncode == 30
+    assert completed.stderr == ""
+    assert payload["verified"] is False
+    assert payload["error_code"] == "release_invalid"
+    assert "archive does not bind" in payload["detail"]

@@ -32,6 +32,14 @@ make submission-check
 make release
 ```
 
+A recipient can verify the downloaded release without installing DriftProof or retaining the source checkout:
+
+```bash
+python verify-release.pyz .
+```
+
+The standalone verifier uses only Python's standard library and Git, emits one JSON object, validates every checksum and archive, cross-binds the judge packet, and verifies the embedded Git bundle.
+
 ## Measured result
 
 | Metric | Build-only baseline | DriftProof | Change |
@@ -91,6 +99,7 @@ The typed SDK validates the one-object protocol, rejects malformed output and pr
 - Installed demo and runtime-recovery review: [`../reviews/2026-08-31-round-5-installed-demo/`](../reviews/2026-08-31-round-5-installed-demo/)
 - Response authenticity and retry-semantics review: [`../reviews/2026-08-31-round-6-response-binding/`](../reviews/2026-08-31-round-6-response-binding/)
 - Hostile judge-packet and evidence-binding review: [`../reviews/2026-08-31-round-7-judge-packet/`](../reviews/2026-08-31-round-7-judge-packet/)
+- Standalone downloaded-release verifier review: [`../reviews/2026-08-31-round-8-standalone-verifier/`](../reviews/2026-08-31-round-8-standalone-verifier/)
 - Machine-readable submission manifest: [`manifest.json`](manifest.json)
 - Full product and trust-boundary documentation: [`../README.md`](../README.md)
 

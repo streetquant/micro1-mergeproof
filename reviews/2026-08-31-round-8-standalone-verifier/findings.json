@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "round": "standalone_downloaded_release_verification",
+  "findings": [
+    {
+      "id": "R8-PORTABILITY-001",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "The advertised downloaded-release verifier imported repository modules and therefore could not be trusted to work from the delivery alone.",
+      "repair": "Ship a deterministic single-file Python zipapp using only the standard library and Git; invoke it from an unrelated working directory with PYTHONPATH cleared.",
+      "validation": [
+        "zipapp contains exactly __main__.py",
+        "no DriftProof package installation or source checkout is required",
+        "success and failure each emit exactly one JSON object",
+        "invalid deliveries return exit 30"
+      ]
+    },
+    {
+      "id": "R8-DISCOVERY-002",
+      "severity": "medium",
+      "status": "fixed",
+      "finding": "A recipient had no obvious verifier at the release root and no copy-paste command in the human, browser, machine, or judge entry points.",
+      "repair": "Publish verify-release.pyz at the release root, document `python verify-release.pyz .`, and expose the argument vector in generated submission metadata and the judge checklist.",
+      "validation": [
+        "release manifest and SHA256SUMS include verify-release.pyz",
+        "START_HERE Markdown and HTML describe the command",
+        "submission manifest exposes downloaded_release_verify",
+        "judge checklist describes exit-30 fail-closed behavior"
+      ]
+    },
+    {
+      "id": "R8-SELF-BINDING-003",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "The verifier binary could have been replaced and rehashed without proving that it was built from the verifier source in the Git-backed release commit.",
+      "repair": "Bind zipapp bytes, member bytes, member CRC, source path, and source SHA-256 in the release manifest; compare the source hash with both source and full archives before accepting the delivery.",
+      "validation": [
+        "zipapp member SHA equals the declared source SHA",
+        "source/full archives contain the same verifier source bytes",
+        "full archive repository.bundle binds the release main commit",
+        "modified verifier plus updated manifest and checksum is rejected"
+      ]
+    },
+    {
+      "id": "R8-OUTER-CHECKSUM-004",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "An outer checksum validates bytes but cannot by itself preserve semantic relationships among the trajectory packet, trace index, claim ledger, rubric, submission manifest, verifier source, archives, and Git bundle.",
+      "repair": "After checksum validation, independently cross-verify all inner identities and archive/root copies before returning verified=true.",
+      "validation": [
+        "rehashed trajectory substitution is rejected",
+        "rehashed verifier substitution is rejected",
+        "all eight delivery entry points are byte-identical across root and archives",
+        "rubric remains bound to the exact claim ledger and totals 100 points"
+      ]
+    },
+    {
+      "id": "R8-ARCHIVE-005",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "A standalone recipient needed the same archive traversal, special-file, size, duplicate-name, encryption, member-count, CRC, delivery, evidence, and Git-bundle checks as the source verifier.",
+      "repair": "Reimplement the complete bounded archive and embedded-bundle verification contract inside the zipapp rather than weakening the downloaded path.",
+      "validation": [
+        "all three archives are fully read and CRC-verified",
+        "unsafe archive names and special modes fail closed",
+        "evidence archive must contain every qualified review",
+        "embedded Git bundle must list the manifest commit as refs/heads/main"
+      ]
+    }
+  ],
+  "human_approval_required": true,
+  "consequential_action_taken": false
+}

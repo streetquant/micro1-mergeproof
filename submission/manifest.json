@@ -10,6 +10,11 @@
       "schema",
       "agent-response"
     ],
+    "downloaded_release_verify": [
+      "python",
+      "verify-release.pyz",
+      "."
+    ],
     "judge_demo": [
       "driftproof",
       "demo",
@@ -59,20 +64,20 @@
       "sha256": "1a69e6a73e4c794a5e47e1b928aea841a9d902bf1219748cd9cd332f06aaa04a"
     },
     "JUDGE_CHECKLIST.md": {
-      "bytes": 2257,
-      "sha256": "34d9a712c7a66f913d65920e242fcafcadb2741075dda362d6a67523db986d9e"
+      "bytes": 2672,
+      "sha256": "36a0910cf3d3064989d719c5b9e67cdf422e0d00dbe3c9e34ceabca75ac85b8a"
     },
     "RUBRIC_MAP.json": {
       "bytes": 3345,
       "sha256": "f0bbb52a9d063d9a66e17eabff8ab1502005e46d3bcbed30df483f4b5634cd45"
     },
     "START_HERE.html": {
-      "bytes": 3847,
-      "sha256": "99e432991d3f4de0f34577e559e79d4ce7f6f2f994140d987b1775ee5bf5d14c"
+      "bytes": 4116,
+      "sha256": "7212794bf519a7ccbf41225ddfb1f36790da1c30c8b0e20c1694f3f1dfb5af66"
     },
     "START_HERE.md": {
-      "bytes": 5544,
-      "sha256": "4280d6cdf345235b6f225ca206d02d52f83a9a2c6d30c362307a76893f59f593"
+      "bytes": 6051,
+      "sha256": "55e0e43d53eb840c487fb09e76a0aec9b68d4c8a48ae96a9fb002605cb3041c0"
     },
     "TRACE_INDEX.json": {
       "bytes": 8976,
@@ -164,6 +169,10 @@
     "reviews/2026-08-31-round-7-judge-packet/qualification.json": {
       "bytes": 4405,
       "sha256": "b81abecd8b9b9d6f5198d620d50b64bc1ac8f8c76dac14f4e31229212da9ca21"
+    },
+    "reviews/2026-08-31-round-8-standalone-verifier/qualification.json": {
+      "bytes": 4003,
+      "sha256": "bf3f6155666fb84824c7e4157684e0a9e09c03b46de343827413b263bfbaa1cd"
     },
     "reviews/recovery-promotion/qualification.json": {
       "bytes": 1660,

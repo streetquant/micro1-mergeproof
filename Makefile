@@ -29,7 +29,7 @@ lint:
 	uv run ruff check src tests scripts
 
 typecheck:
-	uv run mypy src/driftproof src/mergeproof scripts/verify_replay.py scripts/package_final_release.py scripts/export_schemas.py scripts/judge_packet.py scripts/render_submission.py scripts/verify_release.py
+	uv run mypy src/driftproof src/mergeproof scripts/verify_replay.py scripts/package_final_release.py scripts/export_schemas.py scripts/judge_packet.py scripts/render_submission.py scripts/standalone_release_verifier.py scripts/verify_release.py
 
 test:
 	uv run pytest -q

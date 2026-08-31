@@ -31,7 +31,17 @@ Both fixtures must build green. DriftProof must approve the contract-preserving 
 - Confirm its six criteria total 100 points.
 - Follow the argument vectors; do not paste untrusted fields into a shell.
 
-## 5. Run qualification when deeper verification is needed
+## 5. Verify a downloaded release independently
+
+From the downloaded release directory:
+
+```bash
+python verify-release.pyz .
+```
+
+This requires only Python's standard library and Git. It validates the exact file set, SHA-256 records, all archives and CRCs, judge-packet cross-bindings, verifier-source identity, and the embedded Git bundle. Exit `30` means the delivery is invalid and no result should be trusted.
+
+## 6. Run qualification when deeper verification is needed
 
 ```bash
 make check
@@ -40,7 +50,7 @@ bash scripts/reproduce.sh
 
 `make check` covers formatting, linting, strict typing, schema drift, submission drift, protocol smoke tests, the complete test suite, frozen replay, and package construction. The full reproduction additionally regenerates and externally validates the benchmark.
 
-## 6. Preserve the authority boundary
+## 7. Preserve the authority boundary
 
 - `human_approval_required` must remain `true`.
 - `consequential_action_taken` must remain `false`.

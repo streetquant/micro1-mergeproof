@@ -3,10 +3,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import zipfile
 import zlib
@@ -73,6 +75,7 @@ _REVIEW_QUALIFICATION_ARTIFACTS = (
     "reviews/2026-08-31-round-5-installed-demo/qualification.json",
     "reviews/2026-08-31-round-6-response-binding/qualification.json",
     "reviews/2026-08-31-round-7-judge-packet/qualification.json",
+    "reviews/2026-08-31-round-8-standalone-verifier/qualification.json",
 )
 _REQUIRED_EVIDENCE_ARTIFACTS = (
     "benchmark/manifest.json",
@@ -110,6 +113,7 @@ _OWNED_RELEASE_FILES = {
     "RUBRIC_MAP.json",
     "AGENT_TRAJECTORIES.json",
     "TRACE_INDEX.json",
+    "verify-release.pyz",
     "submission-manifest.json",
     "release-verification.json",
     "SHA256SUMS",
@@ -317,6 +321,89 @@ def _write_zip(path: Path, *, prefix: str, members: list[Member]) -> None:
             if total > _MAX_ARCHIVE_BYTES:
                 raise PackagingError("uncompressed archive exceeds safety limit")
             archive.writestr(_zip_info(name, member.mode), payload)
+
+
+def _write_standalone_verifier(root: Path, path: Path) -> dict[str, object]:
+    source_relative = "scripts/standalone_release_verifier.py"
+    source = _run(root, "git", "show", f"HEAD:{source_relative}", text=False)
+    assert isinstance(source, bytes)
+    if len(source) > 2_000_000:
+        raise PackagingError("standalone verifier source exceeds the safety limit")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        archive.writestr(_zip_info("__main__.py", 0o755), source)
+    verified = _verify_standalone_verifier(path)
+    return {
+        **verified,
+        "source": source_relative,
+        "source_sha256": hashlib.sha256(source).hexdigest(),
+    }
+
+
+def _verify_standalone_verifier(path: Path) -> dict[str, object]:
+    if path.is_symlink() or not path.is_file():
+        raise PackagingError(f"standalone verifier must be a regular file: {path}")
+    try:
+        with zipfile.ZipFile(path) as archive:
+            entries = archive.infolist()
+            if [entry.filename for entry in entries] != ["__main__.py"]:
+                raise PackagingError("standalone verifier must contain exactly __main__.py")
+            entry = entries[0]
+            if entry.flag_bits & 0x1 or entry.file_size > 2_000_000:
+                raise PackagingError("standalone verifier member is unsafe")
+            mode = (entry.external_attr >> 16) & 0o170000
+            if mode not in {0, stat.S_IFREG}:
+                raise PackagingError("standalone verifier member is not a regular file")
+            bad_member = archive.testzip()
+            if bad_member is not None:
+                raise PackagingError(f"standalone verifier CRC verification failed: {bad_member}")
+            source = archive.read(entry)
+    except PackagingError:
+        raise
+    except (OSError, EOFError, RuntimeError, zipfile.BadZipFile, zlib.error) as exc:
+        raise PackagingError(f"invalid standalone verifier: {path}") from exc
+    if b"driftproof.standalone-release-verification.v1" not in source:
+        raise PackagingError("standalone verifier source lacks its protocol identity")
+    return {
+        "file": path.name,
+        "sha256": _sha256(path),
+        "bytes": path.stat().st_size,
+        "member": "__main__.py",
+        "member_sha256": hashlib.sha256(source).hexdigest(),
+        "crc_verified": True,
+    }
+
+
+def _run_standalone_verifier(directory: Path) -> dict[str, object]:
+    verifier = directory / "verify-release.pyz"
+    with tempfile.TemporaryDirectory(prefix="driftproof-standalone-cwd-") as raw_cwd:
+        environment = os.environ.copy()
+        environment["PYTHONPATH"] = ""
+        environment["PYTHONNOUSERSITE"] = "1"
+        completed = subprocess.run(
+            [sys.executable, str(verifier), str(directory)],
+            cwd=raw_cwd,
+            env=environment,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+    try:
+        payload = json.loads(completed.stdout)
+    except json.JSONDecodeError as exc:
+        raise PackagingError("standalone verifier did not emit exactly one JSON object") from exc
+    if not isinstance(payload, dict):
+        raise PackagingError("standalone verifier response must be a JSON object")
+    if completed.stderr.strip():
+        raise PackagingError("standalone verifier wrote unexpected stderr output")
+    if completed.returncode != 0 or payload.get("verified") is not True:
+        raise PackagingError(
+            f"standalone verifier rejected the generated release: {payload.get('detail')}"
+        )
+    if payload.get("protocol") != "driftproof.standalone-release-verification.v1":
+        raise PackagingError("standalone verifier returned an unexpected protocol")
+    return payload
 
 
 def verify_zip(path: Path) -> dict[str, object]:
@@ -611,6 +698,7 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
     required_names = {
         "release-manifest.json",
         "final-release-attestation.json",
+        "verify-release.pyz",
         *_DELIVERY_SOURCES,
     }
     missing_names = sorted(required_names - set(records))
@@ -640,6 +728,22 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
     if submission.get("consequential_action_taken") is not False:
         raise PackagingError("submission manifest claims a consequential action")
     submission_packet = _verify_submission_packet(directory, submission)
+
+    verifier_path = directory / "verify-release.pyz"
+    verified_verifier = _verify_standalone_verifier(verifier_path)
+    verifier_metadata = manifest.get("standalone_verifier")
+    if (
+        not isinstance(verifier_metadata, dict)
+        or verifier_metadata.get("file") != "verify-release.pyz"
+        or verifier_metadata.get("bytes") != verifier_path.stat().st_size
+        or verifier_metadata.get("sha256") != _sha256(verifier_path)
+        or verifier_metadata.get("member") != verified_verifier.get("member")
+        or verifier_metadata.get("member_sha256") != verified_verifier.get("member_sha256")
+        or verifier_metadata.get("source") != "scripts/standalone_release_verifier.py"
+        or verifier_metadata.get("source_sha256") != verified_verifier.get("member_sha256")
+        or verifier_metadata.get("crc_verified") is not True
+    ):
+        raise PackagingError("release manifest does not bind the standalone verifier")
 
     assets = manifest.get("assets")
     if not isinstance(assets, list) or len(assets) != 3:
@@ -713,6 +817,18 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
                         f"{label} archive delivery entry differs from the release root: {relative}"
                     )
 
+        verifier_source = str(verifier_metadata["source"])
+        for label in ("full", "source"):
+            extracted_source = extracted[label] / verifier_source
+            if (
+                not extracted_source.is_file()
+                or extracted_source.is_symlink()
+                or _sha256(extracted_source) != verifier_metadata.get("source_sha256")
+            ):
+                raise PackagingError(
+                    f"{label} archive does not bind the standalone verifier source"
+                )
+
         full_attestation = extracted["full"] / "RELEASE-ATTESTATION.json"
         if not full_attestation.is_file() or _load_json_object(full_attestation) != attestation:
             raise PackagingError("full archive attestation differs from the release root")
@@ -734,6 +850,10 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
         if f"{commit} refs/heads/main" not in heads.splitlines():
             raise PackagingError("embedded Git bundle does not bind the release main commit")
 
+    standalone_verification = _run_standalone_verifier(directory)
+    if standalone_verification.get("commit") != commit:
+        raise PackagingError("standalone verifier returned a different release commit")
+
     return {
         "schema_version": 1,
         "protocol": "driftproof.release-verification.v1",
@@ -742,6 +862,8 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
         "tree": manifest.get("tree"),
         "files": len(records),
         "archives": verified_assets,
+        "standalone_verifier": verified_verifier,
+        "standalone_verification": standalone_verification,
         "submission_packet": submission_packet,
         "sha256sums_sha256": _sha256(directory / "SHA256SUMS"),
         "human_approval_required": True,
@@ -773,6 +895,7 @@ def package(root: Path, output: Path) -> dict[str, object]:
         raise PackagingError("source/evidence selection is unexpectedly empty")
 
     _prepare_output_directory(output)
+    standalone_verifier = _write_standalone_verifier(root, output / "verify-release.pyz")
 
     with tempfile.TemporaryDirectory(prefix="mergeproof-release-") as raw_temp:
         temp = Path(raw_temp)
@@ -883,6 +1006,7 @@ def package(root: Path, output: Path) -> dict[str, object]:
             "prefix": prefix,
             "assets": assets,
             "delivery_files": delivery_files,
+            "standalone_verifier": standalone_verifier,
             "verification_protocol": "driftproof.release-verification.v1",
             "attestation": attestation,
         }

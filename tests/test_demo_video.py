@@ -140,3 +140,21 @@ def test_video_readiness_rejects_dirty_source_without_bypass(
     assert "--allow-dirty" not in (ROOT / "scripts/render_demo_video.py").read_text(
         encoding="utf-8"
     )
+
+
+def test_make_video_targets_are_commit_bound_and_json_clean() -> None:
+    makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+
+    assert "GIT_HEAD := $(shell git rev-parse HEAD)" in makefile
+    assert (
+        '@uv run python scripts/render_demo_video.py --check --expected-commit "$(GIT_HEAD)"'
+        in makefile
+    )
+    assert (
+        '@uv run python scripts/render_demo_video.py --output "$(VIDEO_OUTPUT)" '
+        '--expected-commit "$(GIT_HEAD)"' in makefile
+    )
+    assert (
+        '@uv run python scripts/verify_demo_video.py "$(VIDEO_OUTPUT)" --source-root . '
+        '--expected-commit "$(GIT_HEAD)"' in makefile
+    )

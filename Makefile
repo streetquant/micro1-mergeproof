@@ -24,13 +24,13 @@ submission-check:
 	uv run python scripts/render_submission.py --check
 
 video-doctor:
-	uv run python scripts/render_demo_video.py --check --expected-commit "$(GIT_HEAD)"
+	@uv run python scripts/render_demo_video.py --check --expected-commit "$(GIT_HEAD)"
 
 video:
-	uv run python scripts/render_demo_video.py --output "$(VIDEO_OUTPUT)" --expected-commit "$(GIT_HEAD)"
+	@uv run python scripts/render_demo_video.py --output "$(VIDEO_OUTPUT)" --expected-commit "$(GIT_HEAD)"
 
 video-verify:
-	uv run python scripts/verify_demo_video.py "$(VIDEO_OUTPUT)" --source-root . --expected-commit "$(GIT_HEAD)"
+	@uv run python scripts/verify_demo_video.py "$(VIDEO_OUTPUT)" --source-root . --expected-commit "$(GIT_HEAD)"
 
 format:
 	uv run ruff format src tests scripts

@@ -20,15 +20,42 @@ ROOT = Path(__file__).resolve().parents[1]
 def _copy_source_tree(destination: Path) -> None:
     files = [
         "README.md",
+        "CHANGELOG.md",
+        "oracle/problem-brief.md",
+        "docs/architecture.md",
+        "docs/requirements.md",
+        "docs/driftdoctor-upstream.md",
+        "scripts/reproduce.sh",
+        "src/driftproof/demo.py",
+        "src/driftproof/runner.py",
+        "src/driftproof/reporting.py",
+        "upstream/driftdoctor.lock.json",
+        "upstream/DriftDoctor-LICENSE",
         "results/driftproof-comparison/comparison.json",
-        "benchmark_dbt/manifest.json",
-        "schemas/manifest.json",
+        "results/driftproof-benchmark-validation/summary.json",
+        "results/baseline-live-groq-gpt-oss-20b/raw-results.jsonl",
         "results/baseline-replay-gpt-oss-20b/replay-verification.json",
+        "results/agent-fallback-live/gate-report.json",
+        "results/agent-fallback-replay/gate-report.json",
+        "benchmark_dbt/manifest.json",
+        "benchmark_dbt/cases.json",
+        "schemas/manifest.json",
+        "schemas/driftproof/agent-response.schema.json",
+        "schemas/driftproof/response-verification.schema.json",
+        "fixtures/agent/driftproof-contract-clarifier/8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080.json",
         "reviews/recovery-promotion/qualification.json",
         "reviews/replay-nonmutating/qualification.json",
         "reviews/2026-08-31-round-1-human-judge/qualification.json",
         "reviews/2026-08-31-round-2-agent-sdk/qualification.json",
+        "reviews/2026-08-31-round-3-release-delivery/qualification.json",
+        "reviews/2026-08-31-round-4-consumer-verifier/qualification.json",
+        "reviews/2026-08-31-round-5-installed-demo/qualification.json",
+        "reviews/2026-08-31-round-6-response-binding/qualification.json",
     ]
+    files.extend(
+        path.relative_to(ROOT).as_posix()
+        for path in sorted((ROOT / "fixtures/replay/groq-gpt-oss-20b").glob("*.json"))
+    )
     for relative in files:
         source = ROOT / relative
         target = destination / relative
@@ -39,6 +66,11 @@ def _copy_source_tree(destination: Path) -> None:
 def test_committed_submission_is_bound_to_authoritative_metrics() -> None:
     receipt = check_submission(ROOT)
     manifest = json.loads((ROOT / "submission/manifest.json").read_text(encoding="utf-8"))
+    trajectories = json.loads(
+        (ROOT / "submission/AGENT_TRAJECTORIES.json").read_text(encoding="utf-8")
+    )
+    claims = json.loads((ROOT / "submission/CLAIM_LEDGER.json").read_text(encoding="utf-8"))
+    rubric = json.loads((ROOT / "submission/RUBRIC_MAP.json").read_text(encoding="utf-8"))
     metrics = manifest["metrics"]
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
@@ -52,6 +84,17 @@ def test_committed_submission_is_bound_to_authoritative_metrics() -> None:
     assert metrics["advanced_human_reviews"] == 7
     assert README_START in readme and README_END in readme
     assert "**1.000**" not in readme.split(README_END, 1)[0]
+    assert trajectories["coverage_complete"] is True
+    assert trajectories["declared_workflow_agents"] == [
+        "baseline_reviewer",
+        "contract_clarifier",
+    ]
+    assert trajectories["agents"]["baseline_reviewer"]["canonical_case_count"] == 24
+    assert claims["claim_count"] == 8
+    assert claims["all_claims_supported"] is True
+    assert rubric["total_points"] == 100
+    assert sum(item["points"] for item in rubric["criteria"]) == 100
+    assert manifest["entry_points"]["agent_trajectories"] == ("submission/AGENT_TRAJECTORIES.json")
     assert manifest["human_approval_required"] is True
     assert manifest["consequential_action_taken"] is False
 
@@ -91,6 +134,22 @@ def test_submission_check_fails_when_comparison_changes_without_regeneration(
     comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
     comparison["advanced"]["accuracy"] = 0.75
     comparison_path.write_text(json.dumps(comparison, indent=2, sort_keys=True) + "\n")
+
+    with pytest.raises(SubmissionRenderError, match="differ from committed evidence"):
+        check_submission(tmp_path)
+
+
+def test_submission_check_fails_when_a_trace_source_changes_without_regeneration(
+    tmp_path: Path,
+) -> None:
+    _copy_source_tree(tmp_path)
+    write_submission(tmp_path)
+    trace_path = tmp_path / "results/baseline-live-groq-gpt-oss-20b/raw-results.jsonl"
+    rows = trace_path.read_text(encoding="utf-8").splitlines()
+    first = json.loads(rows[0])
+    first["summary"] = "tampered trace summary"
+    rows[0] = json.dumps(first, sort_keys=True)
+    trace_path.write_text("\n".join(rows) + "\n", encoding="utf-8")
 
     with pytest.raises(SubmissionRenderError, match="differ from committed evidence"):
         check_submission(tmp_path)

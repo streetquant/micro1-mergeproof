@@ -1,0 +1,149 @@
+{
+  "claim_ledger": {
+    "bytes": 8740,
+    "path": "submission/CLAIM_LEDGER.json",
+    "sha256": "1a69e6a73e4c794a5e47e1b928aea841a9d902bf1219748cd9cd332f06aaa04a"
+  },
+  "consequential_action_taken": false,
+  "criteria": [
+    {
+      "claim_ids": [
+        "DP-PROBLEM-001"
+      ],
+      "criterion": "Problem & User Value",
+      "judge_actions": [
+        {
+          "kind": "read",
+          "path": "submission/START_HERE.md"
+        },
+        {
+          "kind": "read",
+          "path": "oracle/problem-brief.md"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "claim_ids": [
+        "DP-ENGINEERING-001",
+        "DP-TRACES-001",
+        "DP-SAFETY-001"
+      ],
+      "criterion": "Agent Solution & Engineering",
+      "judge_actions": [
+        {
+          "argv": [
+            "driftproof",
+            "capabilities"
+          ],
+          "kind": "command"
+        },
+        {
+          "argv": [
+            "driftproof",
+            "schema",
+            "agent-response"
+          ],
+          "kind": "command"
+        },
+        {
+          "kind": "read",
+          "path": "submission/AGENT_TRAJECTORIES.json"
+        }
+      ],
+      "points": 30
+    },
+    {
+      "claim_ids": [
+        "DP-DEMO-001",
+        "DP-ENGINEERING-001"
+      ],
+      "criterion": "End to End Quality",
+      "judge_actions": [
+        {
+          "argv": [
+            "driftproof",
+            "demo",
+            "--json"
+          ],
+          "kind": "command"
+        },
+        {
+          "argv": [
+            "driftproof",
+            "verify-report",
+            "<bundle-from-demo>"
+          ],
+          "kind": "command"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "claim_ids": [
+        "DP-METRIC-001"
+      ],
+      "criterion": "Measured Improvement",
+      "judge_actions": [
+        {
+          "kind": "read",
+          "path": "results/driftproof-comparison/comparison.json"
+        },
+        {
+          "kind": "read",
+          "path": "submission/CLAIM_LEDGER.json"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "claim_ids": [
+        "DP-REPRO-001",
+        "DP-ATTRIBUTION-001"
+      ],
+      "criterion": "Reproducibility",
+      "judge_actions": [
+        {
+          "argv": [
+            "make",
+            "check"
+          ],
+          "kind": "command"
+        },
+        {
+          "argv": [
+            "bash",
+            "scripts/reproduce.sh"
+          ],
+          "kind": "command"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "claim_ids": [
+        "DP-METRIC-001",
+        "DP-SAFETY-001"
+      ],
+      "criterion": "Hot Take / Insights",
+      "insight": "A green build is evidence about executability, not business correctness; a useful agentic release gate should optimize unsafe escapes first and make uncertainty visible instead of hiding it behind an approval rate.",
+      "judge_actions": [
+        {
+          "kind": "read",
+          "path": "CHANGELOG.md"
+        }
+      ],
+      "points": 5
+    }
+  ],
+  "human_approval_required": true,
+  "protocol": "driftproof.rubric-map.v1",
+  "schema_version": 1,
+  "source": {
+    "bytes": 4434,
+    "path": "oracle/problem-brief.md",
+    "purpose": "frozen challenge framing",
+    "sha256": "5673f80745f3519d5f4366f9f114f6b3450b86717c345c0589612d2229d1adab"
+  },
+  "total_points": 100
+}

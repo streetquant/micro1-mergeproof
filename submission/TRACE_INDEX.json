@@ -1,0 +1,194 @@
+{
+  "baseline_provider_fixtures": [
+    {
+      "bytes": 4703,
+      "path": "fixtures/replay/groq-gpt-oss-20b/05475e7b37daff36d7e01836472dae7c1432e0a1760223f622c88f6181eab899.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "979ac3f324d99e782df4a6bed8e02bdc95c74d4ee7b14b4e9e10768d884b4814"
+    },
+    {
+      "bytes": 4601,
+      "path": "fixtures/replay/groq-gpt-oss-20b/131e4e252959cb7d220819b95f21a213581a1293116c05d93079dff597f878ff.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "e1ea3de9faef92ef6a95b03de9e8f7f8086363c354de4943273973cf7c4829ea"
+    },
+    {
+      "bytes": 5749,
+      "path": "fixtures/replay/groq-gpt-oss-20b/1882809bbffb1b9a1af1e7219a81f0808b184982b159c6039dae476403e5359c.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "f7a67410d952bfd6bc4fb86b839cc54fccf84469d4faa327457938ecb4017853"
+    },
+    {
+      "bytes": 4714,
+      "path": "fixtures/replay/groq-gpt-oss-20b/3d44f4634bd8d0dc1180a8da14fb6838f59a577caa60c258a1c4364fd06d8cdf.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "c1624b0b33c96c5a72be5eb5bdb08e24fb1b898076d68ff363222c00a27c345b"
+    },
+    {
+      "bytes": 5893,
+      "path": "fixtures/replay/groq-gpt-oss-20b/3ddfe536e336b9959055420ef1d9f55dbfaa0d0d2ef85e9ada277f163c24e865.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "706628d06bedee6c16257a7021bb19ede64db8e2e198c562ea3b1d54fd836aad"
+    },
+    {
+      "bytes": 4738,
+      "path": "fixtures/replay/groq-gpt-oss-20b/5746f508bd319e9c22be042508876637e52cf71308fb6a86bddab3c61d2f5197.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "213a9e5a1bed51a11eb311d2e340b9324d95cd130a2cde5a4d0f6773911ddff5"
+    },
+    {
+      "bytes": 4588,
+      "path": "fixtures/replay/groq-gpt-oss-20b/5e2b2eafdd45a014d67c08aee4ace4b9b24c772ea1cf1a054726b243f364e757.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "cf4f26f6e853edb5aadda122bb023ee16731a3162de14ab8b1744bb68b231ea3"
+    },
+    {
+      "bytes": 5695,
+      "path": "fixtures/replay/groq-gpt-oss-20b/6085887c3047dff0cd5cbd3f8c141d9933c441626f14a1e3108e61027cc7a736.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "8e0925fa9723ae4479ccaf0f8800bf68593959f116ed90b5070ee8cf5adc83ce"
+    },
+    {
+      "bytes": 5479,
+      "path": "fixtures/replay/groq-gpt-oss-20b/74d84d286d3ccb92e8572951163ccf7d067dc9b0b705700d8e8f4e612bfef4ac.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "848e87a7bf3a62f0ea7b408363b5ad7df573bd39a0ef0db11403288ce1d6cff2"
+    },
+    {
+      "bytes": 6057,
+      "path": "fixtures/replay/groq-gpt-oss-20b/7657af980e45e2639c76f7425f6557ccd20e6a397f36eaade4a4f7ac3d1166a1.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "3f7767ee38c9d3a4201c0fcd975d053dbb7c1f245877f40dfec838532b81b80b"
+    },
+    {
+      "bytes": 5671,
+      "path": "fixtures/replay/groq-gpt-oss-20b/800ab62c2ac84546c50c00eaedc08d580bae5bb526410ea3addd845462f9b536.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "83ea7f763656f7dc528bcaae57ed4f532f90d0d0f8dd82ce378eda4e9a64f602"
+    },
+    {
+      "bytes": 5699,
+      "path": "fixtures/replay/groq-gpt-oss-20b/8de00f48dcc2946c5d72ec83ce9d78f69c69f92935d283f087f8a252a6aed5fa.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "6613f6d4e4fe1607c11a7e8ca5476a566b97afe4f0603fb7a8f543a2d73b6d44"
+    },
+    {
+      "bytes": 5949,
+      "path": "fixtures/replay/groq-gpt-oss-20b/974ec89032c4077b89b78577ee15d5a267fdc31d46019fba3652cbef1b061887.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "2def663b72a1bb542443b066f4f336f640aff7a9184f0ad1d713dc7526b52f18"
+    },
+    {
+      "bytes": 5810,
+      "path": "fixtures/replay/groq-gpt-oss-20b/9cc0aae6537b317514adcacd2d9aa6868788df84f7edac8dd5ca8ac8bafb689c.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "dd1bc59e26d6b2b85a3aebcd11c075e4d4c50e160df9b31da29cf9c4d4b6aee2"
+    },
+    {
+      "bytes": 5753,
+      "path": "fixtures/replay/groq-gpt-oss-20b/a0bf26b63c6d034f27fa864bc1fcd89363e0f0b6af312bbbc6e35b73738808dc.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "d9ed9d43aa0e69c089f21879379878bcc339d107679d63fc5e3c949b4c8182d5"
+    },
+    {
+      "bytes": 5506,
+      "path": "fixtures/replay/groq-gpt-oss-20b/aebbef9fa99b8c9a516da844c07a1b9385c7f5133d20943b9abb0bbd659d6a2f.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "94e6ced72aa22bb1f7c926cfbb00c99b2738cf9ae455df0a031affd8ae0b950d"
+    },
+    {
+      "bytes": 4547,
+      "path": "fixtures/replay/groq-gpt-oss-20b/b3f5273250a1ef02f4db49d2a91ddd46954fe9eca3fe40fe4ebd0ced2fa77dcc.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "967005f10f67311d4c6c74b78182e1b10f6b5ad4d46ca309dd6b30cd75725741"
+    },
+    {
+      "bytes": 4786,
+      "path": "fixtures/replay/groq-gpt-oss-20b/bdee010d6fe0576ca72175619add292feb8322839cf624e61202443fb0d3d81d.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "c44905597d372fb282f9eab66a5a7808b33dd9fb52f0f49fa16b1bda52cb6bd1"
+    },
+    {
+      "bytes": 4437,
+      "path": "fixtures/replay/groq-gpt-oss-20b/c34f1880ba358ee4af5ca9b825efd36acae32ba873b80c7d5ecf422d22d70f76.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "f99ae160abbec7bf9aef3cba51b77937d8ac020b15a4c8c4333604fa90c227a5"
+    },
+    {
+      "bytes": 4785,
+      "path": "fixtures/replay/groq-gpt-oss-20b/c3b00ff265e0f3fa79c348163f09a9842123406ca50ed1f6174d597db8084646.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "2bf55813e1b46f3240f588441cc609de54e171354ec443b16d86a6d2190b6d4a"
+    },
+    {
+      "bytes": 5696,
+      "path": "fixtures/replay/groq-gpt-oss-20b/c429d1958f1d089f97981af3bf91ade35d59a3d350c508e29438eb07d20d0c05.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "f3f81e43f04ea20a2b920f78cead9c2bc6d4004dad806f7be3e75c661145dfd3"
+    },
+    {
+      "bytes": 5662,
+      "path": "fixtures/replay/groq-gpt-oss-20b/c9c8bbcd611973b148f77547181b536df11643a7b7469a2bb94327684a5f3b31.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "f46fd110449476382cb4338a775ebb456b9176755e1bd1c3708b4135d7c5ba44"
+    },
+    {
+      "bytes": 5650,
+      "path": "fixtures/replay/groq-gpt-oss-20b/cd1abe80f6eb848bc54de442174f93d9db25fce0db7c258b02ddf4cbf454adc8.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "543e51071f8c5b9c577dc3908f2289dcf0306d092e03de2e1ff15c49ddb5dfa9"
+    },
+    {
+      "bytes": 4828,
+      "path": "fixtures/replay/groq-gpt-oss-20b/eed732b15dfa40cbc19ee61e381b2592e89c664d9af4cc0fc1fe7a0cc779049a.json",
+      "purpose": "content-addressed baseline provider exchange",
+      "sha256": "fac53ab124b6e294cd0eb70c9bb44788dff148b1319b84b8a15a431bda8da52e"
+    }
+  ],
+  "canonical_sources": [
+    {
+      "bytes": 147523,
+      "path": "results/baseline-live-groq-gpt-oss-20b/raw-results.jsonl",
+      "purpose": "24 canonical baseline reviewer traces",
+      "sha256": "6a2927bd57d28f3d62f7d120a862387c5747f432cf5b7f170abd97603d9fab43"
+    },
+    {
+      "bytes": 6463,
+      "path": "results/baseline-replay-gpt-oss-20b/replay-verification.json",
+      "purpose": "offline semantic replay verification",
+      "sha256": "f1a85a4698ad28d68177c154a010c90d875c5e1b725293ac87e8b35e81466825"
+    },
+    {
+      "bytes": 5957,
+      "path": "results/agent-fallback-live/gate-report.json",
+      "purpose": "live contract clarifier trace plus deterministic verifier feedback",
+      "sha256": "18e6bcf006692966c98bf8fc3ac9b7064118411be0080fde3d8d09dda7d46957"
+    },
+    {
+      "bytes": 5959,
+      "path": "results/agent-fallback-replay/gate-report.json",
+      "purpose": "replayed contract clarifier trace",
+      "sha256": "221658ab94412d6e673961c5c47b7f681396a18135fbde7cade64f64c1410e9f"
+    },
+    {
+      "bytes": 24407,
+      "path": "benchmark_dbt/cases.json",
+      "purpose": "24 submitted synthetic input trajectories",
+      "sha256": "8148cdd147febb98573a9c83b0908551384dc9c6eac22063a937369d244ae261"
+    }
+  ],
+  "consequential_action_taken": false,
+  "coverage_complete": true,
+  "human_approval_required": true,
+  "protocol": "driftproof.trace-index.v1",
+  "representative_packet": {
+    "bytes": 48878,
+    "path": "submission/AGENT_TRAJECTORIES.json",
+    "sha256": "5b26d1dcbb86702024386f22d0d0fada39b633fed0f29207aa9e0ec7554637e5"
+  },
+  "schema_version": 1,
+  "workflow_agents": [
+    "baseline_reviewer",
+    "contract_clarifier"
+  ]
+}

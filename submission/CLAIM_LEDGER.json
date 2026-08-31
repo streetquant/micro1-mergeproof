@@ -1,0 +1,215 @@
+{
+  "all_claims_supported": true,
+  "claim_count": 8,
+  "claims": [
+    {
+      "claim": "Agent-authored patches can build green while violating a visible business contract, leaving software leads with slow, fragmented release decisions.",
+      "evidence": [
+        {
+          "bytes": 4434,
+          "path": "oracle/problem-brief.md",
+          "scope": "frozen user, bottleneck, and non-goals",
+          "sha256": "5673f80745f3519d5f4366f9f114f6b3450b86717c345c0589612d2229d1adab"
+        },
+        {
+          "bytes": 3156,
+          "path": "docs/requirements.md",
+          "scope": "pre-implementation requirements and acceptance gates",
+          "sha256": "16b2aee609f91fefdd7528b39d9bd0493d759de3d43c7268bd140c6594e80c1d"
+        }
+      ],
+      "id": "DP-PROBLEM-001",
+      "limitations": [
+        "The chosen domain is dbt repair review, not every software-change domain."
+      ],
+      "status": "supported"
+    },
+    {
+      "claim": "DriftProof executes untrusted dbt candidates in a networkless bubblewrap worktree, preserves the original source, compiles visible contracts, fails closed, and publishes hash-bound evidence for a human checkpoint.",
+      "evidence": [
+        {
+          "bytes": 3313,
+          "path": "docs/architecture.md",
+          "scope": "architecture and trust boundary",
+          "sha256": "483975bc138ca843b201986aa1c5bb3d060489a31712d71b8acd470ae8e8d632"
+        },
+        {
+          "bytes": 10569,
+          "path": "src/driftproof/runner.py",
+          "scope": "sandboxed execution implementation",
+          "sha256": "03130b1071bac61007e13eb3b1d0cf9c89edb91ef90172f721056d6df1e5d828"
+        },
+        {
+          "bytes": 16446,
+          "path": "src/driftproof/reporting.py",
+          "scope": "atomic bundle publication and verification",
+          "sha256": "2c1ad51a37938d7429c37b640716ce0a148c54c091cc7f7cab56f6ffa237aa24"
+        },
+        {
+          "bytes": 3778,
+          "path": "reviews/2026-08-31-round-6-response-binding/qualification.json",
+          "scope": "response-to-bundle authenticity qualification",
+          "sha256": "de4a3efe05cdf6f79b0226298e8abcc79aceddb8bfff79ee4331325ade6f3fe8"
+        }
+      ],
+      "id": "DP-ENGINEERING-001",
+      "limitations": [
+        "The safe execution profile currently requires Linux and working rootless bubblewrap."
+      ],
+      "status": "supported"
+    },
+    {
+      "claim": "The installed credential-free demonstration makes both transparent fixtures pass build-only review, then approves the contract-preserving repair and rejects the green-but-wrong repair.",
+      "evidence": [
+        {
+          "bytes": 2940,
+          "path": "reviews/2026-08-31-round-5-installed-demo/qualification.json",
+          "scope": "installed-wheel demonstration qualification",
+          "sha256": "623928bb849110148f0e4f0484ac212a7dfbf21757b4a8b70c1f4b5937004efb"
+        },
+        {
+          "bytes": 8948,
+          "path": "src/driftproof/demo.py",
+          "scope": "package-native demonstration implementation",
+          "sha256": "13e82051cb2c18d63ac6df57afd66f2031d850a417194776694d3cca56a23b7d"
+        }
+      ],
+      "id": "DP-DEMO-001",
+      "limitations": [
+        "The two-case demonstration is not the scored 24-case benchmark."
+      ],
+      "status": "supported"
+    },
+    {
+      "claim": "On the frozen 24-case benchmark, unsafe-repair escape rate fell from 1.000 to 0.000; safe-approval macro-F1 rose from 0.333 to 0.681; 5 of 12 safe cases were auto-approved and 7 cases escalated.",
+      "evidence": [
+        {
+          "bytes": 2359,
+          "path": "results/driftproof-comparison/comparison.json",
+          "scope": "authoritative metric comparison and fairness disclosure",
+          "sha256": "5b06acae698b3a98a22b3cc263403a6085eca569de16a0b0ed1f1dbc3b37846c"
+        },
+        {
+          "bytes": 1165,
+          "path": "benchmark_dbt/manifest.json",
+          "scope": "frozen benchmark identities",
+          "sha256": "0ffdddcb4c596fe55a8aec19ba8d1be8368f57ca054ac2eb28673531c490185b"
+        },
+        {
+          "bytes": 62206,
+          "path": "results/driftproof-benchmark-validation/summary.json",
+          "scope": "external-oracle validation of all dbt cases",
+          "sha256": "a48ace64da1c83a4e00a263e50ee11983d114cb0c2d571a9f7b786dd75fa2cfc"
+        }
+      ],
+      "id": "DP-METRIC-001",
+      "limitations": [
+        "The benchmark is balanced, synthetic, and project-authored.",
+        "Zero measured unsafe escapes does not establish universal correctness or formal verification."
+      ],
+      "status": "supported"
+    },
+    {
+      "claim": "A clean environment can reproduce the benchmark, replay recorded model responses, rebuild packages, and verify the committed comparison without an API key.",
+      "evidence": [
+        {
+          "bytes": 3944,
+          "path": "scripts/reproduce.sh",
+          "scope": "complete reproduction entry point",
+          "sha256": "17acf4e7a7023beeceb07e5aea135c85c83556e73e6dbcbda01de9e157218d73"
+        },
+        {
+          "bytes": 6463,
+          "path": "results/baseline-replay-gpt-oss-20b/replay-verification.json",
+          "scope": "non-mutating offline replay receipt",
+          "sha256": "f1a85a4698ad28d68177c154a010c90d875c5e1b725293ac87e8b35e81466825"
+        },
+        {
+          "bytes": 4443,
+          "path": "CHANGELOG.md",
+          "scope": "kept, removed, and failed experiments",
+          "sha256": "5becd8cde72077314b1b35aec051a388d39429d3f791dc2188b34d1fdec0b216"
+        }
+      ],
+      "id": "DP-REPRO-001",
+      "limitations": [
+        "Replay proves processing of recorded responses, not unseen-input model generalization."
+      ],
+      "status": "supported"
+    },
+    {
+      "claim": "Representative, content-addressed trajectories are supplied for every workflow agent: baseline_reviewer and contract_clarifier.",
+      "evidence": [
+        {
+          "bytes": 48878,
+          "path": "submission/AGENT_TRAJECTORIES.json",
+          "scope": "representative instructions, responses, deterministic feedback, retries, and human checkpoints for every workflow agent",
+          "sha256": "5b26d1dcbb86702024386f22d0d0fada39b633fed0f29207aa9e0ec7554637e5"
+        },
+        {
+          "bytes": 8976,
+          "path": "submission/TRACE_INDEX.json",
+          "scope": "complete content-addressed trace inventory",
+          "sha256": "26d614f6bd61afb329cb8171c92352846b5ed649e5c3dfb9ca57446d505a6f96"
+        }
+      ],
+      "id": "DP-TRACES-001",
+      "limitations": [
+        "Prompt records contain bounded previews plus full prompt hashes rather than unrestricted full prompts."
+      ],
+      "status": "supported"
+    },
+    {
+      "claim": "DriftDoctor is pinned and credited as prior MIT-licensed work; DriftProof claims only its independent release-gate contribution.",
+      "evidence": [
+        {
+          "bytes": 3287,
+          "path": "docs/driftdoctor-upstream.md",
+          "scope": "explicit prior-work boundary",
+          "sha256": "c1d35e6e537b58f4823f1f842f28d9ec91b2ff09c70d9af27584879441bb9051"
+        },
+        {
+          "bytes": 1445,
+          "path": "upstream/driftdoctor.lock.json",
+          "scope": "pinned upstream identity",
+          "sha256": "c0ed94fa3f4322bd4fa26743f3131dd9bb229d7e16cbecf09c58d9c4403a925a"
+        },
+        {
+          "bytes": 1067,
+          "path": "upstream/DriftDoctor-LICENSE",
+          "scope": "upstream license",
+          "sha256": "124449f47e57919e96d73db7838d2030d462ef05eb4f2d18384bcde73481a825"
+        }
+      ],
+      "id": "DP-ATTRIBUTION-001",
+      "limitations": [],
+      "status": "supported"
+    },
+    {
+      "claim": "Every result remains advisory: human approval is required and no merge, deployment, publication, notification, or deletion is performed by DriftProof.",
+      "evidence": [
+        {
+          "bytes": 9532,
+          "path": "schemas/driftproof/agent-response.schema.json",
+          "scope": "runtime-derived fixed response boundary",
+          "sha256": "740930a2d0cafd10acbb4a2968a30e4c4e31b3a414df4d5e3e089e62e17ed40f"
+        },
+        {
+          "bytes": 4166,
+          "path": "schemas/driftproof/response-verification.schema.json",
+          "scope": "independent response verification boundary",
+          "sha256": "15d64ff96b5dc3aea5fb88fe47cbaa8ff8a6afa5b406482447951b342b6697bc"
+        }
+      ],
+      "id": "DP-SAFETY-001",
+      "limitations": [
+        "External orchestrators must preserve the human checkpoint."
+      ],
+      "status": "supported"
+    }
+  ],
+  "consequential_action_taken": false,
+  "human_approval_required": true,
+  "protocol": "driftproof.claim-ledger.v1",
+  "schema_version": 1
+}

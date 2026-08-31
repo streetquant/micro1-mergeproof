@@ -4,12 +4,18 @@ import argparse
 import hashlib
 import html
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 from mergeproof.utils import atomic_write_text, pretty_json
 
 ROOT = Path(__file__).resolve().parents[1]
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.judge_packet import build_judge_artifacts  # noqa: E402
+
 OUTPUT_DIRECTORY = Path("submission")
 README_START = "<!-- DRIFTPROOF-METRICS:START -->"
 README_END = "<!-- DRIFTPROOF-METRICS:END -->"
@@ -178,6 +184,14 @@ uv run driftproof demo
 
 Both transparent fixtures pass the same build-only `dbt build`. DriftProof approves the contract-preserving fixture and rejects the green-but-wrong fixture, independently verifies both bundles, and prints the HTML report paths plus a machine receipt.
 
+## Judge packet
+
+- [`JUDGE_CHECKLIST.md`](JUDGE_CHECKLIST.md) — shortest evidence-first evaluation path.
+- [`CLAIM_LEDGER.json`](CLAIM_LEDGER.json) — every headline claim bound to exact evidence and limitations.
+- [`RUBRIC_MAP.json`](RUBRIC_MAP.json) — the complete 100-point rubric mapped to claims and executable checks.
+- [`AGENT_TRAJECTORIES.json`](AGENT_TRAJECTORIES.json) — representative instructions, responses, verifier feedback, retry evidence, and human checkpoints for every workflow agent.
+- [`TRACE_INDEX.json`](TRACE_INDEX.json) — content-addressed coverage of all canonical trace sources.
+
 For complete source qualification:
 
 ```bash
@@ -249,6 +263,7 @@ The typed SDK validates the one-object protocol, rejects malformed output and pr
 - Downloaded-release consumer review: [`../reviews/2026-08-31-round-4-consumer-verifier/`](../reviews/2026-08-31-round-4-consumer-verifier/)
 - Installed demo and runtime-recovery review: [`../reviews/2026-08-31-round-5-installed-demo/`](../reviews/2026-08-31-round-5-installed-demo/)
 - Response authenticity and retry-semantics review: [`../reviews/2026-08-31-round-6-response-binding/`](../reviews/2026-08-31-round-6-response-binding/)
+- Hostile judge-packet and evidence-binding review: [`../reviews/2026-08-31-round-7-judge-packet/`](../reviews/2026-08-31-round-7-judge-packet/)
 - Machine-readable submission manifest: [`manifest.json`](manifest.json)
 - Full product and trust-boundary documentation: [`../README.md`](../README.md)
 
@@ -321,6 +336,14 @@ h1,h2{{line-height:1.2}} code,pre{{font-family:ui-monospace,SFMono-Regular,monos
 <pre>uv sync --locked --extra dbt
 uv run driftproof demo</pre>
 <p>Both fixtures pass the same build-only <code>dbt build</code>. DriftProof approves the contract-preserving fixture and rejects the green-but-wrong fixture, verifies both bundles, and prints the report paths.</p>
+<h2>Judge packet</h2>
+<ul>
+<li><a href="JUDGE_CHECKLIST.md">Judge checklist</a></li>
+<li><a href="CLAIM_LEDGER.json">Evidence-bound claim ledger</a></li>
+<li><a href="RUBRIC_MAP.json">100-point rubric map</a></li>
+<li><a href="AGENT_TRAJECTORIES.json">Representative trajectories for every workflow agent</a></li>
+<li><a href="TRACE_INDEX.json">Content-addressed trace index</a></li>
+</ul>
 <h2>Measured result</h2>
 <table><thead><tr><th>Metric</th><th>Build-only baseline</th><th>DriftProof</th><th>Change</th></tr></thead><tbody>{table_rows}</tbody></table>
 <p><strong>Trade-off:</strong> measured unsafe escapes fell to {_percentage(metrics["advanced_unsafe_escape_rate"])}, while only {metrics["advanced_safe_approved"]} of {metrics["safe_total"]} safe candidates were automatically approved and {metrics["advanced_human_reviews"]} cases were escalated. This is a balanced, synthetic, project-authored benchmark—not universal correctness or formal verification.</p>
@@ -346,7 +369,13 @@ assert verification.bundle_verified == verification.review_result_trusted</pre>
 """
 
 
-def _manifest(root: Path, metrics: dict[str, Any], markdown: str, html_text: str) -> dict[str, Any]:
+def _manifest(
+    root: Path,
+    metrics: dict[str, Any],
+    markdown: str,
+    html_text: str,
+    judge_artifacts: dict[str, str],
+) -> dict[str, Any]:
     sources = {
         path.relative_to(root).as_posix(): {
             "bytes": path.stat().st_size,
@@ -364,6 +393,11 @@ def _manifest(root: Path, metrics: dict[str, Any], markdown: str, html_text: str
             "human": "submission/START_HERE.md",
             "browser": "submission/START_HERE.html",
             "machine": "submission/manifest.json",
+            "judge_checklist": "submission/JUDGE_CHECKLIST.md",
+            "claim_ledger": "submission/CLAIM_LEDGER.json",
+            "rubric_map": "submission/RUBRIC_MAP.json",
+            "agent_trajectories": "submission/AGENT_TRAJECTORIES.json",
+            "trace_index": "submission/TRACE_INDEX.json",
         },
         "commands": {
             "judge_demo": ["driftproof", "demo", "--json"],
@@ -384,14 +418,17 @@ def _manifest(root: Path, metrics: dict[str, Any], markdown: str, html_text: str
             ],
         },
         "generated_files": {
-            "START_HERE.md": {
-                "bytes": len(markdown.encode("utf-8")),
-                "sha256": _sha256_bytes(markdown.encode("utf-8")),
-            },
-            "START_HERE.html": {
-                "bytes": len(html_text.encode("utf-8")),
-                "sha256": _sha256_bytes(html_text.encode("utf-8")),
-            },
+            name: {
+                "bytes": len(content.encode("utf-8")),
+                "sha256": _sha256_bytes(content.encode("utf-8")),
+            }
+            for name, content in sorted(
+                {
+                    "START_HERE.md": markdown,
+                    "START_HERE.html": html_text,
+                    **judge_artifacts,
+                }.items()
+            )
         },
         "source_artifacts": sources,
         "limitations": [
@@ -408,20 +445,22 @@ def _manifest(root: Path, metrics: dict[str, Any], markdown: str, html_text: str
 def expected_artifacts(root: Path = ROOT) -> tuple[dict[Path, str], str]:
     root = root.resolve()
     metrics = _metrics(root)
+    judge_artifacts = build_judge_artifacts(root, metrics)
     markdown = _start_here_markdown(metrics)
     html_text = _start_here_html(metrics)
-    manifest = pretty_json(_manifest(root, metrics, markdown, html_text)) + "\n"
+    manifest = pretty_json(_manifest(root, metrics, markdown, html_text, judge_artifacts)) + "\n"
     readme_path = root / "README.md"
     readme = readme_path.read_text(encoding="utf-8", errors="strict")
     updated_readme = _readme_with_metrics(readme, _metrics_markdown(metrics))
-    return (
-        {
-            root / OUTPUT_DIRECTORY / "START_HERE.md": markdown,
-            root / OUTPUT_DIRECTORY / "START_HERE.html": html_text,
-            root / OUTPUT_DIRECTORY / "manifest.json": manifest,
-        },
-        updated_readme,
+    artifacts = {
+        root / OUTPUT_DIRECTORY / "START_HERE.md": markdown,
+        root / OUTPUT_DIRECTORY / "START_HERE.html": html_text,
+        root / OUTPUT_DIRECTORY / "manifest.json": manifest,
+    }
+    artifacts.update(
+        {root / OUTPUT_DIRECTORY / name: content for name, content in judge_artifacts.items()}
     )
+    return artifacts, updated_readme
 
 
 def write_submission(root: Path = ROOT) -> dict[str, Any]:

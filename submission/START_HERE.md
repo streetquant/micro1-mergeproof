@@ -11,6 +11,14 @@ uv run driftproof demo
 
 Both transparent fixtures pass the same build-only `dbt build`. DriftProof approves the contract-preserving fixture and rejects the green-but-wrong fixture, independently verifies both bundles, and prints the HTML report paths plus a machine receipt.
 
+## Judge packet
+
+- [`JUDGE_CHECKLIST.md`](JUDGE_CHECKLIST.md) — shortest evidence-first evaluation path.
+- [`CLAIM_LEDGER.json`](CLAIM_LEDGER.json) — every headline claim bound to exact evidence and limitations.
+- [`RUBRIC_MAP.json`](RUBRIC_MAP.json) — the complete 100-point rubric mapped to claims and executable checks.
+- [`AGENT_TRAJECTORIES.json`](AGENT_TRAJECTORIES.json) — representative instructions, responses, verifier feedback, retry evidence, and human checkpoints for every workflow agent.
+- [`TRACE_INDEX.json`](TRACE_INDEX.json) — content-addressed coverage of all canonical trace sources.
+
 For complete source qualification:
 
 ```bash
@@ -82,6 +90,7 @@ The typed SDK validates the one-object protocol, rejects malformed output and pr
 - Downloaded-release consumer review: [`../reviews/2026-08-31-round-4-consumer-verifier/`](../reviews/2026-08-31-round-4-consumer-verifier/)
 - Installed demo and runtime-recovery review: [`../reviews/2026-08-31-round-5-installed-demo/`](../reviews/2026-08-31-round-5-installed-demo/)
 - Response authenticity and retry-semantics review: [`../reviews/2026-08-31-round-6-response-binding/`](../reviews/2026-08-31-round-6-response-binding/)
+- Hostile judge-packet and evidence-binding review: [`../reviews/2026-08-31-round-7-judge-packet/`](../reviews/2026-08-31-round-7-judge-packet/)
 - Machine-readable submission manifest: [`manifest.json`](manifest.json)
 - Full product and trust-boundary documentation: [`../README.md`](../README.md)
 

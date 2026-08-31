@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "round": "hostile_judge_navigation_and_evidence_binding",
+  "findings": [
+    {
+      "id": "R7-TRACE-001",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "The submission did not provide one judge-facing trajectory packet or prove that every workflow agent had representative instructions, response, retry, verifier-feedback, and human-checkpoint evidence.",
+      "repair": "Generate AGENT_TRAJECTORIES.json and TRACE_INDEX.json from the canonical baseline, replay fixtures, contract-clarifier reports, and benchmark input trajectories; fail if the declared and observed workflow-agent sets differ.",
+      "validation": [
+        "24 baseline reviewer traces and provider fixtures are indexed",
+        "one approval and one rejection are embedded as representative baseline traces",
+        "the live/replay contract clarifier trace and deterministic feedback are embedded",
+        "synthetic repair trajectories are explicitly classified as untrusted inputs rather than workflow agents"
+      ]
+    },
+    {
+      "id": "R7-CLAIM-002",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "Headline claims were spread across prose and result files without one machine-readable ledger binding the claim, evidence bytes, scope, and limitations.",
+      "repair": "Generate CLAIM_LEDGER.json with eight load-bearing claims, exact source paths, byte lengths, SHA-256 values, status, and material limitations.",
+      "validation": [
+        "every claim is marked supported only after every evidence source is a regular file",
+        "metric claims are derived from the authoritative comparison",
+        "upstream attribution and benchmark limitations are explicit",
+        "submission drift detects a changed trace source"
+      ]
+    },
+    {
+      "id": "R7-RUBRIC-003",
+      "severity": "medium",
+      "status": "fixed",
+      "finding": "A judge had no direct map from the six scored criteria to evidence, claims, and executable checks.",
+      "repair": "Generate RUBRIC_MAP.json and JUDGE_CHECKLIST.md; require the six criteria to total exactly 100 points and bind the rubric to the claim-ledger hash.",
+      "validation": [
+        "rubric criteria total exactly 100 points",
+        "every criterion references evidence-backed claim IDs",
+        "judge actions are paths or argument vectors rather than shell interpolation",
+        "the human checklist exposes the conservative approval/escalation trade-off"
+      ]
+    },
+    {
+      "id": "R7-DELIVERY-004",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "Release packaging copied only three submission entry points, so required trace and rubric evidence could be omitted from a downloaded delivery while the archives still verified.",
+      "repair": "Publish all eight submission entry points at the release root and in every archive, require them in HEAD, and verify their byte identity against release metadata and extracted archives.",
+      "validation": [
+        "source, evidence, and full archives contain every judge-packet file",
+        "release root and archive copies are byte-identical",
+        "release manifest describes every delivery entry",
+        "unrelated release-root files remain fail-closed"
+      ]
+    },
+    {
+      "id": "R7-SUBSTITUTION-005",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "An outer checksum alone could not prove that a rehashed trajectory replacement remained the packet bound by the trace index, claim ledger, rubric, and submission manifest.",
+      "repair": "Cross-verify trajectory, trace-index, claim-ledger, rubric, generated-file, and fixed-safety-boundary identities after outer checksum validation.",
+      "validation": [
+        "a modified trajectory file with an updated SHA256SUMS entry is rejected",
+        "trace index binds trajectory byte length and SHA-256",
+        "rubric map binds the claim-ledger byte length and SHA-256",
+        "submission manifest binds every generated judge-packet file"
+      ]
+    }
+  ],
+  "human_approval_required": true,
+  "consequential_action_taken": false
+}

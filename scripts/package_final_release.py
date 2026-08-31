@@ -72,6 +72,7 @@ _REVIEW_QUALIFICATION_ARTIFACTS = (
     "reviews/2026-08-31-round-4-consumer-verifier/qualification.json",
     "reviews/2026-08-31-round-5-installed-demo/qualification.json",
     "reviews/2026-08-31-round-6-response-binding/qualification.json",
+    "reviews/2026-08-31-round-7-judge-packet/qualification.json",
 )
 _REQUIRED_EVIDENCE_ARTIFACTS = (
     "benchmark/manifest.json",
@@ -83,6 +84,11 @@ _REQUIRED_EVIDENCE_ARTIFACTS = (
     "results/agent-fallback-live-verification.json",
     "results/agent-fallback-replay-verification.json",
     "submission/manifest.json",
+    "submission/JUDGE_CHECKLIST.md",
+    "submission/CLAIM_LEDGER.json",
+    "submission/RUBRIC_MAP.json",
+    "submission/AGENT_TRAJECTORIES.json",
+    "submission/TRACE_INDEX.json",
     *_REVIEW_QUALIFICATION_ARTIFACTS,
 )
 _PRIVATE_HOST_MARKERS = tuple(
@@ -99,6 +105,11 @@ _OWNED_RELEASE_FILES = {
     "final-release-attestation.json",
     "START_HERE.md",
     "START_HERE.html",
+    "JUDGE_CHECKLIST.md",
+    "CLAIM_LEDGER.json",
+    "RUBRIC_MAP.json",
+    "AGENT_TRAJECTORIES.json",
+    "TRACE_INDEX.json",
     "submission-manifest.json",
     "release-verification.json",
     "SHA256SUMS",
@@ -106,6 +117,16 @@ _OWNED_RELEASE_FILES = {
 _OWNED_RELEASE_ARCHIVE = re.compile(
     r"^mergeproof-final-(?:full|source|evidence)-[0-9a-f]{12}\.zip$"
 )
+_DELIVERY_SOURCES = {
+    "START_HERE.md": "submission/START_HERE.md",
+    "START_HERE.html": "submission/START_HERE.html",
+    "JUDGE_CHECKLIST.md": "submission/JUDGE_CHECKLIST.md",
+    "CLAIM_LEDGER.json": "submission/CLAIM_LEDGER.json",
+    "RUBRIC_MAP.json": "submission/RUBRIC_MAP.json",
+    "AGENT_TRAJECTORIES.json": "submission/AGENT_TRAJECTORIES.json",
+    "TRACE_INDEX.json": "submission/TRACE_INDEX.json",
+    "submission-manifest.json": "submission/manifest.json",
+}
 _CREDENTIAL_PATTERNS = {
     "github_token": re.compile(rb"(?:ghp|github_pat)_[A-Za-z0-9_]{20,}"),
     "google_api_key": re.compile(rb"AIza[0-9A-Za-z_-]{20,}"),
@@ -450,6 +471,122 @@ def _checksum_records(directory: Path) -> dict[str, str]:
     return records
 
 
+def _require_safety_boundary(payload: dict[str, object], label: str) -> None:
+    if payload.get("human_approval_required") is not True:
+        raise PackagingError(f"{label} weakened the human approval boundary")
+    if payload.get("consequential_action_taken") is not False:
+        raise PackagingError(f"{label} claims a consequential action")
+
+
+def _verify_submission_packet(
+    directory: Path,
+    submission: dict[str, object],
+) -> dict[str, object]:
+    trajectories = _load_json_object(directory / "AGENT_TRAJECTORIES.json")
+    trace_index = _load_json_object(directory / "TRACE_INDEX.json")
+    claims = _load_json_object(directory / "CLAIM_LEDGER.json")
+    rubric = _load_json_object(directory / "RUBRIC_MAP.json")
+    for label, payload in (
+        ("submission manifest", submission),
+        ("agent trajectories", trajectories),
+        ("trace index", trace_index),
+        ("claim ledger", claims),
+        ("rubric map", rubric),
+    ):
+        _require_safety_boundary(payload, label)
+
+    if trajectories.get("protocol") != "driftproof.agent-trajectories.v1":
+        raise PackagingError("unexpected agent trajectory protocol")
+    declared = trajectories.get("declared_workflow_agents")
+    observed = trajectories.get("observed_workflow_agents")
+    if (
+        trajectories.get("coverage_complete") is not True
+        or not isinstance(declared, list)
+        or not declared
+        or declared != observed
+        or any(not isinstance(agent, str) or not agent for agent in declared)
+    ):
+        raise PackagingError("agent trajectory coverage is incomplete or inconsistent")
+
+    if trace_index.get("protocol") != "driftproof.trace-index.v1":
+        raise PackagingError("unexpected trace-index protocol")
+    representative = trace_index.get("representative_packet")
+    trajectories_path = directory / "AGENT_TRAJECTORIES.json"
+    if (
+        trace_index.get("coverage_complete") is not True
+        or not isinstance(representative, dict)
+        or representative.get("path") != "submission/AGENT_TRAJECTORIES.json"
+        or representative.get("bytes") != trajectories_path.stat().st_size
+        or representative.get("sha256") != _sha256(trajectories_path)
+    ):
+        raise PackagingError("trace index does not bind the representative trajectory packet")
+
+    claim_rows = claims.get("claims")
+    if (
+        claims.get("protocol") != "driftproof.claim-ledger.v1"
+        or claims.get("all_claims_supported") is not True
+        or not isinstance(claim_rows, list)
+        or claims.get("claim_count") != len(claim_rows)
+        or not claim_rows
+    ):
+        raise PackagingError("claim ledger is incomplete or contains unsupported claims")
+
+    criteria = rubric.get("criteria")
+    if not isinstance(criteria, list) or not criteria:
+        raise PackagingError("rubric map lacks criteria")
+    points = 0
+    for criterion in criteria:
+        if not isinstance(criterion, dict) or not isinstance(criterion.get("points"), int):
+            raise PackagingError("rubric criterion is malformed")
+        points += int(criterion["points"])
+    claim_binding = rubric.get("claim_ledger")
+    claim_path = directory / "CLAIM_LEDGER.json"
+    if (
+        rubric.get("protocol") != "driftproof.rubric-map.v1"
+        or rubric.get("total_points") != 100
+        or points != 100
+        or not isinstance(claim_binding, dict)
+        or claim_binding.get("path") != "submission/CLAIM_LEDGER.json"
+        or claim_binding.get("bytes") != claim_path.stat().st_size
+        or claim_binding.get("sha256") != _sha256(claim_path)
+    ):
+        raise PackagingError("rubric map is not bound to the 100-point claim ledger")
+
+    entry_points = submission.get("entry_points")
+    generated_files = submission.get("generated_files")
+    expected_entry_points = {
+        "human": "submission/START_HERE.md",
+        "browser": "submission/START_HERE.html",
+        "machine": "submission/manifest.json",
+        "judge_checklist": "submission/JUDGE_CHECKLIST.md",
+        "claim_ledger": "submission/CLAIM_LEDGER.json",
+        "rubric_map": "submission/RUBRIC_MAP.json",
+        "agent_trajectories": "submission/AGENT_TRAJECTORIES.json",
+        "trace_index": "submission/TRACE_INDEX.json",
+    }
+    if entry_points != expected_entry_points or not isinstance(generated_files, dict):
+        raise PackagingError("submission manifest entry points are incomplete or unexpected")
+    for name, source in _DELIVERY_SOURCES.items():
+        if source == "submission/manifest.json":
+            continue
+        metadata = generated_files.get(Path(source).name)
+        path = directory / name
+        if (
+            not isinstance(metadata, dict)
+            or metadata.get("bytes") != path.stat().st_size
+            or metadata.get("sha256") != _sha256(path)
+        ):
+            raise PackagingError(f"submission manifest does not bind generated file: {name}")
+
+    return {
+        "verified": True,
+        "workflow_agents": declared,
+        "claim_count": len(claim_rows),
+        "rubric_points": points,
+        "generated_files": len(generated_files),
+    }
+
+
 def verify_release_directory(directory: Path) -> dict[str, object]:
     """Verify a downloaded release directory without trusting path existence alone."""
 
@@ -474,9 +611,7 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
     required_names = {
         "release-manifest.json",
         "final-release-attestation.json",
-        "START_HERE.md",
-        "START_HERE.html",
-        "submission-manifest.json",
+        *_DELIVERY_SOURCES,
     }
     missing_names = sorted(required_names - set(records))
     if missing_names:
@@ -504,6 +639,7 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
         raise PackagingError("submission manifest weakened the human approval boundary")
     if submission.get("consequential_action_taken") is not False:
         raise PackagingError("submission manifest claims a consequential action")
+    submission_packet = _verify_submission_packet(directory, submission)
 
     assets = manifest.get("assets")
     if not isinstance(assets, list) or len(assets) != 3:
@@ -535,13 +671,11 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
         raise PackagingError("release manifest archive set is incomplete")
 
     delivery_files = manifest.get("delivery_files")
-    if not isinstance(delivery_files, list) or len(delivery_files) != 3:
-        raise PackagingError("release manifest must describe three delivery entry points")
-    expected_delivery = {
-        "START_HERE.md": "submission/START_HERE.md",
-        "START_HERE.html": "submission/START_HERE.html",
-        "submission-manifest.json": "submission/manifest.json",
-    }
+    if not isinstance(delivery_files, list) or len(delivery_files) != len(_DELIVERY_SOURCES):
+        raise PackagingError(
+            f"release manifest must describe {len(_DELIVERY_SOURCES)} delivery entry points"
+        )
+    expected_delivery = _DELIVERY_SOURCES
     delivery_names: set[str] = set()
     for raw_file in delivery_files:
         if not isinstance(raw_file, dict):
@@ -570,11 +704,7 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
                 raise PackagingError(f"unexpected archive name: {name}")
             label = match.group(1)
             extracted[label] = safe_extract(directory / name, temp / label)
-            for relative, delivery_name in (
-                ("submission/START_HERE.md", "START_HERE.md"),
-                ("submission/START_HERE.html", "START_HERE.html"),
-                ("submission/manifest.json", "submission-manifest.json"),
-            ):
+            for delivery_name, relative in _DELIVERY_SOURCES.items():
                 extracted_path = extracted[label] / relative
                 if not extracted_path.is_file() or _sha256(extracted_path) != _sha256(
                     directory / delivery_name
@@ -612,6 +742,7 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
         "tree": manifest.get("tree"),
         "files": len(records),
         "archives": verified_assets,
+        "submission_packet": submission_packet,
         "sha256sums_sha256": _sha256(directory / "SHA256SUMS"),
         "human_approval_required": True,
         "consequential_action_taken": False,
@@ -718,21 +849,19 @@ def package(root: Path, output: Path) -> dict[str, object]:
             raise PackagingError("embedded Git bundle mismatch")
         _run(root, "git", "bundle", "verify", str(embedded_bundle))
         for label, extraction_root in extracted_roots.items():
-            start_here = extraction_root / "submission" / "START_HERE.md"
-            manifest_file = extraction_root / "submission" / "manifest.json"
-            if not start_here.is_file() or not manifest_file.is_file():
+            missing_delivery = sorted(
+                relative
+                for relative in _DELIVERY_SOURCES.values()
+                if not (extraction_root / relative).is_file()
+            )
+            if missing_delivery:
                 raise PackagingError(
-                    f"{label} archive is missing the human or machine submission entry point"
+                    f"{label} archive is missing submission delivery files: {missing_delivery}"
                 )
 
-        delivery_sources = {
-            "START_HERE.md": "submission/START_HERE.md",
-            "START_HERE.html": "submission/START_HERE.html",
-            "submission-manifest.json": "submission/manifest.json",
-        }
         delivery_payloads: dict[str, bytes] = {}
         delivery_files: list[dict[str, object]] = []
-        for name, source in delivery_sources.items():
+        for name, source in _DELIVERY_SOURCES.items():
             payload = _run(root, "git", "show", f"HEAD:{source}", text=False)
             assert isinstance(payload, bytes)
             delivery_payloads[name] = payload

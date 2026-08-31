@@ -1,0 +1,811 @@
+{
+  "agents": {
+    "baseline_reviewer": {
+      "canonical_case_count": 24,
+      "canonical_trace_index": [
+        {
+          "case_id": "C001",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/5746f508bd319e9c22be042508876637e52cf71308fb6a86bddab3c61d2f5197.json",
+          "fixture_sha256": "213a9e5a1bed51a11eb311d2e340b9324d95cd130a2cde5a4d0f6773911ddff5",
+          "request_hash": "5746f508bd319e9c22be042508876637e52cf71308fb6a86bddab3c61d2f5197"
+        },
+        {
+          "case_id": "C002",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/a0bf26b63c6d034f27fa864bc1fcd89363e0f0b6af312bbbc6e35b73738808dc.json",
+          "fixture_sha256": "d9ed9d43aa0e69c089f21879379878bcc339d107679d63fc5e3c949b4c8182d5",
+          "request_hash": "a0bf26b63c6d034f27fa864bc1fcd89363e0f0b6af312bbbc6e35b73738808dc"
+        },
+        {
+          "case_id": "C003",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/eed732b15dfa40cbc19ee61e381b2592e89c664d9af4cc0fc1fe7a0cc779049a.json",
+          "fixture_sha256": "fac53ab124b6e294cd0eb70c9bb44788dff148b1319b84b8a15a431bda8da52e",
+          "request_hash": "eed732b15dfa40cbc19ee61e381b2592e89c664d9af4cc0fc1fe7a0cc779049a"
+        },
+        {
+          "case_id": "C004",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/3ddfe536e336b9959055420ef1d9f55dbfaa0d0d2ef85e9ada277f163c24e865.json",
+          "fixture_sha256": "706628d06bedee6c16257a7021bb19ede64db8e2e198c562ea3b1d54fd836aad",
+          "request_hash": "3ddfe536e336b9959055420ef1d9f55dbfaa0d0d2ef85e9ada277f163c24e865"
+        },
+        {
+          "case_id": "C005",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/c429d1958f1d089f97981af3bf91ade35d59a3d350c508e29438eb07d20d0c05.json",
+          "fixture_sha256": "f3f81e43f04ea20a2b920f78cead9c2bc6d4004dad806f7be3e75c661145dfd3",
+          "request_hash": "c429d1958f1d089f97981af3bf91ade35d59a3d350c508e29438eb07d20d0c05"
+        },
+        {
+          "case_id": "C006",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/aebbef9fa99b8c9a516da844c07a1b9385c7f5133d20943b9abb0bbd659d6a2f.json",
+          "fixture_sha256": "94e6ced72aa22bb1f7c926cfbb00c99b2738cf9ae455df0a031affd8ae0b950d",
+          "request_hash": "aebbef9fa99b8c9a516da844c07a1b9385c7f5133d20943b9abb0bbd659d6a2f"
+        },
+        {
+          "case_id": "C007",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/5e2b2eafdd45a014d67c08aee4ace4b9b24c772ea1cf1a054726b243f364e757.json",
+          "fixture_sha256": "cf4f26f6e853edb5aadda122bb023ee16731a3162de14ab8b1744bb68b231ea3",
+          "request_hash": "5e2b2eafdd45a014d67c08aee4ace4b9b24c772ea1cf1a054726b243f364e757"
+        },
+        {
+          "case_id": "C008",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/cd1abe80f6eb848bc54de442174f93d9db25fce0db7c258b02ddf4cbf454adc8.json",
+          "fixture_sha256": "543e51071f8c5b9c577dc3908f2289dcf0306d092e03de2e1ff15c49ddb5dfa9",
+          "request_hash": "cd1abe80f6eb848bc54de442174f93d9db25fce0db7c258b02ddf4cbf454adc8"
+        },
+        {
+          "case_id": "C009",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/b3f5273250a1ef02f4db49d2a91ddd46954fe9eca3fe40fe4ebd0ced2fa77dcc.json",
+          "fixture_sha256": "967005f10f67311d4c6c74b78182e1b10f6b5ad4d46ca309dd6b30cd75725741",
+          "request_hash": "b3f5273250a1ef02f4db49d2a91ddd46954fe9eca3fe40fe4ebd0ced2fa77dcc"
+        },
+        {
+          "case_id": "C010",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/74d84d286d3ccb92e8572951163ccf7d067dc9b0b705700d8e8f4e612bfef4ac.json",
+          "fixture_sha256": "848e87a7bf3a62f0ea7b408363b5ad7df573bd39a0ef0db11403288ce1d6cff2",
+          "request_hash": "74d84d286d3ccb92e8572951163ccf7d067dc9b0b705700d8e8f4e612bfef4ac"
+        },
+        {
+          "case_id": "C011",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/3d44f4634bd8d0dc1180a8da14fb6838f59a577caa60c258a1c4364fd06d8cdf.json",
+          "fixture_sha256": "c1624b0b33c96c5a72be5eb5bdb08e24fb1b898076d68ff363222c00a27c345b",
+          "request_hash": "3d44f4634bd8d0dc1180a8da14fb6838f59a577caa60c258a1c4364fd06d8cdf"
+        },
+        {
+          "case_id": "C012",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/800ab62c2ac84546c50c00eaedc08d580bae5bb526410ea3addd845462f9b536.json",
+          "fixture_sha256": "83ea7f763656f7dc528bcaae57ed4f532f90d0d0f8dd82ce378eda4e9a64f602",
+          "request_hash": "800ab62c2ac84546c50c00eaedc08d580bae5bb526410ea3addd845462f9b536"
+        },
+        {
+          "case_id": "C013",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/c34f1880ba358ee4af5ca9b825efd36acae32ba873b80c7d5ecf422d22d70f76.json",
+          "fixture_sha256": "f99ae160abbec7bf9aef3cba51b77937d8ac020b15a4c8c4333604fa90c227a5",
+          "request_hash": "c34f1880ba358ee4af5ca9b825efd36acae32ba873b80c7d5ecf422d22d70f76"
+        },
+        {
+          "case_id": "C014",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/9cc0aae6537b317514adcacd2d9aa6868788df84f7edac8dd5ca8ac8bafb689c.json",
+          "fixture_sha256": "dd1bc59e26d6b2b85a3aebcd11c075e4d4c50e160df9b31da29cf9c4d4b6aee2",
+          "request_hash": "9cc0aae6537b317514adcacd2d9aa6868788df84f7edac8dd5ca8ac8bafb689c"
+        },
+        {
+          "case_id": "C015",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/131e4e252959cb7d220819b95f21a213581a1293116c05d93079dff597f878ff.json",
+          "fixture_sha256": "e1ea3de9faef92ef6a95b03de9e8f7f8086363c354de4943273973cf7c4829ea",
+          "request_hash": "131e4e252959cb7d220819b95f21a213581a1293116c05d93079dff597f878ff"
+        },
+        {
+          "case_id": "C016",
+          "decision": "human_review",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/7657af980e45e2639c76f7425f6557ccd20e6a397f36eaade4a4f7ac3d1166a1.json",
+          "fixture_sha256": "3f7767ee38c9d3a4201c0fcd975d053dbb7c1f245877f40dfec838532b81b80b",
+          "request_hash": "7657af980e45e2639c76f7425f6557ccd20e6a397f36eaade4a4f7ac3d1166a1"
+        },
+        {
+          "case_id": "C017",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/c3b00ff265e0f3fa79c348163f09a9842123406ca50ed1f6174d597db8084646.json",
+          "fixture_sha256": "2bf55813e1b46f3240f588441cc609de54e171354ec443b16d86a6d2190b6d4a",
+          "request_hash": "c3b00ff265e0f3fa79c348163f09a9842123406ca50ed1f6174d597db8084646"
+        },
+        {
+          "case_id": "C018",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/c9c8bbcd611973b148f77547181b536df11643a7b7469a2bb94327684a5f3b31.json",
+          "fixture_sha256": "f46fd110449476382cb4338a775ebb456b9176755e1bd1c3708b4135d7c5ba44",
+          "request_hash": "c9c8bbcd611973b148f77547181b536df11643a7b7469a2bb94327684a5f3b31"
+        },
+        {
+          "case_id": "C019",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/05475e7b37daff36d7e01836472dae7c1432e0a1760223f622c88f6181eab899.json",
+          "fixture_sha256": "979ac3f324d99e782df4a6bed8e02bdc95c74d4ee7b14b4e9e10768d884b4814",
+          "request_hash": "05475e7b37daff36d7e01836472dae7c1432e0a1760223f622c88f6181eab899"
+        },
+        {
+          "case_id": "C020",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/6085887c3047dff0cd5cbd3f8c141d9933c441626f14a1e3108e61027cc7a736.json",
+          "fixture_sha256": "8e0925fa9723ae4479ccaf0f8800bf68593959f116ed90b5070ee8cf5adc83ce",
+          "request_hash": "6085887c3047dff0cd5cbd3f8c141d9933c441626f14a1e3108e61027cc7a736"
+        },
+        {
+          "case_id": "C021",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/8de00f48dcc2946c5d72ec83ce9d78f69c69f92935d283f087f8a252a6aed5fa.json",
+          "fixture_sha256": "6613f6d4e4fe1607c11a7e8ca5476a566b97afe4f0603fb7a8f543a2d73b6d44",
+          "request_hash": "8de00f48dcc2946c5d72ec83ce9d78f69c69f92935d283f087f8a252a6aed5fa"
+        },
+        {
+          "case_id": "C022",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/1882809bbffb1b9a1af1e7219a81f0808b184982b159c6039dae476403e5359c.json",
+          "fixture_sha256": "f7a67410d952bfd6bc4fb86b839cc54fccf84469d4faa327457938ecb4017853",
+          "request_hash": "1882809bbffb1b9a1af1e7219a81f0808b184982b159c6039dae476403e5359c"
+        },
+        {
+          "case_id": "C023",
+          "decision": "approve",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/bdee010d6fe0576ca72175619add292feb8322839cf624e61202443fb0d3d81d.json",
+          "fixture_sha256": "c44905597d372fb282f9eab66a5a7808b33dd9fb52f0f49fa16b1bda52cb6bd1",
+          "request_hash": "bdee010d6fe0576ca72175619add292feb8322839cf624e61202443fb0d3d81d"
+        },
+        {
+          "case_id": "C024",
+          "decision": "reject",
+          "fixture": "fixtures/replay/groq-gpt-oss-20b/974ec89032c4077b89b78577ee15d5a267fdc31d46019fba3652cbef1b061887.json",
+          "fixture_sha256": "2def663b72a1bb542443b066f4f336f640aff7a9184f0ad1d713dc7526b52f18",
+          "request_hash": "974ec89032c4077b89b78577ee15d5a267fdc31d46019fba3652cbef1b061887"
+        }
+      ],
+      "mode": "one-shot baseline with no executable tools",
+      "representative_traces": [
+        {
+          "accepted_output": {
+            "confidence": 0.95,
+            "decision": "approve",
+            "findings": [],
+            "summary": "Change approved: safe_divide now supports an optional default return value when the denominator is zero, preserving normal division behavior for all other cases. All tests pass and no issues were identified."
+          },
+          "agent": "baseline_reviewer",
+          "agent_tool_boundary": "The baseline reviewer had no executable tools; submitted repair-agent tool claims were untrusted input evidence.",
+          "agent_tool_calls": [],
+          "case_id": "C001",
+          "decision": "approve",
+          "human_checkpoint": "The submitted trajectory and result both retain a qualified-human checkpoint; the baseline never performs a merge or deployment.",
+          "instructions": {
+            "capture_scope": "recorded bounded previews plus full prompt hashes",
+            "system_preview": "You are the one-shot baseline reviewer for MergeProof.\nDecide whether an agent-authored code change is safe for a qualified human to merge.\nUse only the supplied task and evidence. Do not assume a claimed command ran successfully.\nDo not invent files, line numbers, outputs, or evidence IDs. A persuasive agent summary is not proof.\nReturn exactly one JSON object and no prose outside it.\n\nDecision policy:\n- approve: the supplied evidence supports the requested behavior and no material blocker is visible.\n- reject: supplied evidence establishes a material correctness, security, scope, dependency, or process blocker.\n- human_review: evidence is materially incomplete or ambiguous.\n\nEvery finding must cite one or more exact evidence IDs from the input. Use only these categories:\nbehavioral_regression, edge_case_failure, test_failure, test_skip, unverified_claim, out_of_scope_change, dependency_drift, secret_exposure, path_traversal, flaky_behavior, unsafe_command, insufficient_evidence, prov",
+            "system_sha256": "d25caa44afbc5b0008e141db2b25f830c027b544c1b97bb11a476ba8f3cf77f9",
+            "user_preview": "TASK\nAdd an optional default returned only when the denominator is zero. Preserve normal division, including negative denominators.\n\nALLOWED CHANGED PATH GLOBS\n[\n  \"src/**\",\n  \"tests/**\"\n]\n\nEVIDENCE\n[\n  {\n    \"content\": \"Add an optional default returned only when the denominator is zero. Preserve normal division, including negative denominators.\",\n    \"id\": \"task:task.md:0d6cc1539d71b4af\",\n    \"kind\": \"task\",\n    \"source\": \"task.md\"\n  },\n  {\n    \"content\": \"--- a/src/calc.py\\n+++ b/src/calc.py\\n@@ -1,2 +1,4 @@\\n-def safe_divide(numerator: float, denominator: float) -> float:\\n+def safe_divide(numerator: float, denominator: float, default: float = 0.0) -> float:\\n+    if denominator == 0:\\n+        return default\\n     return numerator / denominator\\n--- a/tests/test_calc.py\\n+++ b/tests/test_calc.py\\n@@ -0,0 +1,17 @@\\n+import sys\\n+import unittest\\n+\\n+sys.path.insert(0, \\\"src\\\")\\n+from calc import safe_divide\\n+\\n+\\n+class SafeDivideTests(unittest.TestCase):\\n+    def test_zero_uses_default(self):\\n+        self.assertEqual(safe_divide(7, 0, default=-1), -1)\\n+\\n+    def test_negative_denominator_is_divided(self):\\n+        self.assertEqual(safe_divide(8, -2), -4)\\n+\\n+\\n+if __name__ == \\\"__main__\\\":\\n+    unittest.main()\",\n    \"id\": \"diff:candidate.patch:b0efa98f98955e92\",\n    \"kind\": \"diff\",\n    \"source\": \"candidate.patch\"\n  },\n  {\n    \"content\": \"[{\\\"action\\\":\\\"implement\\\",\\\"content\\\":\\\"Implemented the requested change and reviewed the candidate diff.\\\",\\\"role\\\":\\\"agent\\\"},{\\\"action\\\":\\\"verify\\\",\\\"content\\\":\\\"The declared verification completed successfully with exit code 0.\\\",\\\"input\\\":\\\"python -m unittest discover -s tests -q\\\",\\\"role\\\":\\\"agent\\\",\\\"tool\\\":\\\"shell\\\"},{\\\"action\\\":\\\"checkpoint\\\",\\\"content\\\":\\\"A qualified reviewer must approve before merge.\\\",\\\"role\\\":\\\"human\\\"}]\",\n    \"id\": \"trajectory:trajectory.json:10c73a41ce1fdd6b\",\n    \"kind\": \"trajectory\",\n    \"source\": \"trajectory.json\"\n  },\n  {\n    \"content\": \"[\\\"src/**\\\",\\\"tests/**\\\"]\",\n    \"id\": \"policy",
+            "user_sha256": "b1bd178bf76a4342956336541249d352f518bf225adc45ccc5284a5c09d67dff"
+          },
+          "model": "openai/gpt-oss-20b",
+          "model_response": {
+            "data": {
+              "confidence": 0.95,
+              "decision": "approve",
+              "findings": [],
+              "summary": "Change approved: safe_divide now supports an optional default return value when the denominator is zero, preserving normal division behavior for all other cases. All tests pass and no issues were identified."
+            },
+            "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"Change approved: safe_divide now supports an optional default return value when the denominator is zero, preserving normal division behavior for all other cases. All tests pass and no issues were identified.\"}",
+            "usage": {
+              "agent": "baseline_reviewer",
+              "estimated_cost_usd": null,
+              "http_attempts": 1,
+              "input_tokens": 1393,
+              "latency_ms": 986,
+              "model": "openai/gpt-oss-20b",
+              "output_tokens": 437,
+              "provider": "groq",
+              "rate_limit_wait_ms": 0,
+              "request_hash": "5746f508bd319e9c22be042508876637e52cf71308fb6a86bddab3c61d2f5197",
+              "total_tokens": 1830
+            }
+          },
+          "provider": "groq",
+          "request_hash": "5746f508bd319e9c22be042508876637e52cf71308fb6a86bddab3c61d2f5197",
+          "retry_evidence": {
+            "agent": "baseline_reviewer",
+            "estimated_cost_usd": null,
+            "http_attempts": 1,
+            "input_tokens": 1393,
+            "latency_ms": 986,
+            "model": "openai/gpt-oss-20b",
+            "output_tokens": 437,
+            "provider": "groq",
+            "rate_limit_wait_ms": 0,
+            "request_hash": "5746f508bd319e9c22be042508876637e52cf71308fb6a86bddab3c61d2f5197",
+            "total_tokens": 1830
+          },
+          "role": "frozen one-shot comparison baseline",
+          "source": {
+            "fixture": "fixtures/replay/groq-gpt-oss-20b/5746f508bd319e9c22be042508876637e52cf71308fb6a86bddab3c61d2f5197.json",
+            "fixture_sha256": "213a9e5a1bed51a11eb311d2e340b9324d95cd130a2cde5a4d0f6773911ddff5",
+            "result": "results/baseline-live-groq-gpt-oss-20b/raw-results.jsonl",
+            "row": 1,
+            "row_sha256": "8b95b39b651fc1305a1894c44b14a46c575b54a3931104302b1296209fac5c6f"
+          },
+          "submitted_upstream_trajectory": [
+            {
+              "action": "implement",
+              "content": "Implemented the requested change and reviewed the candidate diff.",
+              "role": "agent"
+            },
+            {
+              "action": "verify",
+              "content": "The declared verification completed successfully with exit code 0.",
+              "input": "python -m unittest discover -s tests -q",
+              "role": "agent",
+              "tool": "shell"
+            },
+            {
+              "action": "checkpoint",
+              "content": "A qualified reviewer must approve before merge.",
+              "role": "human"
+            }
+          ],
+          "verifier_feedback": {
+            "decision": "approve",
+            "findings": [],
+            "gate_violations": [],
+            "summary": "Change approved: safe_divide now supports an optional default return value when the denominator is zero, preserving normal division behavior for all other cases. All tests pass and no issues were identified.",
+            "valid_evidence_rate": 1.0
+          }
+        },
+        {
+          "accepted_output": {
+            "confidence": 0.95,
+            "decision": "reject",
+            "findings": [
+              {
+                "category": "test_failure",
+                "evidence_ids": [
+                  "diff:candidate.patch:f1b276a98a2fb601",
+                  "file:candidate_src_calc.py:fad9a65291d17b76",
+                  "file:candidate_tests_test_calc.py:7b159df2574e8536"
+                ],
+                "explanation": "The implementation returns the default value when the denominator is negative, but the task requires returning the default only when the denominator is zero. This causes the test `test_negative_denominator_is_divided` to fail, violating the intended behavior.",
+                "severity": "high",
+                "title": "Incorrect division logic for negative denominators"
+              }
+            ],
+            "summary": "The change fails to meet the task requirements and causes test failures; it should be rejected."
+          },
+          "agent": "baseline_reviewer",
+          "agent_tool_boundary": "The baseline reviewer had no executable tools; submitted repair-agent tool claims were untrusted input evidence.",
+          "agent_tool_calls": [],
+          "case_id": "C002",
+          "decision": "reject",
+          "human_checkpoint": "The submitted trajectory and result both retain a qualified-human checkpoint; the baseline never performs a merge or deployment.",
+          "instructions": {
+            "capture_scope": "recorded bounded previews plus full prompt hashes",
+            "system_preview": "You are the one-shot baseline reviewer for MergeProof.\nDecide whether an agent-authored code change is safe for a qualified human to merge.\nUse only the supplied task and evidence. Do not assume a claimed command ran successfully.\nDo not invent files, line numbers, outputs, or evidence IDs. A persuasive agent summary is not proof.\nReturn exactly one JSON object and no prose outside it.\n\nDecision policy:\n- approve: the supplied evidence supports the requested behavior and no material blocker is visible.\n- reject: supplied evidence establishes a material correctness, security, scope, dependency, or process blocker.\n- human_review: evidence is materially incomplete or ambiguous.\n\nEvery finding must cite one or more exact evidence IDs from the input. Use only these categories:\nbehavioral_regression, edge_case_failure, test_failure, test_skip, unverified_claim, out_of_scope_change, dependency_drift, secret_exposure, path_traversal, flaky_behavior, unsafe_command, insufficient_evidence, prov",
+            "system_sha256": "d25caa44afbc5b0008e141db2b25f830c027b544c1b97bb11a476ba8f3cf77f9",
+            "user_preview": "TASK\nAdd an optional default returned only when the denominator is zero. Preserve normal division, including negative denominators.\n\nALLOWED CHANGED PATH GLOBS\n[\n  \"src/**\",\n  \"tests/**\"\n]\n\nEVIDENCE\n[\n  {\n    \"content\": \"Add an optional default returned only when the denominator is zero. Preserve normal division, including negative denominators.\",\n    \"id\": \"task:task.md:0d6cc1539d71b4af\",\n    \"kind\": \"task\",\n    \"source\": \"task.md\"\n  },\n  {\n    \"content\": \"--- a/src/calc.py\\n+++ b/src/calc.py\\n@@ -1,2 +1,4 @@\\n-def safe_divide(numerator: float, denominator: float) -> float:\\n+def safe_divide(numerator: float, denominator: float, default: float = 0.0) -> float:\\n+    if denominator < 0:\\n+        return default\\n     return numerator / denominator\\n--- a/tests/test_calc.py\\n+++ b/tests/test_calc.py\\n@@ -0,0 +1,17 @@\\n+import sys\\n+import unittest\\n+\\n+sys.path.insert(0, \\\"src\\\")\\n+from calc import safe_divide\\n+\\n+\\n+class SafeDivideTests(unittest.TestCase):\\n+    def test_zero_uses_default(self):\\n+        self.assertEqual(safe_divide(7, 0, default=-1), -1)\\n+\\n+    def test_negative_denominator_is_divided(self):\\n+        self.assertEqual(safe_divide(8, -2), -4)\\n+\\n+\\n+if __name__ == \\\"__main__\\\":\\n+    unittest.main()\",\n    \"id\": \"diff:candidate.patch:f1b276a98a2fb601\",\n    \"kind\": \"diff\",\n    \"source\": \"candidate.patch\"\n  },\n  {\n    \"content\": \"[{\\\"action\\\":\\\"implement\\\",\\\"content\\\":\\\"Implemented the requested change and reviewed the candidate diff.\\\",\\\"role\\\":\\\"agent\\\"},{\\\"action\\\":\\\"verify\\\",\\\"content\\\":\\\"The declared verification completed successfully with exit code 0.\\\",\\\"input\\\":\\\"python -m unittest discover -s tests -q\\\",\\\"role\\\":\\\"agent\\\",\\\"tool\\\":\\\"shell\\\"},{\\\"action\\\":\\\"checkpoint\\\",\\\"content\\\":\\\"A qualified reviewer must approve before merge.\\\",\\\"role\\\":\\\"human\\\"}]\",\n    \"id\": \"trajectory:trajectory.json:10c73a41ce1fdd6b\",\n    \"kind\": \"trajectory\",\n    \"source\": \"trajectory.json\"\n  },\n  {\n    \"content\": \"[\\\"src/**\\\",\\\"tests/**\\\"]\",\n    \"id\": \"policy:",
+            "user_sha256": "b4c81345070eee5c12d30aec49e106663b448968a0399ca796e03534c0db7953"
+          },
+          "model": "openai/gpt-oss-20b",
+          "model_response": {
+            "data": {
+              "confidence": 0.95,
+              "decision": "reject",
+              "findings": [
+                {
+                  "category": "test_failure",
+                  "evidence_ids": [
+                    "diff:candidate.patch:f1b276a98a2fb601",
+                    "file:candidate_src_calc.py:fad9a65291d17b76",
+                    "file:candidate_tests_test_calc.py:7b159df2574e8536"
+                  ],
+                  "explanation": "The implementation returns the default value when the denominator is negative, but the task requires returning the default only when the denominator is zero. This causes the test `test_negative_denominator_is_divided` to fail, violating the intended behavior.",
+                  "severity": "high",
+                  "title": "Incorrect division logic for negative denominators"
+                }
+              ],
+              "summary": "The change fails to meet the task requirements and causes test failures; it should be rejected."
+            },
+            "raw_text": "{\"confidence\":0.95,\"decision\":\"reject\",\"findings\":[{\"category\":\"test_failure\",\"evidence_ids\":[\"diff:candidate.patch:f1b276a98a2fb601\",\"file:candidate_src_calc.py:fad9a65291d17b76\",\"file:candidate_tests_test_calc.py:7b159df2574e8536\"],\"explanation\":\"The implementation returns the default value when the denominator is negative, but the task requires returning the default only when the denominator is zero. This causes the test `test_negative_denominator_is_divided` to fail, violating the intended behavior.\",\"severity\":\"high\",\"title\":\"Incorrect division logic for negative denominators\"}],\"summary\":\"The change fails to meet the task requirements and causes test failures; it should be rejected.\"}",
+            "usage": {
+              "agent": "baseline_reviewer",
+              "estimated_cost_usd": null,
+              "http_attempts": 1,
+              "input_tokens": 1394,
+              "latency_ms": 11951,
+              "model": "openai/gpt-oss-20b",
+              "output_tokens": 576,
+              "provider": "groq",
+              "rate_limit_wait_ms": 10889,
+              "request_hash": "a0bf26b63c6d034f27fa864bc1fcd89363e0f0b6af312bbbc6e35b73738808dc",
+              "total_tokens": 1970
+            }
+          },
+          "provider": "groq",
+          "request_hash": "a0bf26b63c6d034f27fa864bc1fcd89363e0f0b6af312bbbc6e35b73738808dc",
+          "retry_evidence": {
+            "agent": "baseline_reviewer",
+            "estimated_cost_usd": null,
+            "http_attempts": 1,
+            "input_tokens": 1394,
+            "latency_ms": 11951,
+            "model": "openai/gpt-oss-20b",
+            "output_tokens": 576,
+            "provider": "groq",
+            "rate_limit_wait_ms": 10889,
+            "request_hash": "a0bf26b63c6d034f27fa864bc1fcd89363e0f0b6af312bbbc6e35b73738808dc",
+            "total_tokens": 1970
+          },
+          "role": "frozen one-shot comparison baseline",
+          "source": {
+            "fixture": "fixtures/replay/groq-gpt-oss-20b/a0bf26b63c6d034f27fa864bc1fcd89363e0f0b6af312bbbc6e35b73738808dc.json",
+            "fixture_sha256": "d9ed9d43aa0e69c089f21879379878bcc339d107679d63fc5e3c949b4c8182d5",
+            "result": "results/baseline-live-groq-gpt-oss-20b/raw-results.jsonl",
+            "row": 2,
+            "row_sha256": "4d16bae0e38d572e38eed6ec27254da08becaca763d368d3225a3ebb71d8684b"
+          },
+          "submitted_upstream_trajectory": [
+            {
+              "action": "implement",
+              "content": "Implemented the requested change and reviewed the candidate diff.",
+              "role": "agent"
+            },
+            {
+              "action": "verify",
+              "content": "The declared verification completed successfully with exit code 0.",
+              "input": "python -m unittest discover -s tests -q",
+              "role": "agent",
+              "tool": "shell"
+            },
+            {
+              "action": "checkpoint",
+              "content": "A qualified reviewer must approve before merge.",
+              "role": "human"
+            }
+          ],
+          "verifier_feedback": {
+            "decision": "reject",
+            "findings": [
+              {
+                "category": "test_failure",
+                "evidence_ids": [
+                  "diff:candidate.patch:f1b276a98a2fb601",
+                  "file:candidate_src_calc.py:fad9a65291d17b76",
+                  "file:candidate_tests_test_calc.py:7b159df2574e8536"
+                ],
+                "explanation": "The implementation returns the default value when the denominator is negative, but the task requires returning the default only when the denominator is zero. This causes the test `test_negative_denominator_is_divided` to fail, violating the intended behavior.",
+                "severity": "high",
+                "status": "verified",
+                "title": "Incorrect division logic for negative denominators"
+              }
+            ],
+            "gate_violations": [],
+            "summary": "The change fails to meet the task requirements and causes test failures; it should be rejected.",
+            "valid_evidence_rate": 1.0
+          }
+        }
+      ]
+    },
+    "contract_clarifier": {
+      "canonical_case_count": 1,
+      "mode": "optional bounded agent inside the advanced workflow",
+      "representative_traces": [
+        {
+          "agent": "contract_clarifier",
+          "agent_tool_boundary": "The clarifier cannot run code or approve a candidate. Deterministic dbt execution and rule admission remain outside the model agent.",
+          "agent_tool_calls": [],
+          "deterministic_tool_response": {
+            "command": [
+              "dbt",
+              "build",
+              "--project-dir",
+              "<WORKTREE>",
+              "--profiles-dir",
+              "<WORKTREE>",
+              "--no-use-colors"
+            ],
+            "isolation": "disposable_copy",
+            "passed": true,
+            "returncode": 0,
+            "worktree_sha256": "1107fbbc6ab00b861f65007aaee5d66ed0010b205beeb959604111ddeafcf735"
+          },
+          "human_checkpoint": "Unresolved statements force human_review; the clarifier cannot authorize merge or deployment.",
+          "instructions": {
+            "capture_scope": "recorded bounded previews plus full prompt hashes",
+            "system_preview": "You are DriftProof's bounded Contract Clarifier Agent.\nYour only task is to translate supplied unresolved business-contract sentences into typed rules.\nYou cannot approve a repair, run code, modify files, create SQL, weaken a check, or use hidden facts.\nUse only identifiers listed in OBSERVED_IDENTIFIERS or explicitly written in the source sentence.\nEvery proposed source_text must be copied exactly from UNRESOLVED_SENTENCES.\nReturn one JSON object with keys rules and unresolved_sentences. Do not add prose outside JSON.\n\nAllowed rule kinds and required shapes:\n- public_contract: fields=[documented output columns]\n- source_alias: output=<downstream column>, parameters.semantic_token=<source-name token>\n- derived_concat: output=<output>, fields=[first,last], parameters={separator:\" \",trim:true}\n- numeric_null_policy: output=<output>, parameters={invalid_policy:\"null\",required_conversion:\"try_cast\",target_type:\"decimal\"}\n- latest_record: fields=[entity_key,order_field], parameters={order_f",
+            "system_sha256": "4a1dfb95bc86213b645ad499991e66b0aea94f1059759f2fc03fba51a7f1c8bc",
+            "user_preview": "{\"EXISTING_RULES\":[],\"OBSERVED_IDENTIFIERS\":[\"net_revenue\",\"refunds\",\"revenue\",\"sales\"],\"OUTPUT_SCHEMA\":{\"rules\":[{\"fields\":[\"identifiers\"],\"kind\":\"allowed rule kind\",\"output\":\"identifier or null\",\"parameters\":{},\"rationale\":\"one sentence\",\"source_text\":\"exact unresolved sentence\"}],\"unresolved_sentences\":[\"exact unresolved sentences not converted\"]},\"UNRESOLVED_SENTENCES\":[\"Finance policy treats refunded cash as a deduction from booked sales.\",\"The published columns are `sales`, `refunds`, and `net_revenue`.\"]}",
+            "user_sha256": "c9de05d5ca1360616c40a5fa00791e95b526351c99e178dddf7ba9d3097e22b7"
+          },
+          "live_agent_trace": {
+            "accepted_rule_ids": [
+              "R-26A199356AD7"
+            ],
+            "agent": "contract_clarifier",
+            "input_tokens": 564,
+            "model": "openai/gpt-oss-20b",
+            "output_sha256": "",
+            "output_tokens": 612,
+            "provider": "groq",
+            "rejected_proposals": [
+              "proposal 1: schema validation failed: 1 validation error for RuleProposal\nsource_text\n  Field required [type=missing, input_value={'output': 'net_revenue',...mission still applies.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing"
+            ],
+            "request_hash": "8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080",
+            "schema_version": 1,
+            "total_tokens": 1176,
+            "unresolved_sentences": [
+              "Finance policy treats refunded cash as a deduction from booked sales."
+            ]
+          },
+          "model": "openai/gpt-oss-20b",
+          "model_response": {
+            "data": {
+              "rules": [
+                {
+                  "fields": [
+                    "sales",
+                    "refunds",
+                    "net_revenue"
+                  ],
+                  "kind": "public_contract"
+                },
+                {
+                  "fields": [
+                    "sales",
+                    "refunds"
+                  ],
+                  "output": "net_revenue",
+                  "parameters": {
+                    "operator": "subtract"
+                  }
+                }
+              ],
+              "unresolved_sentences": []
+            },
+            "raw_text": "{\"rules\":[{\"kind\":\"public_contract\",\"fields\":[\"sales\",\"refunds\",\"net_revenue\"]},{\"output\":\"net_revenue\",\"fields\":[\"sales\",\"refunds\"],\"parameters\":{\"operator\":\"subtract\"}}],\"unresolved_sentences\":[]}",
+            "usage": {
+              "agent": "contract_clarifier",
+              "estimated_cost_usd": null,
+              "http_attempts": 1,
+              "input_tokens": 564,
+              "latency_ms": 2203,
+              "model": "openai/gpt-oss-20b",
+              "output_tokens": 612,
+              "provider": "groq",
+              "rate_limit_wait_ms": 0,
+              "request_hash": "8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080",
+              "total_tokens": 1176
+            }
+          },
+          "provider": "groq",
+          "replay_agent_trace": {
+            "accepted_rule_ids": [
+              "R-26A199356AD7"
+            ],
+            "agent": "contract_clarifier",
+            "input_tokens": 564,
+            "model": "openai/gpt-oss-20b",
+            "output_sha256": "",
+            "output_tokens": 612,
+            "provider": "replay",
+            "rejected_proposals": [
+              "proposal 1: schema validation failed: 1 validation error for RuleProposal\nsource_text\n  Field required [type=missing, input_value={'fields': ['sales', 'ref...mission still applies.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing"
+            ],
+            "request_hash": "8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080",
+            "schema_version": 1,
+            "total_tokens": 1176,
+            "unresolved_sentences": [
+              "Finance policy treats refunded cash as a deduction from booked sales."
+            ]
+          },
+          "request_hash": "8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080",
+          "retry_evidence": {
+            "agent": "contract_clarifier",
+            "estimated_cost_usd": null,
+            "http_attempts": 1,
+            "input_tokens": 564,
+            "latency_ms": 2203,
+            "model": "openai/gpt-oss-20b",
+            "output_tokens": 612,
+            "provider": "groq",
+            "rate_limit_wait_ms": 0,
+            "request_hash": "8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080",
+            "total_tokens": 1176
+          },
+          "role": "bounded optional translation of unresolved visible context into admitted typed rules",
+          "source": {
+            "fixture": "fixtures/agent/driftproof-contract-clarifier/8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080.json",
+            "fixture_sha256": "75fc78665815cdd9368e2f581bd9cd9261942c922eee43cbef3146e111aac995",
+            "live_gate_report": "results/agent-fallback-live/gate-report.json",
+            "live_gate_report_sha256": "18e6bcf006692966c98bf8fc3ac9b7064118411be0080fde3d8d09dda7d46957",
+            "replay_gate_report": "results/agent-fallback-replay/gate-report.json",
+            "replay_gate_report_sha256": "221658ab94412d6e673961c5c47b7f681396a18135fbde7cade64f64c1410e9f"
+          },
+          "verifier_feedback": {
+            "checks": [
+              {
+                "detail": "dbt returned 0 under disposable_copy isolation.",
+                "evidence": [
+                  "dbt build",
+                  "1107fbbc6ab00b861f65007aaee5d66ed0010b205beeb959604111ddeafcf735"
+                ],
+                "id": "C-046C625A4D7B",
+                "metadata": {},
+                "rule_id": null,
+                "status": "pass",
+                "title": "Candidate builds from the disposable review worktree"
+              },
+              {
+                "detail": "The source tree hash is unchanged.",
+                "evidence": [
+                  "1107fbbc6ab00b861f65007aaee5d66ed0010b205beeb959604111ddeafcf735",
+                  "1107fbbc6ab00b861f65007aaee5d66ed0010b205beeb959604111ddeafcf735"
+                ],
+                "id": "C-2EE4ED4DFCAA",
+                "metadata": {},
+                "rule_id": null,
+                "status": "pass",
+                "title": "Original candidate project remained unchanged"
+              },
+              {
+                "detail": "Accepted 1 typed rules; rejected 1 proposals; left 1 sentences unresolved.",
+                "evidence": [
+                  "8048ba79613d4758495aee5c4e0cc11eed6f2f459b85510d3903512e8c042080",
+                  "R-26A199356AD7"
+                ],
+                "id": "C-5F67A34A2097",
+                "metadata": {},
+                "rule_id": null,
+                "status": "inconclusive",
+                "title": "Bounded Contract Clarifier produced only admitted typed rules"
+              },
+              {
+                "detail": "Compiled 1 rules without using an external benchmark oracle.",
+                "evidence": [
+                  "BUSINESS_CONTEXT.md",
+                  "fe3ec5bb473225fad8be26266ab80d538e2d195b329b129a978adaeb13744865"
+                ],
+                "id": "C-AB2C57D37E34",
+                "metadata": {},
+                "rule_id": null,
+                "status": "pass",
+                "title": "Visible business context compiled into executable checks"
+              },
+              {
+                "detail": "All documented fields are projected by the candidate.",
+                "evidence": [
+                  "models/revenue.sql"
+                ],
+                "id": "C-C9296209BFA0",
+                "metadata": {
+                  "missing": [],
+                  "observed_outputs": [
+                    "net_revenue",
+                    "refunds",
+                    "sales"
+                  ]
+                },
+                "rule_id": "R-26A199356AD7",
+                "status": "pass",
+                "title": "Public output contract is represented"
+              },
+              {
+                "detail": "No disabled or warning-only validation controls were found.",
+                "evidence": [],
+                "id": "C-3A141B290B9B",
+                "metadata": {
+                  "suppression_signals": []
+                },
+                "rule_id": null,
+                "status": "pass",
+                "title": "Verification controls were not weakened"
+              },
+              {
+                "detail": "1 visible business statements remain unresolved; approval is not permitted.",
+                "evidence": [
+                  "BUSINESS_CONTEXT.md",
+                  "fe3ec5bb473225fad8be26266ab80d538e2d195b329b129a978adaeb13744865"
+                ],
+                "id": "C-56E06F939337",
+                "metadata": {},
+                "rule_id": null,
+                "status": "inconclusive",
+                "title": "Every visible business statement was resolved or verified"
+              }
+            ],
+            "failed_check_ids": [],
+            "inconclusive_check_ids": [
+              "C-5F67A34A2097",
+              "C-56E06F939337"
+            ],
+            "summary": "Candidate requires qualified human review because the visible contract could not be verified conclusively: C-5F67A34A2097, C-56E06F939337.",
+            "verdict": "human_review"
+          }
+        }
+      ]
+    }
+  },
+  "consequential_action_taken": false,
+  "coverage_complete": true,
+  "declared_workflow_agents": [
+    "baseline_reviewer",
+    "contract_clarifier"
+  ],
+  "human_approval_required": true,
+  "input_trajectories": {
+    "classification": "untrusted input trajectories, not workflow agents",
+    "count": 24,
+    "records": [
+      {
+        "candidate_id": "DP-0FE869AC42EF",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "ceb117f7526ed7e2565e7c9d0d4d43402fbe1fa567c2c2bf4f47465ca70d23c9"
+      },
+      {
+        "candidate_id": "DP-1356AA7EA9E1",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "1bd927288f87a34ebc7b76a19d2b81fc113c4eff355e8b331eadd54b09f76848"
+      },
+      {
+        "candidate_id": "DP-1B2B4FC46DF8",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "f618a758a44fadc7f0f8155d8e0e69622b748a415095b3a627bfc5736ef9d705"
+      },
+      {
+        "candidate_id": "DP-2596E9A99C10",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "5a28f0355a9d31caea3e1015e92a5bfb2ecb2a277c37cc7b121f19ae90e11b92"
+      },
+      {
+        "candidate_id": "DP-312974D18960",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "3b013e7887be40cdb74983737fb59b52496f03421a633273bd1d4963f40fe539"
+      },
+      {
+        "candidate_id": "DP-31946B2D5F71",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "fe7c1cfaa16280d584c5ae9513a2fd1f39c4399cbf8b3ae4f5e1e7010893e8fa"
+      },
+      {
+        "candidate_id": "DP-3CA23D190F13",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "353ec2a8ee71b458472d1f46c0fad68cb3576346662b30d8fdef8b6b200fb81f"
+      },
+      {
+        "candidate_id": "DP-41AA58ED9D7F",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "f8a93cbfd2f84446ebc9f1eac963fb39b1ee5240f7e64c499621ddb2d281d942"
+      },
+      {
+        "candidate_id": "DP-445E0193A5BE",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "36099b9e6ecc25026b4cf479983ef66995d512dd3d621bd3636d80b496faba43"
+      },
+      {
+        "candidate_id": "DP-53C0D560C795",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "563e2b7405524a617b296a61de1d7a46768566e37630848fcabee440110b4988"
+      },
+      {
+        "candidate_id": "DP-540F992519BB",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "6c6e1041fa1088d5d71b06848c472b7fa92ee5791085f086db72b39162f9d198"
+      },
+      {
+        "candidate_id": "DP-5BC0FBC4D979",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "fd3922d6bb701bdd877ad142b0a9c9afffac47e7eff0ad57ec4c9c840b222a53"
+      },
+      {
+        "candidate_id": "DP-5F391A186F68",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "c0de1407159847da4f39b9607c356c3635ab9aa52ebd8a444ea1493b8102abc2"
+      },
+      {
+        "candidate_id": "DP-69B90162904D",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "7284c3899d7c8d1e7ef8ce82514bc301898ab742a697d8bab2b852c98bc88ee3"
+      },
+      {
+        "candidate_id": "DP-6AA24B281651",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "0f1a820f73b7a3118ae5079dbe865b2af722b0c9595c52cdac295adc041ce7ef"
+      },
+      {
+        "candidate_id": "DP-7898CF99DC3F",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "f784bce5a7e9cc0d8c1a3e9d877190e0cd7a46c93204d1cd9656d1ea0ef0681d"
+      },
+      {
+        "candidate_id": "DP-7E6835344182",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "400f15d57d006a21e4e4d0da78244cdc91337f9342d2ddbd7457a5a1bad44ecf"
+      },
+      {
+        "candidate_id": "DP-7FD36DF2E7C0",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "933831d5de291d6318ff72b743b76bfb6188df2115c06d4363e7aa3cc15579f7"
+      },
+      {
+        "candidate_id": "DP-A3A3BE60E1C3",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "a676689c631e24eaf0d600d388c16016557095096141a90965bcebcf5b15fd3f"
+      },
+      {
+        "candidate_id": "DP-BA26592B2BF9",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "16a3f9233004cbb33bb3469e2f7db87e1db76cc83e21d7944764745277b010f1"
+      },
+      {
+        "candidate_id": "DP-CFDEACDE53B7",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "16457dd3d723bf94a9506fa8e8d303485833c2208e4cb71dbabda35fbbfd3411"
+      },
+      {
+        "candidate_id": "DP-DF8B15B5A6CC",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "a001995e668114c73b726a365f6ea40d79f3139ed7b8e33e2d1c445941440a73"
+      },
+      {
+        "candidate_id": "DP-E6C082649625",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "4e7c57bafe1af8790f2c0bb5e4ae643cd23ee32dfff23bc9d3a3a3bdcf17e44e"
+      },
+      {
+        "candidate_id": "DP-F4246B8D029D",
+        "human_checkpoint": "No merge or deployment is allowed until an independent release gate approves.",
+        "producer": "synthetic agent-repair fixture",
+        "trajectory_sha256": "4f3014829d49584b02509a246824e157639c92a85d929d950e8dcd34c95cf59f"
+      }
+    ],
+    "source": "benchmark_dbt/cases.json",
+    "source_sha256": "8148cdd147febb98573a9c83b0908551384dc9c6eac22063a937369d244ae261"
+  },
+  "limitations": [
+    "Provider records retain bounded prompt previews and full prompt hashes, not unrestricted full prompts.",
+    "The baseline reviewer and contract clarifier have no executable tools; deterministic tool results are recorded separately.",
+    "Synthetic repair-agent trajectories are untrusted benchmark inputs and are not counted as DriftProof workflow agents."
+  ],
+  "observed_workflow_agents": [
+    "baseline_reviewer",
+    "contract_clarifier"
+  ],
+  "protocol": "driftproof.agent-trajectories.v1",
+  "schema_version": 1
+}

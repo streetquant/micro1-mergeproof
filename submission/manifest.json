@@ -40,18 +40,43 @@
   },
   "consequential_action_taken": false,
   "entry_points": {
+    "agent_trajectories": "submission/AGENT_TRAJECTORIES.json",
     "browser": "submission/START_HERE.html",
+    "claim_ledger": "submission/CLAIM_LEDGER.json",
     "human": "submission/START_HERE.md",
-    "machine": "submission/manifest.json"
+    "judge_checklist": "submission/JUDGE_CHECKLIST.md",
+    "machine": "submission/manifest.json",
+    "rubric_map": "submission/RUBRIC_MAP.json",
+    "trace_index": "submission/TRACE_INDEX.json"
   },
   "generated_files": {
+    "AGENT_TRAJECTORIES.json": {
+      "bytes": 48878,
+      "sha256": "5b26d1dcbb86702024386f22d0d0fada39b633fed0f29207aa9e0ec7554637e5"
+    },
+    "CLAIM_LEDGER.json": {
+      "bytes": 8740,
+      "sha256": "1a69e6a73e4c794a5e47e1b928aea841a9d902bf1219748cd9cd332f06aaa04a"
+    },
+    "JUDGE_CHECKLIST.md": {
+      "bytes": 2257,
+      "sha256": "34d9a712c7a66f913d65920e242fcafcadb2741075dda362d6a67523db986d9e"
+    },
+    "RUBRIC_MAP.json": {
+      "bytes": 3345,
+      "sha256": "f0bbb52a9d063d9a66e17eabff8ab1502005e46d3bcbed30df483f4b5634cd45"
+    },
     "START_HERE.html": {
-      "bytes": 3457,
-      "sha256": "b6dcb65aed416da1f2d8b052bbc294b2db8dca4b1505b9d5c561d3f00c6f805c"
+      "bytes": 3847,
+      "sha256": "99e432991d3f4de0f34577e559e79d4ce7f6f2f994140d987b1775ee5bf5d14c"
     },
     "START_HERE.md": {
-      "bytes": 4783,
-      "sha256": "2cd98e312d1a43597a3f9ed7bbc2b836d8a6c3a2832e4301cd69f4ebdac4c606"
+      "bytes": 5544,
+      "sha256": "4280d6cdf345235b6f225ca206d02d52f83a9a2c6d30c362307a76893f59f593"
+    },
+    "TRACE_INDEX.json": {
+      "bytes": 8976,
+      "sha256": "26d614f6bd61afb329cb8171c92352846b5ed649e5c3dfb9ca57446d505a6f96"
     }
   },
   "human_approval_required": true,
@@ -135,6 +160,10 @@
     "reviews/2026-08-31-round-6-response-binding/qualification.json": {
       "bytes": 3778,
       "sha256": "de4a3efe05cdf6f79b0226298e8abcc79aceddb8bfff79ee4331325ade6f3fe8"
+    },
+    "reviews/2026-08-31-round-7-judge-packet/qualification.json": {
+      "bytes": 4405,
+      "sha256": "b81abecd8b9b9d6f5198d620d50b64bc1ac8f8c76dac14f4e31229212da9ca21"
     },
     "reviews/recovery-promotion/qualification.json": {
       "bytes": 1660,

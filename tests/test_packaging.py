@@ -64,6 +64,94 @@ def initialized_release_repo(tmp_path: Path) -> Path:
     (repo / "submission/START_HERE.html").write_text(
         "<!doctype html><title>Start here</title>\n", encoding="utf-8"
     )
+    trajectories = {
+        "schema_version": 1,
+        "protocol": "driftproof.agent-trajectories.v1",
+        "coverage_complete": True,
+        "declared_workflow_agents": ["baseline_reviewer", "contract_clarifier"],
+        "observed_workflow_agents": ["baseline_reviewer", "contract_clarifier"],
+        "human_approval_required": True,
+        "consequential_action_taken": False,
+    }
+    trajectories_path = repo / "submission/AGENT_TRAJECTORIES.json"
+    trajectories_path.write_text(
+        json.dumps(trajectories, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    trace_index = {
+        "schema_version": 1,
+        "protocol": "driftproof.trace-index.v1",
+        "coverage_complete": True,
+        "representative_packet": {
+            "path": "submission/AGENT_TRAJECTORIES.json",
+            "bytes": trajectories_path.stat().st_size,
+            "sha256": PACKAGING._sha256(trajectories_path),
+        },
+        "human_approval_required": True,
+        "consequential_action_taken": False,
+    }
+    (repo / "submission/TRACE_INDEX.json").write_text(
+        json.dumps(trace_index, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    claim_ledger = {
+        "schema_version": 1,
+        "protocol": "driftproof.claim-ledger.v1",
+        "claim_count": 1,
+        "claims": [{"id": "fixture", "status": "supported"}],
+        "all_claims_supported": True,
+        "human_approval_required": True,
+        "consequential_action_taken": False,
+    }
+    claim_path = repo / "submission/CLAIM_LEDGER.json"
+    claim_path.write_text(
+        json.dumps(claim_ledger, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    rubric = {
+        "schema_version": 1,
+        "protocol": "driftproof.rubric-map.v1",
+        "total_points": 100,
+        "criteria": [{"criterion": "fixture", "points": 100}],
+        "claim_ledger": {
+            "path": "submission/CLAIM_LEDGER.json",
+            "bytes": claim_path.stat().st_size,
+            "sha256": PACKAGING._sha256(claim_path),
+        },
+        "human_approval_required": True,
+        "consequential_action_taken": False,
+    }
+    (repo / "submission/RUBRIC_MAP.json").write_text(
+        json.dumps(rubric, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    (repo / "submission/JUDGE_CHECKLIST.md").write_text(
+        "# Judge checklist\n\nFixture checklist.\n", encoding="utf-8"
+    )
+    generated_files = {
+        Path(source).name: {
+            "bytes": (repo / source).stat().st_size,
+            "sha256": PACKAGING._sha256(repo / source),
+        }
+        for source in PACKAGING._DELIVERY_SOURCES.values()
+        if source != "submission/manifest.json"
+    }
+    submission_manifest = {
+        "schema_version": 1,
+        "protocol": "driftproof.submission-manifest.v1",
+        "entry_points": {
+            "human": "submission/START_HERE.md",
+            "browser": "submission/START_HERE.html",
+            "machine": "submission/manifest.json",
+            "judge_checklist": "submission/JUDGE_CHECKLIST.md",
+            "claim_ledger": "submission/CLAIM_LEDGER.json",
+            "rubric_map": "submission/RUBRIC_MAP.json",
+            "agent_trajectories": "submission/AGENT_TRAJECTORIES.json",
+            "trace_index": "submission/TRACE_INDEX.json",
+        },
+        "generated_files": generated_files,
+        "human_approval_required": True,
+        "consequential_action_taken": False,
+    }
+    (repo / "submission/manifest.json").write_text(
+        json.dumps(submission_manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     git(repo, "add", ".")
     git(repo, "commit", "-q", "-m", "release evidence")
 
@@ -169,7 +257,9 @@ def test_required_evidence_preflight_lists_missing_head_artifacts(tmp_path: Path
 
     assert "results/driftproof-comparison/comparison.json" in str(exc.value)
     assert "submission/manifest.json" in str(exc.value)
-    assert "reviews/2026-08-31-round-3-release-delivery/qualification.json" in str(exc.value)
+    assert "submission/AGENT_TRAJECTORIES.json" in str(exc.value)
+    assert "submission/CLAIM_LEDGER.json" in str(exc.value)
+    assert "reviews/2026-08-31-round-6-response-binding/qualification.json" in str(exc.value)
 
 
 def test_required_evidence_preflight_hashes_actual_head_artifacts(tmp_path: Path) -> None:
@@ -229,6 +319,8 @@ def test_release_content_audit_accepts_portable_content(tmp_path: Path) -> None:
 def test_evidence_selection_contains_reviews_and_submission_entry_points() -> None:
     assert PACKAGING._is_evidence("reviews/2026-08-31-round-2-agent-sdk/qualification.json")
     assert PACKAGING._is_evidence("submission/START_HERE.md")
+    assert PACKAGING._is_evidence("submission/AGENT_TRAJECTORIES.json")
+    assert PACKAGING._is_evidence("submission/CLAIM_LEDGER.json")
     assert PACKAGING._is_source("submission/START_HERE.html")
     assert set(PACKAGING._REVIEW_QUALIFICATION_ARTIFACTS).issubset(
         PACKAGING._REQUIRED_EVIDENCE_ARTIFACTS
@@ -302,8 +394,35 @@ def test_complete_release_is_deterministic_and_independently_verifiable(
     )
     assert json.loads(completed.stdout)["verified"] is True
     assert (first_output / "START_HERE.md").read_text(encoding="utf-8") == "# Start here\n"
+    for name, source in PACKAGING._DELIVERY_SOURCES.items():
+        assert (first_output / name).read_bytes() == (repo / source).read_bytes()
 
     start_here = first_output / "START_HERE.md"
     start_here.write_text("tampered\n", encoding="utf-8")
     with pytest.raises(PackagingError, match="checksum mismatch"):
         PACKAGING.verify_release_directory(first_output)
+
+
+def test_release_verifier_rejects_rehashed_trajectory_substitution(tmp_path: Path) -> None:
+    repo = initialized_release_repo(tmp_path)
+    output = tmp_path / "release"
+    PACKAGING.package(repo, output)
+
+    trajectories = output / "AGENT_TRAJECTORIES.json"
+    payload = json.loads(trajectories.read_text(encoding="utf-8"))
+    payload["declared_workflow_agents"].append("substituted_agent")
+    trajectories.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    checksum_path = output / "SHA256SUMS"
+    lines = checksum_path.read_text(encoding="utf-8").splitlines()
+    replacement = f"{PACKAGING._sha256(trajectories)}  AGENT_TRAJECTORIES.json"
+    checksum_path.write_text(
+        "\n".join(
+            replacement if line.endswith("  AGENT_TRAJECTORIES.json") else line for line in lines
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(PackagingError, match=r"trajectory|trace index"):
+        PACKAGING.verify_release_directory(output)

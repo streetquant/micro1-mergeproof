@@ -25,7 +25,7 @@ The authoritative comparison, raw predictions, candidate bundles, and exact metr
 
 ## Submission entry point
 
-Start with [`submission/START_HERE.md`](submission/START_HERE.md), open the self-contained [`submission/START_HERE.html`](submission/START_HERE.html), or consume the exact machine contract in [`submission/manifest.json`](submission/manifest.json). These files and the README metric table are regenerated from the committed comparison; `make submission-check` rejects claim drift.
+Start with [`submission/START_HERE.md`](submission/START_HERE.md), open the self-contained [`submission/START_HERE.html`](submission/START_HERE.html), or consume the exact machine contract in [`submission/manifest.json`](submission/manifest.json). The generated judge packet adds a concise [`submission/JUDGE_CHECKLIST.md`](submission/JUDGE_CHECKLIST.md), an evidence-bound [`submission/CLAIM_LEDGER.json`](submission/CLAIM_LEDGER.json), a complete [`submission/RUBRIC_MAP.json`](submission/RUBRIC_MAP.json), and content-addressed [`submission/AGENT_TRAJECTORIES.json`](submission/AGENT_TRAJECTORIES.json) plus [`submission/TRACE_INDEX.json`](submission/TRACE_INDEX.json). These files and the README metric table are regenerated from committed evidence; `make submission-check` rejects metric, trace, claim, or rubric drift.
 
 ## Credential-free judge demonstration
 

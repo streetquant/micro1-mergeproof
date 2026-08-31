@@ -151,10 +151,8 @@ def test_doctor_returns_actionable_machine_next_steps(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr("driftproof.cli._bubblewrap_available", lambda: True)
-    monkeypatch.setattr(
-        "driftproof.cli.shutil.which",
-        lambda name: None if name == "dbt" else f"/usr/bin/{name}",
-    )
+    monkeypatch.setattr("driftproof.cli.find_dbt_executable", lambda: None)
+    monkeypatch.setattr("driftproof.cli.shutil.which", lambda name: f"/usr/bin/{name}")
 
     missing = runner.invoke(app, ["doctor", "--json"])
 
@@ -165,7 +163,7 @@ def test_doctor_returns_actionable_machine_next_steps(
     assert missing_payload["next_argv"] is None
     assert any("dbt-core" in item for item in missing_payload["remediation"])
 
-    monkeypatch.setattr("driftproof.cli.shutil.which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr("driftproof.cli.find_dbt_executable", lambda: "/usr/bin/dbt")
     ready = runner.invoke(app, ["doctor", "--json"])
 
     assert ready.exit_code == 0

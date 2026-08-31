@@ -5,6 +5,7 @@ import re
 import resource
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Literal
@@ -28,6 +29,18 @@ _OPEN_FILES = 256
 
 class BuildExecutionError(RuntimeError):
     pass
+
+
+def find_dbt_executable() -> str | None:
+    """Find dbt on PATH or beside the active Python in an installed environment."""
+
+    on_path = shutil.which("dbt")
+    if on_path is not None:
+        return str(Path(on_path).resolve())
+    sibling = Path(sys.executable).parent / "dbt"
+    if sibling.is_file() and not sibling.is_symlink():
+        return str(sibling.resolve())
+    return None
 
 
 def _copy_project(project: Path, destination: Path) -> None:
@@ -249,12 +262,12 @@ def run_dbt_build(
     home.mkdir(exist_ok=True)
     snapshot = snapshot_project(worktree)
 
-    dbt = shutil.which("dbt")
+    dbt = find_dbt_executable()
     if dbt is None:
         raise BuildExecutionError(
-            "dbt is not available on PATH; install the pinned dbt optional dependencies"
+            "dbt is not available on PATH or beside the active Python; install the pinned dbt "
+            "optional dependencies"
         )
-    dbt = str(Path(dbt).resolve())
 
     selected: Literal["disposable_copy", "bubblewrap"]
     if isolation in {"auto", "bubblewrap"}:

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from .demo import run_demo
 from .gate import baseline_green_gate, review_project
 from .models import Verdict
 
-__all__ = ["Verdict", "baseline_green_gate", "review_project"]
+__all__ = ["Verdict", "baseline_green_gate", "review_project", "run_demo"]
 __version__ = "0.2.0"

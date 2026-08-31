@@ -7,7 +7,12 @@ from pathlib import Path
 import pytest
 
 from driftproof.project import snapshot_project
-from driftproof.runner import _bubblewrap_command, _runtime_python, run_dbt_build
+from driftproof.runner import (
+    _bubblewrap_command,
+    _runtime_python,
+    find_dbt_executable,
+    run_dbt_build,
+)
 
 
 def _minimal_dbt_project(root: Path) -> Path:
@@ -47,6 +52,23 @@ def _minimal_dbt_project(root: Path) -> Path:
     )
     (root / "models" / "value.sql").write_text("select 1 as value\n", encoding="utf-8")
     return root
+
+
+def test_dbt_discovery_falls_back_to_the_active_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    venv = tmp_path / "venv"
+    (venv / "bin").mkdir(parents=True)
+    python = venv / "bin" / "python"
+    python.write_text("fixture\n", encoding="utf-8")
+    dbt = venv / "bin" / "dbt"
+    dbt.write_text("#!/bin/sh\n", encoding="utf-8")
+    dbt.chmod(0o755)
+
+    monkeypatch.setattr("driftproof.runner.shutil.which", lambda _name: None)
+    monkeypatch.setattr("driftproof.runner.sys.executable", str(python))
+
+    assert find_dbt_executable() == str(dbt.resolve())
 
 
 def test_runtime_python_resolves_an_absolute_virtualenv_symlink(tmp_path: Path) -> None:

@@ -29,14 +29,14 @@ Start with [`submission/START_HERE.md`](submission/START_HERE.md), open the self
 
 ## Credential-free judge demonstration
 
-After installing the locked environment, one command demonstrates the central failure mode on two transparent fixtures:
+After installing the locked environment, one installed command demonstrates the central failure mode on two transparent fixtures:
 
 ```bash
-uv sync --locked --extra dev --extra dbt
-make judge-demo
+uv sync --locked --extra dbt
+uv run driftproof demo
 ```
 
-Both fixtures pass the same build-only `dbt build` baseline. DriftProof then approves the contract-preserving repair and rejects the green-but-wrong repair. The command independently verifies both bundles and prints the two HTML report paths plus a content-addressed `quickstart-receipt.json`. It uses no API key, external model, hidden label, merge, or deployment action. This paired demonstration is intentionally smaller than the frozen 24-case benchmark.
+The same command works from an installed wheel as `driftproof demo`; it does not depend on repository example files. Both fixtures pass the same build-only `dbt build` baseline. DriftProof then approves the contract-preserving repair and rejects the green-but-wrong repair. It independently verifies both bundles and prints their HTML report paths plus a typed `demo-receipt.json`. It uses no API key, external model, hidden label, merge, or deployment action. This paired demonstration is intentionally smaller than the frozen 24-case benchmark.
 
 ## Human workflow: onboard → edit contract → preflight → review
 

@@ -11,6 +11,7 @@ from typing import Annotated, Any, Literal, NoReturn, cast
 
 import typer
 from rich.console import Console
+from rich.table import Table
 
 from mergeproof.providers import ProviderError, build_provider
 from mergeproof.sandbox import _bubblewrap_available
@@ -27,12 +28,14 @@ from . import __version__
 from .agent import ContractClarifier
 from .certificate import verify_certificate
 from .contracts import compile_contract
+from .demo import run_demo
 from .gate import GateExecutionError, review_project
 from .identity import fingerprint_request, request_identity
 from .models import (
     ApprovalCertificate,
     DriftProofAgentProtocolResponse,
     DriftProofContextTemplateResponse,
+    DriftProofDemoResponse,
     DriftProofErrorResponse,
     DriftProofFingerprintResponse,
     DriftProofNavigationResponse,
@@ -49,6 +52,7 @@ from .reporting import (
     prepare_gate_output,
     verify_gate_bundle,
 )
+from .runner import find_dbt_executable
 from .templates import CONTEXT_TEMPLATE
 
 Isolation = Literal["auto", "disposable_copy", "bubblewrap"]
@@ -72,6 +76,8 @@ _SCHEMA_ALIASES = {
     "onboard_response": "onboarding_response",
     "onboarding-response": "onboarding_response",
     "onboarding_response": "onboarding_response",
+    "demo-response": "demo_response",
+    "demo_response": "demo_response",
     "fingerprint-response": "fingerprint_response",
     "fingerprint_response": "fingerprint_response",
     "report": "report",
@@ -491,6 +497,7 @@ def _schema_catalog() -> dict[str, dict[str, Any]]:
         "preflight_response": DriftProofPreflightResponse.model_json_schema(),
         "context_template_response": DriftProofContextTemplateResponse.model_json_schema(),
         "onboarding_response": DriftProofOnboardingResponse.model_json_schema(),
+        "demo_response": DriftProofDemoResponse.model_json_schema(),
         "fingerprint_response": DriftProofFingerprintResponse.model_json_schema(),
         "report": GateReport.model_json_schema(),
         "certificate": ApprovalCertificate.model_json_schema(),
@@ -740,6 +747,68 @@ def preflight(
             f"{len(payload['unresolved_sentences'])} unresolved statements"
         )
         console.print(f"Next state: {payload['recommended_action']}")
+
+
+@app.command("demo")
+def demo(
+    output: Annotated[
+        Path | None,
+        typer.Option(
+            help=(
+                "Absent destination for the transparent demo evidence; defaults to a unique "
+                "directory under the system temporary directory."
+            )
+        ),
+    ] = None,
+    timeout_seconds: Annotated[int, typer.Option()] = 120,
+    isolation: Annotated[str, typer.Option()] = "auto",
+    allow_unconfined: Annotated[
+        bool,
+        typer.Option(
+            help=(
+                "Permit disposable-copy execution only for these built-in transparent fixtures. "
+                "Bubblewrap remains the safe default."
+            )
+        ),
+    ] = False,
+    json_output: Annotated[bool, typer.Option("--json")] = False,
+) -> None:
+    """Run the installed credential-free safe/unsafe demonstration."""
+
+    try:
+        response = run_demo(
+            output=output,
+            timeout_seconds=_validate_timeout(timeout_seconds),
+            isolation=_normalize_isolation(isolation),
+            allow_unconfined=allow_unconfined,
+        )
+    except Exception as exc:
+        _fail(exc, json_output=json_output, context="DriftProof demo")
+
+    if json_output:
+        typer.echo(pretty_json(response.model_dump(mode="json")))
+        return
+
+    table = Table("Fixture", "Build-only baseline", "DriftProof", "Human report")
+    for case in (response.safe, response.unsafe):
+        table.add_row(
+            case.kind,
+            case.baseline_verdict.value,
+            case.driftproof_verdict.value,
+            case.human_report,
+        )
+    console.print("[bold]DriftProof credential-free installed demo[/bold]")
+    console.print(table)
+    console.print(f"Evidence directory: {response.output}")
+    console.print(f"Machine receipt: {response.receipt}")
+    console.print(
+        "Both candidates built green; DriftProof approved the contract-preserving repair and "
+        "rejected the green-but-wrong repair."
+    )
+    console.print(
+        "A qualified human still owns every merge or deployment decision; no consequential "
+        "action was taken."
+    )
 
 
 def _execute_review_request(
@@ -1205,7 +1274,7 @@ def verify_bundle(
 def doctor(json_output: Annotated[bool, typer.Option("--json")] = False) -> None:
     """Report local readiness without exposing credential values."""
 
-    dbt_path = shutil.which("dbt")
+    dbt_path = find_dbt_executable()
     bwrap_path = shutil.which("bwrap")
     checks: dict[str, Any] = {
         "python": {
@@ -1271,6 +1340,7 @@ def capabilities() -> None:
                 "commands": {
                     "human_review": "driftproof review",
                     "machine_review": "driftproof agent",
+                    "demo": "driftproof demo",
                     "onboard": "driftproof onboard",
                     "fingerprint": "driftproof fingerprint",
                     "preflight": "driftproof preflight",
@@ -1282,6 +1352,7 @@ def capabilities() -> None:
                 },
                 "usage": {
                     "machine_review": "driftproof agent <project|request.json|->",
+                    "demo": "driftproof demo [--output ABSENT_DIRECTORY] [--json]",
                     "onboard": "driftproof onboard <project> [--apply] --json",
                     "fingerprint": "driftproof fingerprint <project|request.json|->",
                     "preflight": "driftproof preflight <project> --json",

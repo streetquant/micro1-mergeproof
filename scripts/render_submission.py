@@ -169,11 +169,11 @@ def _start_here_markdown(metrics: dict[str, Any]) -> str:
 
 DriftProof is an independent, fail-closed release gate for agent-authored dbt repairs. It checks a visible business contract in a networkless disposable worktree and publishes a self-verifying bundle for a qualified human. It never merges or deploys code.
 
-## 60-second judge path
+## One-command judge path
 
 ```bash
-uv sync --locked --extra dev --extra dbt
-make judge-demo
+uv sync --locked --extra dbt
+uv run driftproof demo
 ```
 
 Both transparent fixtures pass the same build-only `dbt build`. DriftProof approves the contract-preserving fixture and rejects the green-but-wrong fixture, independently verifies both bundles, and prints the HTML report paths plus a machine receipt.
@@ -241,6 +241,7 @@ The typed SDK validates the one-object protocol, rejects malformed output and pr
 - AI-agent/SDK adversarial review: [`../reviews/2026-08-31-round-2-agent-sdk/`](../reviews/2026-08-31-round-2-agent-sdk/)
 - Release/delivery adversarial review: [`../reviews/2026-08-31-round-3-release-delivery/`](../reviews/2026-08-31-round-3-release-delivery/)
 - Downloaded-release consumer review: [`../reviews/2026-08-31-round-4-consumer-verifier/`](../reviews/2026-08-31-round-4-consumer-verifier/)
+- Installed demo and runtime-recovery review: [`../reviews/2026-08-31-round-5-installed-demo/`](../reviews/2026-08-31-round-5-installed-demo/)
 - Machine-readable submission manifest: [`manifest.json`](manifest.json)
 - Full product and trust-boundary documentation: [`../README.md`](../README.md)
 
@@ -309,9 +310,9 @@ h1,h2{{line-height:1.2}} code,pre{{font-family:ui-monospace,SFMono-Regular,monos
 <body>
 <h1>DriftProof submission — start here</h1>
 <p>Independent, fail-closed release gate for agent-authored dbt repairs. It verifies a visible business contract and publishes a self-verifying bundle for a qualified human. It never merges or deploys code.</p>
-<h2>60-second judge path</h2>
-<pre>uv sync --locked --extra dev --extra dbt
-make judge-demo</pre>
+<h2>One-command judge path</h2>
+<pre>uv sync --locked --extra dbt
+uv run driftproof demo</pre>
 <p>Both fixtures pass the same build-only <code>dbt build</code>. DriftProof approves the contract-preserving fixture and rejects the green-but-wrong fixture, verifies both bundles, and prints the report paths.</p>
 <h2>Measured result</h2>
 <table><thead><tr><th>Metric</th><th>Build-only baseline</th><th>DriftProof</th><th>Change</th></tr></thead><tbody>{table_rows}</tbody></table>
@@ -356,7 +357,7 @@ def _manifest(root: Path, metrics: dict[str, Any], markdown: str, html_text: str
             "machine": "submission/manifest.json",
         },
         "commands": {
-            "judge_demo": ["make", "judge-demo"],
+            "judge_demo": ["driftproof", "demo", "--json"],
             "source_qualification": ["make", "check"],
             "submission_drift_check": ["make", "submission-check"],
             "release_package": ["make", "release"],

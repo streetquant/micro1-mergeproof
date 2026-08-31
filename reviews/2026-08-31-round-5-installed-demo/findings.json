@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "round": "installed_human_demo_and_runtime_recovery",
+  "findings": [
+    {
+      "id": "R5-DEMO-001",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "The judge path existed only as a repository Make target; an installed wheel had no `driftproof demo` command.",
+      "repair": "Added a package-native credential-free paired demo, typed response schema, human table output, JSON output, and runtime capability discovery.",
+      "validation": [
+        "source CLI demo",
+        "fresh-wheel demo outside the source checkout",
+        "runtime-derived demo-response schema",
+        "legacy wrapper delegates to installed command"
+      ]
+    },
+    {
+      "id": "R5-RUNTIME-002",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "A directly invoked wheel could not find `dbt` installed in the same virtual environment unless the caller activated that environment first.",
+      "repair": "Centralized dbt discovery now checks PATH and then the active Python's sibling `bin/dbt`; doctor, demo, and review execution use the same discovery rule.",
+      "validation": [
+        "fresh wheel invoked with PATH=/usr/bin:/bin",
+        "doctor identifies sibling dbt",
+        "paired demo succeeds without environment activation",
+        "unit regression for sibling discovery"
+      ]
+    },
+    {
+      "id": "R5-PUBLICATION-003",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "A demonstration could have left partial evidence or overwritten an existing directory if publication were implemented as incremental writes.",
+      "repair": "The complete demo is built in a sibling temporary tree, both bundles and the typed receipt are verified, work directories are removed, and the tree is atomically renamed into an absent destination.",
+      "validation": [
+        "existing output with sentinel is preserved",
+        "existing output returns structured exit 30",
+        "published tree contains no work directory",
+        "both report bundles independently verify"
+      ]
+    },
+    {
+      "id": "R5-FAILURE-004",
+      "severity": "medium",
+      "status": "fixed",
+      "finding": "First-time users without dbt needed a deterministic remediation response rather than a traceback or ambiguous shell failure.",
+      "repair": "Missing dbt returns one strict invalid-review JSON object with exit 30, a package-extra installation hint, no trusted partial result, and no consequential action.",
+      "validation": [
+        "fresh wheel without dbt",
+        "one-object JSON validation",
+        "fixed human/no-action constants",
+        "source CLI missing-runtime regression"
+      ]
+    },
+    {
+      "id": "R5-CLAIMS-005",
+      "severity": "medium",
+      "status": "fixed",
+      "finding": "Judge-facing material described a repository-only command and used an unsupported time-to-completion claim.",
+      "repair": "README, human guide, generated Markdown, generated HTML, and machine submission manifest now advertise the installed `driftproof demo` command and call it a one-command path rather than a timed promise.",
+      "validation": [
+        "submission renderer drift check",
+        "documentation command verification",
+        "machine manifest command vector",
+        "README and browser entry-point inspection"
+      ]
+    }
+  ],
+  "human_approval_required": true,
+  "consequential_action_taken": false
+}

@@ -11,8 +11,9 @@
       "agent-response"
     ],
     "judge_demo": [
-      "make",
-      "judge-demo"
+      "driftproof",
+      "demo",
+      "--json"
     ],
     "release_package": [
       "make",
@@ -35,12 +36,12 @@
   },
   "generated_files": {
     "START_HERE.html": {
-      "bytes": 3300,
-      "sha256": "15f0ca3d9249df0051bd61e7d243a34dbb240f10f33242b308f376d5635947af"
+      "bytes": 3297,
+      "sha256": "3f41400fb70615084312c27be87ae952dc04bce062dd5e77660dd7737dbe823e"
     },
     "START_HERE.md": {
-      "bytes": 4202,
-      "sha256": "283b97d93cb1991c7e816983dcfc2eb94b253dc55a8e59ead71a7f4a0380bb85"
+      "bytes": 4342,
+      "sha256": "97cabaf2734de2d1191ecd5d98a935edc8bb57cc20b0a708fc2493d294099517"
     }
   },
   "human_approval_required": true,
@@ -117,6 +118,10 @@
       "bytes": 2667,
       "sha256": "3c4125d4054adaddefbd2a44311f60feb514cf1a3a9bba54e7d53488f2697f90"
     },
+    "reviews/2026-08-31-round-5-installed-demo/qualification.json": {
+      "bytes": 2940,
+      "sha256": "623928bb849110148f0e4f0484ac212a7dfbf21757b4a8b70c1f4b5937004efb"
+    },
     "reviews/recovery-promotion/qualification.json": {
       "bytes": 1660,
       "sha256": "92c27fd4f637e3cab2028d42d5418122af8690e128810b0198af54c39b4c3053"
@@ -126,8 +131,8 @@
       "sha256": "342c5ec039c6189f3052f2f228ef10c2b584ea2d3056310737ae2a990b61e1bd"
     },
     "schemas/manifest.json": {
-      "bytes": 3808,
-      "sha256": "22557e7f179fc7b94a3e6eddeca94664e7ab2d0445bc4eb8a6c9049780c551e0"
+      "bytes": 3979,
+      "sha256": "9178c4a96d6583a8941e0db87f27356437134aa6c31bc25e54396c607ccc7096"
     }
   }
 }

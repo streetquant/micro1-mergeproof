@@ -238,6 +238,59 @@ class DriftProofOnboardingResponse(StrictModel):
         return self
 
 
+class DriftProofDemoCase(StrictModel):
+    kind: Literal["safe", "unsafe"]
+    expected_safe_to_approve: bool
+    project: str
+    baseline_result: str
+    baseline_result_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    baseline_verdict: Verdict
+    driftproof_verdict: Verdict
+    driftproof_exit_code: Literal[0, 10]
+    bundle: str
+    human_report: str
+    verify_argv: list[str] = Field(min_length=3)
+    bundle_manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    failed_check_ids: list[str]
+
+    @model_validator(mode="after")
+    def demo_case_is_consistent(self) -> DriftProofDemoCase:
+        if self.baseline_verdict != Verdict.APPROVE:
+            raise ValueError("the build-only demo baseline must approve both green builds")
+        expected = Verdict.APPROVE if self.expected_safe_to_approve else Verdict.REJECT
+        expected_exit = 0 if expected == Verdict.APPROVE else 10
+        if self.driftproof_verdict != expected or self.driftproof_exit_code != expected_exit:
+            raise ValueError("DriftProof demo verdict does not match the transparent fixture")
+        if self.kind == "safe" and not self.expected_safe_to_approve:
+            raise ValueError("safe demo fixture must be approval-safe")
+        if self.kind == "unsafe" and self.expected_safe_to_approve:
+            raise ValueError("unsafe demo fixture must not be approval-safe")
+        if self.kind == "unsafe" and not self.failed_check_ids:
+            raise ValueError("unsafe demo fixture must expose at least one failed check")
+        return self
+
+
+class DriftProofDemoResponse(StrictModel):
+    schema_version: Literal[1] = 1
+    protocol: Literal["driftproof.demo.v1"] = "driftproof.demo.v1"
+    verified: Literal[True] = True
+    output: str
+    receipt: str
+    safe: DriftProofDemoCase
+    unsafe: DriftProofDemoCase
+    scope: Literal["Credential-free paired demonstration. It is not the 24-case benchmark."] = (
+        "Credential-free paired demonstration. It is not the 24-case benchmark."
+    )
+    human_approval_required: Literal[True] = True
+    consequential_action_taken: Literal[False] = False
+
+    @model_validator(mode="after")
+    def demo_pair_is_consistent(self) -> DriftProofDemoResponse:
+        if self.safe.kind != "safe" or self.unsafe.kind != "unsafe":
+            raise ValueError("demo response must contain one safe and one unsafe fixture")
+        return self
+
+
 class DriftProofFingerprintResponse(StrictModel):
     schema_version: Literal[1] = 1
     protocol: Literal["driftproof.fingerprint.v1"] = "driftproof.fingerprint.v1"

@@ -1,0 +1,163 @@
+{
+  "$defs": {
+    "DriftProofDemoCase": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_result": {
+          "title": "Baseline Result",
+          "type": "string"
+        },
+        "baseline_result_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Baseline Result Sha256",
+          "type": "string"
+        },
+        "baseline_verdict": {
+          "$ref": "#/$defs/Verdict"
+        },
+        "bundle": {
+          "title": "Bundle",
+          "type": "string"
+        },
+        "bundle_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Bundle Manifest Sha256",
+          "type": "string"
+        },
+        "driftproof_exit_code": {
+          "enum": [
+            0,
+            10
+          ],
+          "title": "Driftproof Exit Code",
+          "type": "integer"
+        },
+        "driftproof_verdict": {
+          "$ref": "#/$defs/Verdict"
+        },
+        "expected_safe_to_approve": {
+          "title": "Expected Safe To Approve",
+          "type": "boolean"
+        },
+        "failed_check_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Failed Check Ids",
+          "type": "array"
+        },
+        "human_report": {
+          "title": "Human Report",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "safe",
+            "unsafe"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "project": {
+          "title": "Project",
+          "type": "string"
+        },
+        "verify_argv": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 3,
+          "title": "Verify Argv",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "expected_safe_to_approve",
+        "project",
+        "baseline_result",
+        "baseline_result_sha256",
+        "baseline_verdict",
+        "driftproof_verdict",
+        "driftproof_exit_code",
+        "bundle",
+        "human_report",
+        "verify_argv",
+        "bundle_manifest_sha256",
+        "failed_check_ids"
+      ],
+      "title": "DriftProofDemoCase",
+      "type": "object"
+    },
+    "Verdict": {
+      "enum": [
+        "approve",
+        "reject",
+        "human_review"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "consequential_action_taken": {
+      "const": false,
+      "default": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "human_approval_required": {
+      "const": true,
+      "default": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "output": {
+      "title": "Output",
+      "type": "string"
+    },
+    "protocol": {
+      "const": "driftproof.demo.v1",
+      "default": "driftproof.demo.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "receipt": {
+      "title": "Receipt",
+      "type": "string"
+    },
+    "safe": {
+      "$ref": "#/$defs/DriftProofDemoCase"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "scope": {
+      "const": "Credential-free paired demonstration. It is not the 24-case benchmark.",
+      "default": "Credential-free paired demonstration. It is not the 24-case benchmark.",
+      "title": "Scope",
+      "type": "string"
+    },
+    "unsafe": {
+      "$ref": "#/$defs/DriftProofDemoCase"
+    },
+    "verified": {
+      "const": true,
+      "default": true,
+      "title": "Verified",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "output",
+    "receipt",
+    "safe",
+    "unsafe"
+  ],
+  "title": "DriftProofDemoResponse",
+  "type": "object"
+}

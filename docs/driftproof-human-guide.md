@@ -7,11 +7,11 @@ DriftProof is an independent release gate for agent-authored dbt repairs. It ver
 ### 0. See the failure mode on transparent fixtures
 
 ```bash
-uv sync --locked --extra dev --extra dbt
-make judge-demo
+uv sync --locked --extra dbt
+uv run driftproof demo
 ```
 
-The credential-free demonstration proves that both fixtures pass build-only review, while DriftProof approves the contract-preserving repair and rejects the green-but-wrong repair. It prints independently verified report paths and a content-addressed receipt.
+The same command is available from an installed wheel as `driftproof demo`; it embeds its transparent fixtures rather than reading repository examples. The credential-free demonstration proves that both fixtures pass build-only review, while DriftProof approves the contract-preserving repair and rejects the green-but-wrong repair. It prints independently verified report paths and a typed `demo-receipt.json`.
 
 ### 1. Install and diagnose
 

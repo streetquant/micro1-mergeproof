@@ -1,0 +1,53 @@
+{
+  "artifact_sha256": {
+    "documentation_receipt": "e453bb078c9425cd15f7bdce09d6edb3a5c8ec611b879635b064fb95f0c9b14d",
+    "findings.json": "6da6579ea13dfbf81e28a307e262f86d1daac4b99951ec8f3bd9adee6c82432b",
+    "git_fsck_log": "b509eda636afa1e7d6379d1b4be4e6ab90c3efe123417ac6d7f7cb0e03d90f27",
+    "installed-wheel-boundary.json": "cef2b13bdca1e468db4b908c6c06f618a60f9520fc1801e921c164615d834f7f",
+    "make_check_log": "6fd911052b6494e64448672c0da98a7c34e9ae4f9d852d8702ba415dac38f557",
+    "schemas/driftproof/demo-response.schema.json": "678c077586b69c4af69defded3a88c888b4368bcff00a31fcd3e857807913929",
+    "src/driftproof/cli.py": "67bb495bc58099330f723394bf4b6c2331922bdaf0e23e3bc771910aef7a4f95",
+    "src/driftproof/demo.py": "13e82051cb2c18d63ac6df57afd66f2031d850a417194776694d3cca56a23b7d",
+    "src/driftproof/models.py": "ee1e8fd1b53c63842869a34ccf7d3b759c8a390455330fcc4c91a49cc66c3ff9",
+    "src/driftproof/runner.py": "03130b1071bac61007e13eb3b1d0cf9c89edb91ef90172f721056d6df1e5d828",
+    "submission_receipt": "f663921931c57b58213b32a58f189eacac280c248296a42fa1b6441193258075",
+    "tests/test_driftproof_demo.py": "756693501888cf5d0731cdf3d75fe8a4e49830a818858880dc7be14b08a17d25",
+    "tests/test_driftproof_runner.py": "96ae55f22498dad378cf248145e9f30eea8cd5f9b82f443c08538b0b2a228ffd"
+  },
+  "consequential_action_taken": false,
+  "finding_count": 5,
+  "human_approval_required": true,
+  "limitations": [
+    "The installed demo contains two transparent fixtures and is not the scored 24-case benchmark.",
+    "The safe default currently requires Linux and a working rootless bubblewrap namespace.",
+    "A deterministic installed demo does not establish unseen-project generalization.",
+    "Approval remains advisory and requires a qualified human decision."
+  ],
+  "parent_commit": "6d54be5a75a220582e394ee8b3a6c0d12af434e4",
+  "qualification": {
+    "atomic_verified_publication": true,
+    "doctor_found_sibling_dbt": true,
+    "documentation_verification": true,
+    "existing_output_preserved": true,
+    "frozen_replay_verified": true,
+    "git_diff_check": true,
+    "git_fsck": true,
+    "installed_wheel_demo": true,
+    "installed_wheel_missing_dbt_failed_closed": true,
+    "installed_wheel_outside_source_checkout": true,
+    "legacy_wrapper_delegates_to_installed_command": true,
+    "make_check_status_hash_unchanged": true,
+    "mypy_strict": true,
+    "pytest_passed": 196,
+    "ruff_format": true,
+    "ruff_lint": true,
+    "runtime_schema_check": true,
+    "source_and_wheel_builds": true,
+    "source_demo_verified": true,
+    "submission_claim_drift_check": true,
+    "virtualenv_activation_required": false
+  },
+  "review_method": "hostile first-contact audit across source CLI, absent/existing outputs, directly invoked fresh wheel with and without dbt, unactivated virtual environments, generated schemas, and judge-facing command drift",
+  "schema_version": 1,
+  "status": "passed"
+}

@@ -17,6 +17,11 @@
       "sha256": "75145262c5033216afca91aaefcdba7419e48324a86f68a0c450fc88e1b96ac3"
     },
     {
+      "file": "demo-response.schema.json",
+      "name": "demo_response",
+      "sha256": "678c077586b69c4af69defded3a88c888b4368bcff00a31fcd3e857807913929"
+    },
+    {
       "file": "error-response.schema.json",
       "name": "error_response",
       "sha256": "0688842aa4c2c6cb078d163cd07671d8a3187fb22224bfa5e24496b27b8253eb"

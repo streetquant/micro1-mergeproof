@@ -1,0 +1,8 @@
+{
+  "missing_dbt_receipt_sha256": "f2700e510c7f4de20b4807f697d0ded19e7e616f76df619367bed288fa04e61e",
+  "schema_version": 1,
+  "successful_demo_receipt_sha256": "33340a46ba699b5db77c46c46402c70a0bad92750bf5b6a3cca3893b1291174f",
+  "verified": true,
+  "wheel": "driftproof-0.2.0-py3-none-any.whl",
+  "wheel_sha256": "4eb992ffbc402677c3cdc2294889f067e40d6d389ec78a3315df30f7f35ab9db"
+}

@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "producer": "synthetic judge-demo repair agent",
+  "claim": "The candidate passes dbt build and is ready for independent semantic review.",
+  "tool_calls": [
+    {"tool": "dbt build", "result": "exit code 0"}
+  ],
+  "human_checkpoint": "No merge or deployment occurs before DriftProof and a qualified human approve."
+}

@@ -11,6 +11,7 @@ from hypothesis import strategies as st
 from mergeproof.utils import (
     atomic_write_text,
     canonical_json,
+    exclusive_atomic_write_text,
     extract_json_object,
     redact_secrets,
     stable_evidence_id,
@@ -75,6 +76,35 @@ def test_atomic_write_rejects_a_symlink_destination(tmp_path: Path) -> None:
         atomic_write_text(destination, "replace me\n")
 
     assert victim.read_text(encoding="utf-8") == "keep me\n"
+
+
+def test_exclusive_atomic_write_never_replaces_existing_content(tmp_path: Path) -> None:
+    destination = tmp_path / "context.md"
+    destination.write_text("human-authored\n", encoding="utf-8")
+
+    with pytest.raises(FileExistsError, match="already exists"):
+        exclusive_atomic_write_text(destination, "generated\n", mode=0o644)
+
+    assert destination.read_text(encoding="utf-8") == "human-authored\n"
+
+
+def test_concurrent_exclusive_writers_publish_exactly_one_payload(tmp_path: Path) -> None:
+    destination = tmp_path / "context.md"
+    payloads = [f"writer-{index}\n" for index in range(24)]
+
+    def publish(payload: str) -> bool:
+        try:
+            exclusive_atomic_write_text(destination, payload, mode=0o644)
+        except FileExistsError:
+            return False
+        return True
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        outcomes = list(executor.map(publish, payloads))
+
+    assert outcomes.count(True) == 1
+    assert destination.read_text(encoding="utf-8") in payloads
+    assert not list(tmp_path.glob(".context.md.*.tmp"))
 
 
 @given(st.dictionaries(st.text(max_size=20), st.integers(), max_size=8))

@@ -21,14 +21,19 @@
       "sha256": "0688842aa4c2c6cb078d163cd07671d8a3187fb22224bfa5e24496b27b8253eb"
     },
     {
-      "bytes": 1495,
+      "bytes": 1677,
       "path": "driftproof/index.json",
-      "sha256": "1b7005cbea2bca24ea651987ffda53c96f0925aeee6fa22d67d6fd55d8eb5a73"
+      "sha256": "8a0460caf4a067d6a0d9f2afc01eae8e5a9796a69878e6a2bcb467d323747788"
     },
     {
       "bytes": 4901,
       "path": "driftproof/navigation-response.schema.json",
       "sha256": "f43ae7ea2e37c45462c9844386426cb941d9c797208945c4e21478558cfff245"
+    },
+    {
+      "bytes": 2903,
+      "path": "driftproof/onboarding-response.schema.json",
+      "sha256": "3668f49cb7572f0c50eed44b8c9f0b3e8264b9f408eb28b77d9ee23f23e6f422"
     },
     {
       "bytes": 3196,

@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 .SHELLFLAGS := -euo pipefail -c
 
-.PHONY: setup doctor format format-check lint typecheck test smoke replay schemas schema-export schema-check protocol-smoke build check reproduce release
+.PHONY: setup doctor judge-demo format format-check lint typecheck test smoke replay schemas schema-export schema-check protocol-smoke build check reproduce release
 
 setup:
 	uv sync --locked --extra dev --extra dbt
@@ -9,6 +9,9 @@ setup:
 doctor:
 	uv run mergeproof doctor --json
 	uv run driftproof doctor --json
+
+judge-demo:
+	bash scripts/judge_quickstart.sh
 
 format:
 	uv run ruff format src tests scripts

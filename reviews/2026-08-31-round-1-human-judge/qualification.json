@@ -1,0 +1,47 @@
+{
+  "artifact_sha256": {
+    "make_check_log": "649799d772c37a88463d7319d8637d923598c6f9ccd7baa360750090e4a55d76",
+    "schemas/driftproof/onboarding-response.schema.json": "3668f49cb7572f0c50eed44b8c9f0b3e8264b9f408eb28b77d9ee23f23e6f422",
+    "schemas/manifest.json": "22b2986ac4bdf16f072a681c74ec46d882e3b8eca0fe22c7fb877fd6b9318b7f",
+    "scripts/judge_quickstart.sh": "572ed32aa77c9c23b5e4cb07e068e618d4427a0f0ae64a32f3e403e5f46749ec",
+    "src/driftproof/cli.py": "5e7100834d48e25ebaff143442b57d07387e6a041b35980385a2ac4244a059c6",
+    "src/driftproof/models.py": "d4d23c71d0760daf65fe1d872aa6423bf1c7d9eccf14be0d80cd83668f246683",
+    "src/mergeproof/utils.py": "33bb0c769d169fda9676ece7e87dd6b9627a24aa8c70aaecd58e810cc4296058"
+  },
+  "judge_demo": {
+    "build_only_safe_exit": 0,
+    "build_only_unsafe_exit": 0,
+    "driftproof_safe_exit": 0,
+    "driftproof_safe_verdict": "approve",
+    "driftproof_unsafe_exit": 10,
+    "driftproof_unsafe_verdict": "reject",
+    "receipt_sha256": "bf7be7318f5935e638572b039587985473f93ab861f09505b7b47a546b50c41b",
+    "unsafe_failed_check_ids": [
+      "C-350E249C9346"
+    ]
+  },
+  "limitations": [
+    "The paired judge demonstration contains two transparent fixtures and is not the 24-case benchmark.",
+    "The benchmark remains synthetic and project-authored.",
+    "Approval remains advisory and requires a qualified human decision."
+  ],
+  "parent_commit": "9a88cfda6d939d15e1622c1f51c72429e7004637",
+  "qualification": {
+    "documentation_verification": true,
+    "frozen_replay_verified": true,
+    "git_diff_check": true,
+    "git_fsck": true,
+    "judge_demo_status_hash_unchanged": true,
+    "judge_demo_verified": true,
+    "make_check_status_hash_unchanged": true,
+    "mypy_strict": true,
+    "pytest_passed": 178,
+    "ruff_format": true,
+    "ruff_lint": true,
+    "runtime_schema_check": true,
+    "source_and_wheel_builds": true
+  },
+  "review_method": "hostile installed-wheel and copy-paste workflow audit plus executable boundary probes",
+  "schema_version": 1,
+  "status": "passed"
+}

@@ -131,6 +131,51 @@ def atomic_write_text(path: Path, payload: str) -> None:
             temporary.unlink(missing_ok=True)
 
 
+def exclusive_atomic_write_text(path: Path, payload: str, *, mode: int = 0o600) -> None:
+    """Atomically publish a new text file without replacing a concurrent writer.
+
+    The complete payload is fsynced in a unique same-directory temporary file,
+    then linked into the absent destination. The hard-link publication is atomic
+    and fails if another process created the destination first.
+    """
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink() or path.exists():
+        raise FileExistsError(f"output already exists or is unsafe: {path}")
+
+    descriptor: int | None = None
+    temporary: Path | None = None
+    try:
+        descriptor, raw_temporary = tempfile.mkstemp(
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            dir=path.parent,
+            text=True,
+        )
+        temporary = Path(raw_temporary)
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
+            descriptor = None
+            os.fchmod(handle.fileno(), mode)
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.link(temporary, path, follow_symlinks=False)
+        temporary.unlink()
+        temporary = None
+
+        directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+        directory_fd = os.open(path.parent, directory_flags)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 def write_json(path: Path, value: Any) -> None:
     atomic_write_text(path, pretty_json(value) + "\n")
 

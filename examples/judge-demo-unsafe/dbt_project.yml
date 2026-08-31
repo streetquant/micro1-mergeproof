@@ -1,0 +1,6 @@
+name: judge_demo_unsafe
+version: 1.0.0
+profile: judge_demo_unsafe
+model-paths: [models]
+target-path: target
+clean-targets: [target, logs]

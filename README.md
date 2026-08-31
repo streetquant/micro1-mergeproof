@@ -18,7 +18,18 @@ The project-authored benchmark contains 24 paired candidates: 12 externally corr
 
 The raw predictions, per-candidate evidence, manifests, and exact metric computation are in [`results/driftproof-comparison/`](results/driftproof-comparison/). This is a balanced synthetic benchmark authored for this project; it is not evidence of universal correctness or formal verification.
 
-## Human workflow: template → preflight → review
+## Credential-free judge demonstration
+
+After installing the locked environment, one command demonstrates the central failure mode on two transparent fixtures:
+
+```bash
+uv sync --locked --extra dev --extra dbt
+make judge-demo
+```
+
+Both fixtures pass the same build-only `dbt build` baseline. DriftProof then approves the contract-preserving repair and rejects the green-but-wrong repair. The command independently verifies both bundles and prints the two HTML report paths plus a content-addressed `quickstart-receipt.json`. It uses no API key, external model, hidden label, merge, or deployment action. This paired demonstration is intentionally smaller than the frozen 24-case benchmark.
+
+## Human workflow: onboard → edit contract → preflight → review
 
 Prerequisites are Linux, Python 3.11 or later, [`uv`](https://docs.astral.sh/uv/), dbt, and a working rootless bubblewrap installation.
 
@@ -27,15 +38,21 @@ uv sync --locked --extra dbt
 uv run driftproof --version
 uv run driftproof doctor --json
 
-uv run driftproof context-template \
-  --output /absolute/path/to/dbt-project/BUSINESS_CONTEXT.md
+# Plan only: no candidate execution and no file creation.
+uv run driftproof onboard /absolute/path/to/dbt-project --run-id reviewer-1 --json
+
+# Create only a missing BUSINESS_CONTEXT.md; never replace existing content.
+uv run driftproof onboard /absolute/path/to/dbt-project \
+  --run-id reviewer-1 \
+  --apply \
+  --json
 
 # Edit the generated examples to state the real visible contract.
 uv run driftproof preflight /absolute/path/to/dbt-project --json
 uv run driftproof review /absolute/path/to/dbt-project --run-id reviewer-1
 ```
 
-`context-template` writes a compilable starting point without executing candidate code. `preflight` snapshots the project and reports compiled typed rules plus unresolved statements, also without executing dbt. The review then chooses collision-resistant report/work paths from the absolute project identity and optional run ID, outside the candidate.
+`onboard` returns exact argument vectors for context creation, preflight, review, and readiness checks. Planning is non-mutating; `--apply` atomically creates only a missing context file and never overwrites human-authored content. `preflight` snapshots the project and reports compiled typed rules plus unresolved statements, also without executing dbt. The review then chooses collision-resistant report/work paths from the absolute project identity and optional run ID, outside the candidate.
 
 The human command prints the verdict, next state, HTML and machine report paths, certificate SHA-256, request identity, and the reminder that a qualified human still owns the final action.
 

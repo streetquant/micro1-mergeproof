@@ -195,6 +195,49 @@ class DriftProofContextTemplateResponse(StrictModel):
     consequential_action_taken: Literal[False] = False
 
 
+class DriftProofOnboardingResponse(StrictModel):
+    schema_version: Literal[1] = 1
+    protocol: Literal["driftproof.onboard.v1"] = "driftproof.onboard.v1"
+    status: Literal["planning", "context_created", "context_present"]
+    project: str
+    context: str
+    context_exists: bool
+    context_created: bool
+    context_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    created_files: list[str]
+    recommended_action: Literal[
+        "create_business_context",
+        "edit_business_context",
+        "run_preflight",
+    ]
+    create_context_argv: list[str] | None = None
+    preflight_argv: list[str] = Field(min_length=4)
+    review_argv: list[str] = Field(min_length=4)
+    doctor_argv: list[str] = Field(min_length=3)
+    candidate_code_executed: Literal[False] = False
+    human_approval_required: Literal[True] = True
+    consequential_action_taken: Literal[False] = False
+
+    @model_validator(mode="after")
+    def onboarding_state_is_consistent(self) -> DriftProofOnboardingResponse:
+        expected = {
+            "planning": (False, False, "create_business_context"),
+            "context_created": (True, True, "edit_business_context"),
+            "context_present": (True, False, "run_preflight"),
+        }[self.status]
+        if (self.context_exists, self.context_created, self.recommended_action) != expected:
+            raise ValueError("onboarding status fields are inconsistent")
+        if self.context_exists != (self.context_sha256 is not None):
+            raise ValueError("context hash presence does not match context existence")
+        if self.context_created != bool(self.created_files):
+            raise ValueError("created_files does not match context_created")
+        if self.context_exists and self.create_context_argv is not None:
+            raise ValueError("create_context_argv must be absent once context exists")
+        if not self.context_exists and self.create_context_argv is None:
+            raise ValueError("missing context requires create_context_argv")
+        return self
+
+
 class DriftProofNavigationResponse(StrictModel):
     schema_version: Literal[1] = 1
     protocol: Literal["driftproof.agent.v1"] = "driftproof.agent.v1"

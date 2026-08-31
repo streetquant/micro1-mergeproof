@@ -1,0 +1,142 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "candidate_code_executed": {
+      "const": false,
+      "default": false,
+      "title": "Candidate Code Executed",
+      "type": "boolean"
+    },
+    "consequential_action_taken": {
+      "const": false,
+      "default": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "context": {
+      "title": "Context",
+      "type": "string"
+    },
+    "context_created": {
+      "title": "Context Created",
+      "type": "boolean"
+    },
+    "context_exists": {
+      "title": "Context Exists",
+      "type": "boolean"
+    },
+    "context_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Context Sha256"
+    },
+    "create_context_argv": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Create Context Argv"
+    },
+    "created_files": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Created Files",
+      "type": "array"
+    },
+    "doctor_argv": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 3,
+      "title": "Doctor Argv",
+      "type": "array"
+    },
+    "human_approval_required": {
+      "const": true,
+      "default": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "preflight_argv": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 4,
+      "title": "Preflight Argv",
+      "type": "array"
+    },
+    "project": {
+      "title": "Project",
+      "type": "string"
+    },
+    "protocol": {
+      "const": "driftproof.onboard.v1",
+      "default": "driftproof.onboard.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "recommended_action": {
+      "enum": [
+        "create_business_context",
+        "edit_business_context",
+        "run_preflight"
+      ],
+      "title": "Recommended Action",
+      "type": "string"
+    },
+    "review_argv": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 4,
+      "title": "Review Argv",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "planning",
+        "context_created",
+        "context_present"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "project",
+    "context",
+    "context_exists",
+    "context_created",
+    "created_files",
+    "recommended_action",
+    "preflight_argv",
+    "review_argv",
+    "doctor_argv"
+  ],
+  "title": "DriftProofOnboardingResponse",
+  "type": "object"
+}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import re
+import shlex
 import shutil
 import sys
 import tempfile
@@ -16,6 +17,7 @@ from mergeproof.sandbox import _bubblewrap_available
 from mergeproof.utils import (
     atomic_write_text,
     canonical_json,
+    exclusive_atomic_write_text,
     pretty_json,
     redact_secrets,
     sha256_text,
@@ -33,6 +35,7 @@ from .models import (
     DriftProofContextTemplateResponse,
     DriftProofErrorResponse,
     DriftProofNavigationResponse,
+    DriftProofOnboardingResponse,
     DriftProofPreflightResponse,
     DriftProofReviewRequest,
     GateReport,
@@ -64,6 +67,10 @@ _SCHEMA_ALIASES = {
     "preflight_response": "preflight_response",
     "context-template-response": "context_template_response",
     "context_template_response": "context_template_response",
+    "onboard-response": "onboarding_response",
+    "onboard_response": "onboarding_response",
+    "onboarding-response": "onboarding_response",
+    "onboarding_response": "onboarding_response",
     "report": "report",
     "gate-report": "report",
     "gate_report": "report",
@@ -483,6 +490,7 @@ def _schema_catalog() -> dict[str, dict[str, Any]]:
         "request": DriftProofReviewRequest.model_json_schema(),
         "preflight_response": DriftProofPreflightResponse.model_json_schema(),
         "context_template_response": DriftProofContextTemplateResponse.model_json_schema(),
+        "onboarding_response": DriftProofOnboardingResponse.model_json_schema(),
         "report": GateReport.model_json_schema(),
         "certificate": ApprovalCertificate.model_json_schema(),
         "navigation_response": DriftProofNavigationResponse.model_json_schema(),
@@ -550,6 +558,135 @@ def context_template(
         console.print(f"Business-context template: {resolved_output}")
     else:
         typer.echo(CONTEXT_TEMPLATE, nl=False)
+
+
+@app.command("onboard")
+def onboard(
+    project: Annotated[Path, typer.Argument()] = Path("."),
+    context: Annotated[
+        Path | None,
+        typer.Option(help="Business-context path; defaults to PROJECT/BUSINESS_CONTEXT.md."),
+    ] = None,
+    apply: Annotated[
+        bool,
+        typer.Option(
+            "--apply",
+            help="Create a missing context template atomically. Existing files are never replaced.",
+        ),
+    ] = False,
+    run_id: Annotated[
+        str | None,
+        typer.Option(
+            help="Optional collision-safe identifier included in the suggested review command."
+        ),
+    ] = None,
+    json_output: Annotated[bool, typer.Option("--json")] = False,
+) -> None:
+    """Plan first-time setup or safely create the one missing context template."""
+
+    try:
+        lexical_project = project.expanduser()
+        if lexical_project.is_symlink() or not lexical_project.is_dir():
+            raise GateExecutionError(f"project must be a regular directory: {lexical_project}")
+        resolved_project = lexical_project.resolve()
+        selected_context = (
+            context.expanduser()
+            if context is not None
+            else (resolved_project / "BUSINESS_CONTEXT.md")
+        )
+        if selected_context.is_symlink():
+            raise GateExecutionError(f"business context may not be a symlink: {selected_context}")
+        resolved_context = selected_context.resolve(strict=False)
+        if resolved_context.exists() and not resolved_context.is_file():
+            raise GateExecutionError(
+                f"business context must be a regular UTF-8 file path: {resolved_context}"
+            )
+
+        validated_run_id = _validate_run_id(run_id)
+        context_created = False
+        if not resolved_context.exists() and apply:
+            exclusive_atomic_write_text(resolved_context, CONTEXT_TEMPLATE, mode=0o644)
+            context_created = True
+
+        context_exists = resolved_context.is_file() and not resolved_context.is_symlink()
+        context_sha256 = (
+            sha256_text(resolved_context.read_text(encoding="utf-8")) if context_exists else None
+        )
+        if context_created:
+            status: Literal["planning", "context_created", "context_present"] = "context_created"
+            recommended_action: Literal[
+                "create_business_context", "edit_business_context", "run_preflight"
+            ] = "edit_business_context"
+        elif context_exists:
+            status = "context_present"
+            recommended_action = "run_preflight"
+        else:
+            status = "planning"
+            recommended_action = "create_business_context"
+
+        project_text = str(resolved_project)
+        context_text = str(resolved_context)
+        create_context_argv = (
+            [
+                "driftproof",
+                "onboard",
+                project_text,
+                "--context",
+                context_text,
+                "--apply",
+                "--json",
+            ]
+            if not context_exists
+            else None
+        )
+        preflight_argv = [
+            "driftproof",
+            "preflight",
+            project_text,
+            "--context",
+            context_text,
+            "--json",
+        ]
+        review_argv = [
+            "driftproof",
+            "review",
+            project_text,
+            "--context",
+            context_text,
+        ]
+        if validated_run_id is not None:
+            review_argv.extend(("--run-id", validated_run_id))
+
+        payload = DriftProofOnboardingResponse(
+            status=status,
+            project=project_text,
+            context=context_text,
+            context_exists=context_exists,
+            context_created=context_created,
+            context_sha256=context_sha256,
+            created_files=[context_text] if context_created else [],
+            recommended_action=recommended_action,
+            create_context_argv=create_context_argv,
+            preflight_argv=preflight_argv,
+            review_argv=review_argv,
+            doctor_argv=["driftproof", "doctor", "--json"],
+        ).model_dump(mode="json")
+    except Exception as exc:
+        _fail(exc, json_output=json_output, context="DriftProof onboarding")
+
+    if json_output:
+        typer.echo(pretty_json(payload))
+        return
+    console.print("[bold]DriftProof onboarding[/bold]")
+    console.print(f"Project: {payload['project']}")
+    console.print(f"Context: {payload['context']} ({payload['status']})")
+    console.print(f"Next state: {payload['recommended_action']}")
+    if payload["create_context_argv"] is not None:
+        console.print(f"Create template: {shlex.join(payload['create_context_argv'])}")
+    if payload["context_created"]:
+        console.print("Edit the generated context so it states the real visible business contract.")
+    console.print(f"Preflight: {shlex.join(payload['preflight_argv'])}")
+    console.print(f"Review: {shlex.join(payload['review_argv'])}")
 
 
 @app.command("preflight")
@@ -1027,13 +1164,31 @@ def doctor(json_output: Annotated[bool, typer.Option("--json")] = False) -> None
             "note": "A provider is optional; deterministic DriftProof requires none.",
         },
     }
-    ready = bool(
-        checks["python"]["ready"] and checks["dbt"]["ready"] and checks["bubblewrap"]["ready"]
-    )
+    missing_requirements: list[str] = []
+    remediation: list[str] = []
+    if not checks["python"]["ready"]:
+        missing_requirements.append("python>=3.11")
+        remediation.append("Install Python 3.11 or later, then rerun driftproof doctor --json.")
+    if not checks["dbt"]["ready"]:
+        missing_requirements.append("dbt")
+        remediation.append(
+            "Install the pinned dbt dependencies (dbt-core 1.11.14 and dbt-duckdb 1.11.0), "
+            "or run `uv sync --locked --extra dbt` in this repository."
+        )
+    if not checks["bubblewrap"]["ready"]:
+        missing_requirements.append("working_bubblewrap_namespace")
+        remediation.append(
+            "Install bubblewrap and ensure an unprivileged `bwrap --unshare-all` namespace works."
+        )
+    ready = not missing_requirements
     payload = {
         "schema_version": 1,
         "protocol": "driftproof.doctor.v1",
         "ready_for_review": ready,
+        "missing_requirements": missing_requirements,
+        "recommended_action": "run_onboard" if ready else "repair_environment",
+        "next_argv": ["driftproof", "onboard", ".", "--json"] if ready else None,
+        "remediation": remediation,
         "checks": checks,
     }
     typer.echo(pretty_json(payload)) if json_output else console.print(pretty_json(payload))
@@ -1054,6 +1209,7 @@ def capabilities() -> None:
                 "commands": {
                     "human_review": "driftproof review",
                     "machine_review": "driftproof agent",
+                    "onboard": "driftproof onboard",
                     "preflight": "driftproof preflight",
                     "context_template": "driftproof context-template",
                     "verify_bundle": "driftproof verify-report",
@@ -1063,6 +1219,7 @@ def capabilities() -> None:
                 },
                 "usage": {
                     "machine_review": "driftproof agent <project|request.json|->",
+                    "onboard": "driftproof onboard <project> [--apply] --json",
                     "preflight": "driftproof preflight <project> --json",
                     "context_template": "driftproof context-template [--output BUSINESS_CONTEXT.md]",
                     "verify_bundle": "driftproof verify-report <bundle>",

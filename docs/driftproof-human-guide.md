@@ -4,6 +4,15 @@ DriftProof is an independent release gate for agent-authored dbt repairs. It ver
 
 ## Fastest safe workflow
 
+### 0. See the failure mode on transparent fixtures
+
+```bash
+uv sync --locked --extra dev --extra dbt
+make judge-demo
+```
+
+The credential-free demonstration proves that both fixtures pass build-only review, while DriftProof approves the contract-preserving repair and rejects the green-but-wrong repair. It prints independently verified report paths and a content-addressed receipt.
+
 ### 1. Install and diagnose
 
 ```bash
@@ -12,18 +21,26 @@ uv run driftproof --version
 uv run driftproof doctor --json
 ```
 
-A production review requires Linux, dbt, and a working rootless bubblewrap namespace. Provider credentials are not required for deterministic review.
+A production review requires Linux, dbt, and a working rootless bubblewrap namespace. Provider credentials are not required for deterministic review. Doctor output identifies missing requirements, remediation, and the next argument vector.
 
-### 2. Create visible business context
+### 2. Onboard the real project
 
-Generate a compilable template without executing candidate code:
+Plan setup without executing candidate code or creating files:
 
 ```bash
-uv run driftproof context-template \
-  --output /absolute/path/to/dbt-project/BUSINESS_CONTEXT.md
+uv run driftproof onboard /absolute/path/to/dbt-project --run-id reviewer-1 --json
 ```
 
-Edit the generated file so it states the real contract. Remove example rules that do not apply. Do not copy hidden labels, expected benchmark answers, secrets, or reference repairs into the context.
+Create only a missing context template:
+
+```bash
+uv run driftproof onboard /absolute/path/to/dbt-project \
+  --run-id reviewer-1 \
+  --apply \
+  --json
+```
+
+`--apply` is no-clobber: it never replaces an existing context file, including one created concurrently. Edit the generated file so it states the real contract. Remove example rules that do not apply. Do not copy hidden labels, expected benchmark answers, secrets, or reference repairs into the context.
 
 ### 3. Preflight without executing dbt
 

@@ -266,6 +266,49 @@ def test_context_template_is_compilable_and_requires_explicit_replacement(
     assert replaced.exit_code == 0
 
 
+def test_onboard_plans_without_execution_and_safely_creates_context(tmp_path: Path) -> None:
+    project = tmp_path / "candidate with spaces"
+    project.mkdir()
+    context = project / "BUSINESS_CONTEXT.md"
+
+    planned = runner.invoke(app, ["onboard", str(project), "--run-id", "judge-1", "--json"])
+
+    assert planned.exit_code == 0, planned.output
+    plan = json.loads(planned.stdout)
+    assert plan["protocol"] == "driftproof.onboard.v1"
+    assert plan["status"] == "planning"
+    assert plan["recommended_action"] == "create_business_context"
+    assert plan["context_exists"] is False
+    assert plan["context_created"] is False
+    assert plan["candidate_code_executed"] is False
+    assert plan["create_context_argv"][-2:] == ["--apply", "--json"]
+    assert plan["review_argv"][-2:] == ["--run-id", "judge-1"]
+    assert not context.exists()
+
+    applied = runner.invoke(
+        app,
+        ["onboard", str(project), "--run-id", "judge-1", "--apply", "--json"],
+    )
+
+    assert applied.exit_code == 0, applied.output
+    created = json.loads(applied.stdout)
+    assert created["status"] == "context_created"
+    assert created["recommended_action"] == "edit_business_context"
+    assert created["context_exists"] is True
+    assert created["context_created"] is True
+    assert created["created_files"] == [str(context.resolve())]
+    assert created["create_context_argv"] is None
+    assert compile_contract(context.read_text(encoding="utf-8")).rules
+
+    context.write_text("Human-authored contract.\n", encoding="utf-8")
+    repeated = runner.invoke(app, ["onboard", str(project), "--apply", "--json"])
+    assert repeated.exit_code == 0, repeated.output
+    existing = json.loads(repeated.stdout)
+    assert existing["status"] == "context_present"
+    assert existing["context_created"] is False
+    assert context.read_text(encoding="utf-8") == "Human-authored contract.\n"
+
+
 def test_preflight_reports_compiled_and_unresolved_contracts(tmp_path: Path) -> None:
     complete = dbt_project(
         tmp_path / "complete",

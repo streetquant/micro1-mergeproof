@@ -1,0 +1,34 @@
+{
+  "artifact_sha256": {
+    "doctor.json": "fbb1cd56328c174f06ac86d3d288dd0350cd45a2f36b2871804d9d7a5a138360",
+    "navigation-safe.json": "ce4064b9ba5c7a77364bd6bf31a71ffc4e915b48e7342641e1c7140b4e03ad07",
+    "navigation-unsafe.json": "d4e6e711197625d63cf39b93993477fb2b1427331fbd8d4a834311732299585e",
+    "preflight-safe.json": "39f9806c23f1946d1ace5f48f5c6d677dfab416ed5ef08949de13eda4b060102",
+    "preflight-unsafe.json": "20b3d2930431659e94402ee5011d4934af053aa727a5a47fd31b0b837adb3bce",
+    "verification-safe.json": "bf1d89614dc90e8ab910e959d18d5d87ca8d9403e9522005298fde561da314d6",
+    "verification-unsafe.json": "bf74ea184a4ecdc980136b862eb44a543763ef88f3ef0a784f47ac6f1b838f99"
+  },
+  "build_only_baseline": {
+    "safe_exit": 0,
+    "unsafe_exit": 0
+  },
+  "consequential_action_taken": false,
+  "driftproof": {
+    "safe_exit": 0,
+    "safe_verdict": "approve",
+    "unsafe_exit": 10,
+    "unsafe_failed_check_ids": [
+      "C-350E249C9346"
+    ],
+    "unsafe_verdict": "reject"
+  },
+  "human_approval_required": true,
+  "protocol": "driftproof.judge-quickstart.v1",
+  "reports": {
+    "safe": "/tmp/driftproof-round1-parent.GJwT8o/delivery/reviews/safe/report.html",
+    "unsafe": "/tmp/driftproof-round1-parent.GJwT8o/delivery/reviews/unsafe/report.html"
+  },
+  "schema_version": 1,
+  "scope": "Credential-free paired demonstration. It is not the 24-case benchmark.",
+  "verified": true
+}

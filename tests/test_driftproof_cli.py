@@ -147,15 +147,46 @@ def test_review_unexpected_error_is_generic_and_fail_closed(
     assert "/secret/location" not in payload["detail"]
 
 
+def test_doctor_returns_actionable_machine_next_steps(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("driftproof.cli._bubblewrap_available", lambda: True)
+    monkeypatch.setattr(
+        "driftproof.cli.shutil.which",
+        lambda name: None if name == "dbt" else f"/usr/bin/{name}",
+    )
+
+    missing = runner.invoke(app, ["doctor", "--json"])
+
+    assert missing.exit_code == 30
+    missing_payload = json.loads(missing.stdout)
+    assert missing_payload["missing_requirements"] == ["dbt"]
+    assert missing_payload["recommended_action"] == "repair_environment"
+    assert missing_payload["next_argv"] is None
+    assert any("dbt-core" in item for item in missing_payload["remediation"])
+
+    monkeypatch.setattr("driftproof.cli.shutil.which", lambda name: f"/usr/bin/{name}")
+    ready = runner.invoke(app, ["doctor", "--json"])
+
+    assert ready.exit_code == 0
+    ready_payload = json.loads(ready.stdout)
+    assert ready_payload["missing_requirements"] == []
+    assert ready_payload["recommended_action"] == "run_onboard"
+    assert ready_payload["next_argv"] == ["driftproof", "onboard", ".", "--json"]
+
+
 def test_capabilities_and_schema_aliases_are_machine_discoverable() -> None:
     capabilities = runner.invoke(app, ["capabilities"])
     agent_schema = runner.invoke(app, ["schema", "agent-response"])
     navigation_schema = runner.invoke(app, ["schema", "navigation_response"])
+    onboarding_schema = runner.invoke(app, ["schema", "onboard-response"])
     invalid_schema = runner.invoke(app, ["schema", "not-a-schema"])
 
     assert capabilities.exit_code == 0
     capability_payload = json.loads(capabilities.stdout)
     assert capability_payload["commands"]["machine_review"] == "driftproof agent"
+    assert capability_payload["commands"]["onboard"] == "driftproof onboard"
+    assert capability_payload["usage"]["onboard"].startswith("driftproof onboard")
     assert capability_payload["external_provider_consent_required"] is True
     assert capability_payload["safety_boundary"] == {
         "human_approval_required": True,
@@ -171,6 +202,10 @@ def test_capabilities_and_schema_aliases_are_machine_discoverable() -> None:
     }
     assert navigation_schema.exit_code == 0
     assert json.loads(navigation_schema.stdout)["title"] == "DriftProofNavigationResponse"
+    assert onboarding_schema.exit_code == 0
+    onboarding_payload = json.loads(onboarding_schema.stdout)
+    assert onboarding_payload["title"] == "DriftProofOnboardingResponse"
+    assert onboarding_payload["additionalProperties"] is False
     assert invalid_schema.exit_code == 30
     assert json.loads(invalid_schema.stdout)["error_code"] == "validation_failed"
 

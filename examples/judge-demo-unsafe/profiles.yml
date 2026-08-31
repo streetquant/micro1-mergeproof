@@ -1,0 +1,7 @@
+judge_demo_unsafe:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: judge-demo.duckdb
+      threads: 1

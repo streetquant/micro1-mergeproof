@@ -27,6 +27,11 @@
       "sha256": "f43ae7ea2e37c45462c9844386426cb941d9c797208945c4e21478558cfff245"
     },
     {
+      "file": "onboarding-response.schema.json",
+      "name": "onboarding_response",
+      "sha256": "3668f49cb7572f0c50eed44b8c9f0b3e8264b9f408eb28b77d9ee23f23e6f422"
+    },
+    {
       "file": "preflight-response.schema.json",
       "name": "preflight_response",
       "sha256": "2e1525e8b82187a7957a7500bc7c3ac01ea381c80bce30eef6a04a8a02d60965"

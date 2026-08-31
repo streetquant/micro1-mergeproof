@@ -1,0 +1,78 @@
+{
+  "findings": [
+    {
+      "finding": "A first-time reviewer had to compose template, context, preflight and review paths manually.",
+      "id": "R1-HUMAN-001",
+      "repair": "Added non-mutating `driftproof onboard` planning plus no-clobber `--apply`, with exact argument vectors and a runtime-derived schema.",
+      "severity": "high",
+      "status": "fixed",
+      "validation": [
+        "onboard path-with-spaces test",
+        "existing human context preserved",
+        "exclusive concurrent publication test"
+      ]
+    },
+    {
+      "finding": "Doctor described readiness but did not identify missing requirements or the next machine action.",
+      "id": "R1-HUMAN-002",
+      "repair": "Added missing_requirements, remediation, recommended_action and next_argv while retaining credential-value privacy.",
+      "severity": "medium",
+      "status": "fixed",
+      "validation": [
+        "missing-dbt machine test",
+        "ready-environment next-argv test",
+        "installed JSON parse probe"
+      ]
+    },
+    {
+      "finding": "There was no credential-free one-command demonstration of the green-build semantic failure.",
+      "id": "R1-JUDGE-003",
+      "repair": "Added transparent safe/unsafe dbt fixtures and `make judge-demo`, which runs identical build-only baselines, DriftProof reviews, independent bundle verification and a hash-bearing receipt.",
+      "severity": "high",
+      "status": "fixed",
+      "validation": [
+        "both build-only exits 0",
+        "safe DriftProof exit 0 approve",
+        "unsafe DriftProof exit 10 reject",
+        "both bundles verified"
+      ]
+    },
+    {
+      "finding": "The first demo implementation ran baseline dbt from the repository root and created judge-demo.duckdb there.",
+      "id": "R1-JUDGE-004",
+      "repair": "Execute each baseline inside its copied fixture with the qualified project dbt binary; assert Git status hash is unchanged across the demonstration.",
+      "severity": "medium",
+      "status": "fixed",
+      "validation": [
+        "no repository database artifact",
+        "status hash unchanged",
+        "full paired demo passed"
+      ]
+    },
+    {
+      "finding": "Schema clone-independence test encoded a brittle historical file count.",
+      "id": "R1-REPRO-005",
+      "repair": "Assert required schema members and equality instead of a magic count.",
+      "severity": "low",
+      "status": "fixed",
+      "validation": [
+        "schema export/check passed",
+        "onboarding schema present",
+        "full suite passed"
+      ]
+    },
+    {
+      "finding": "A caller could accidentally target an existing judge-output path.",
+      "id": "R1-SAFETY-006",
+      "repair": "No code change required: the script already refuses any existing or symlink output. The first hostile probe failed closed before execution.",
+      "severity": "medium",
+      "status": "verified_existing_behavior",
+      "validation": [
+        "existing-output probe exited 2",
+        "no existing content replaced"
+      ]
+    }
+  ],
+  "round": "human_and_judge_ergonomics",
+  "schema_version": 1
+}

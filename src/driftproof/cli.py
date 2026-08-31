@@ -41,6 +41,7 @@ from .models import (
     DriftProofNavigationResponse,
     DriftProofOnboardingResponse,
     DriftProofPreflightResponse,
+    DriftProofResponseVerification,
     DriftProofReviewRequest,
     GateReport,
     RuleKind,
@@ -52,6 +53,7 @@ from .reporting import (
     prepare_gate_output,
     verify_gate_bundle,
 )
+from .response import verify_response_file
 from .runner import find_dbt_executable
 from .templates import CONTEXT_TEMPLATE
 
@@ -90,6 +92,8 @@ _SCHEMA_ALIASES = {
     "navigation_response": "navigation_response",
     "error-response": "error_response",
     "error_response": "error_response",
+    "response-verification": "response_verification",
+    "response_verification": "response_verification",
     "agent-response": "agent_response",
     "agent_response": "agent_response",
 }
@@ -503,6 +507,7 @@ def _schema_catalog() -> dict[str, dict[str, Any]]:
         "certificate": ApprovalCertificate.model_json_schema(),
         "navigation_response": DriftProofNavigationResponse.model_json_schema(),
         "error_response": DriftProofErrorResponse.model_json_schema(),
+        "response_verification": DriftProofResponseVerification.model_json_schema(),
         "agent_response": DriftProofAgentProtocolResponse.model_json_schema(),
     }
 
@@ -1176,6 +1181,35 @@ def agent(
     raise typer.Exit(code=_execute_review_request(request, json_output=True))
 
 
+@app.command("verify-response")
+def verify_response(
+    response: Annotated[
+        Path,
+        typer.Argument(help="Regular DriftProof agent-response JSON file."),
+    ],
+    expected_request_sha256: Annotated[
+        str | None,
+        typer.Option(
+            "--expected-request-sha256",
+            help=(
+                "Optional independently computed configuration request SHA-256. A mismatch fails "
+                "closed rather than producing a partially verified response."
+            ),
+        ),
+    ] = None,
+) -> None:
+    """Authenticate one response envelope and every claim bound by its bundle."""
+
+    try:
+        payload = verify_response_file(
+            response,
+            expected_request_sha256=expected_request_sha256,
+        ).model_dump(mode="json")
+    except Exception as exc:
+        _fail(exc, json_output=True, context="DriftProof response verification")
+    typer.echo(pretty_json(payload))
+
+
 @app.command("verify-report")
 def verify_report(
     bundle: Annotated[
@@ -1346,6 +1380,7 @@ def capabilities() -> None:
                     "preflight": "driftproof preflight",
                     "context_template": "driftproof context-template",
                     "verify_bundle": "driftproof verify-report",
+                    "verify_response": "driftproof verify-response",
                     "inspect_bundle": "driftproof inspect",
                     "readiness": "driftproof doctor",
                     "schema": "driftproof schema",
@@ -1358,6 +1393,9 @@ def capabilities() -> None:
                     "preflight": "driftproof preflight <project> --json",
                     "context_template": "driftproof context-template [--output BUSINESS_CONTEXT.md]",
                     "verify_bundle": "driftproof verify-report <bundle>",
+                    "verify_response": (
+                        "driftproof verify-response <response.json> [--expected-request-sha256 HEX]"
+                    ),
                     "inspect_bundle": "driftproof inspect <bundle> --json",
                     "readiness": "driftproof doctor --json",
                     "schema": "driftproof schema <name>",

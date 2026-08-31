@@ -1,0 +1,208 @@
+{
+  "$defs": {
+    "Verdict": {
+      "enum": [
+        "approve",
+        "reject",
+        "human_review"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bundle": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Bundle"
+    },
+    "bundle_manifest_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Bundle Manifest Sha256"
+    },
+    "bundle_verified": {
+      "title": "Bundle Verified",
+      "type": "boolean"
+    },
+    "candidate_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Candidate Id"
+    },
+    "consequential_action_taken": {
+      "const": false,
+      "default": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "expected_request_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expected Request Sha256"
+    },
+    "human_approval_required": {
+      "const": true,
+      "default": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "protocol": {
+      "const": "driftproof.response-verification.v1",
+      "default": "driftproof.response-verification.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "request_identity_verified": {
+      "title": "Request Identity Verified",
+      "type": "boolean"
+    },
+    "request_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Request Sha256"
+    },
+    "response_envelope_verified": {
+      "const": true,
+      "default": true,
+      "title": "Response Envelope Verified",
+      "type": "boolean"
+    },
+    "response_exit_code": {
+      "enum": [
+        0,
+        10,
+        20,
+        30
+      ],
+      "title": "Response Exit Code",
+      "type": "integer"
+    },
+    "response_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Response File"
+    },
+    "response_status": {
+      "enum": [
+        "valid_review",
+        "invalid_review"
+      ],
+      "title": "Response Status",
+      "type": "string"
+    },
+    "review_result_trusted": {
+      "title": "Review Result Trusted",
+      "type": "boolean"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Run Id"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "unbound_response_fields": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unbound Response Fields",
+      "type": "array"
+    },
+    "verdict": {
+      "$ref": "#/$defs/Verdict"
+    },
+    "verified_binding_scope": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Verified Binding Scope",
+      "type": "array"
+    },
+    "verify_argv": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Verify Argv"
+    }
+  },
+  "required": [
+    "response_status",
+    "response_exit_code",
+    "request_identity_verified",
+    "review_result_trusted",
+    "bundle_verified",
+    "verdict",
+    "verified_binding_scope",
+    "unbound_response_fields"
+  ],
+  "title": "DriftProofResponseVerification",
+  "type": "object"
+}

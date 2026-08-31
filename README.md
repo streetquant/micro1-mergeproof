@@ -84,6 +84,7 @@ Discover installed capabilities and schemas rather than scraping prose:
 uv run driftproof capabilities
 uv run driftproof schema request
 uv run driftproof schema agent-response
+uv run driftproof schema response-verification
 uv run driftproof doctor --json
 ```
 
@@ -100,20 +101,27 @@ Python agents can avoid subprocess and JSON plumbing in their own code:
 ```python
 from pathlib import Path
 
-from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_for_agent
+from driftproof.sdk import (
+    ReviewRequest,
+    fingerprint_for_agent,
+    review_and_verify_for_agent,
+)
 
 request = ReviewRequest(
     project="candidate-project",
     context="candidate-project/BUSINESS_CONTEXT.md",
 )
 identity = fingerprint_for_agent(request, base_dir=Path.cwd())
-response = review_for_agent(request, base_dir=Path.cwd())
+response, verification = review_and_verify_for_agent(request, base_dir=Path.cwd())
+assert verification.request_identity_verified
+assert verification.request_sha256 == identity.configuration_request_sha256
+assert verification.bundle_verified == verification.review_result_trusted
 print(identity.content_fingerprint_sha256)
-print(response.model_dump_json(indent=2))
+print(verification.model_dump_json(indent=2))
 raise SystemExit(response.exit_code)
 ```
 
-When neither `output` nor `run_id` is supplied, the SDK assigns a unique control run ID so independent concurrent callers receive disjoint bundles. The semantic request hash excludes that control ID.
+`review_and_verify_for_agent` first binds the semantic request identity, then rejects any response whose bundle path, verdict, hashes, check indexes, report paths, or verification command disagree with the independently verified bundle. It also reports which response fields are bundle-bound and which remain metadata-only. When neither `output` nor `run_id` is supplied, the SDK assigns a unique control run ID so independent concurrent callers receive disjoint bundles. For an intentional content-bound retry, use `request_with_stable_run_id`; changing candidate or context bytes changes that run ID. Existing outputs are still never replaced implicitly.
 
 Start from [`examples/driftproof-request.json`](examples/driftproof-request.json), validate it against [`schemas/driftproof/request.schema.json`](schemas/driftproof/request.schema.json), then invoke:
 
@@ -140,7 +148,7 @@ The four stable process states are:
 | `20` | `human_review` | Verify bundle and escalate missing or ambiguous evidence. |
 | `30` | `invalid_review` | Trust no partial result; repair input, isolation, provider, filesystem, or integrity failure. |
 
-A valid response binds the tool version, request SHA-256, run ID, absolute project/context paths, candidate/context/build hashes, bundle and report paths, certificate and manifest hashes, exact failed/inconclusive check IDs, and a safe `verify_argv` vector. Invalid responses include `partial_result_trusted: false`.
+A valid response carries the tool version, request SHA-256, run ID, absolute project/context paths, candidate/context/build hashes, bundle and report paths, certificate and manifest hashes, exact failed/inconclusive check IDs, and a safe `verify_argv` vector. `driftproof verify-response` independently authenticates every bundle-backed field; request identity is additionally authenticated only when an independently computed expected request hash is supplied. The verification receipt explicitly lists metadata-only fields that the bundle cannot prove. Invalid responses include `partial_result_trusted: false` and never establish a trusted review result.
 
 Committed runtime-derived schemas live in [`schemas/`](schemas/); `python scripts/export_schemas.py --check` fails if they drift from executable models. The normative state machine and anti-patterns are in [`docs/driftproof-agent-protocol.md`](docs/driftproof-agent-protocol.md).
 

@@ -19,6 +19,11 @@
       "make",
       "release"
     ],
+    "response_verification_schema": [
+      "driftproof",
+      "schema",
+      "response-verification"
+    ],
     "source_qualification": [
       "make",
       "check"
@@ -26,6 +31,11 @@
     "submission_drift_check": [
       "make",
       "submission-check"
+    ],
+    "verify_agent_response": [
+      "driftproof",
+      "verify-response",
+      "response.json"
     ]
   },
   "consequential_action_taken": false,
@@ -36,12 +46,12 @@
   },
   "generated_files": {
     "START_HERE.html": {
-      "bytes": 3297,
-      "sha256": "3f41400fb70615084312c27be87ae952dc04bce062dd5e77660dd7737dbe823e"
+      "bytes": 3457,
+      "sha256": "b6dcb65aed416da1f2d8b052bbc294b2db8dca4b1505b9d5c561d3f00c6f805c"
     },
     "START_HERE.md": {
-      "bytes": 4342,
-      "sha256": "97cabaf2734de2d1191ecd5d98a935edc8bb57cc20b0a708fc2493d294099517"
+      "bytes": 4783,
+      "sha256": "2cd98e312d1a43597a3f9ed7bbc2b836d8a6c3a2832e4301cd69f4ebdac4c606"
     }
   },
   "human_approval_required": true,
@@ -122,6 +132,10 @@
       "bytes": 2940,
       "sha256": "623928bb849110148f0e4f0484ac212a7dfbf21757b4a8b70c1f4b5937004efb"
     },
+    "reviews/2026-08-31-round-6-response-binding/qualification.json": {
+      "bytes": 3778,
+      "sha256": "de4a3efe05cdf6f79b0226298e8abcc79aceddb8bfff79ee4331325ade6f3fe8"
+    },
     "reviews/recovery-promotion/qualification.json": {
       "bytes": 1660,
       "sha256": "92c27fd4f637e3cab2028d42d5418122af8690e128810b0198af54c39b4c3053"
@@ -131,8 +145,8 @@
       "sha256": "342c5ec039c6189f3052f2f228ef10c2b584ea2d3056310737ae2a990b61e1bd"
     },
     "schemas/manifest.json": {
-      "bytes": 3979,
-      "sha256": "9178c4a96d6583a8941e0db87f27356437134aa6c31bc25e54396c607ccc7096"
+      "bytes": 4158,
+      "sha256": "4b55470f9e15691cbbf99c9cb9fa383fa332a3c006a4e83d1543ab0030f112e3"
     }
   }
 }

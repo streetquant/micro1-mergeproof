@@ -221,16 +221,22 @@ uv run driftproof verify-report /path/to/bundle
 ```python
 from pathlib import Path
 
-from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_for_agent
+from driftproof.sdk import (
+    ReviewRequest,
+    fingerprint_for_agent,
+    review_and_verify_for_agent,
+)
 
 request = ReviewRequest(project="candidate", context="candidate/BUSINESS_CONTEXT.md")
 identity = fingerprint_for_agent(request, base_dir=Path.cwd())
-response = review_for_agent(request, base_dir=Path.cwd())
-assert response.request_sha256 == identity.configuration_request_sha256
+response, verification = review_and_verify_for_agent(request, base_dir=Path.cwd())
+assert verification.request_identity_verified
+assert verification.request_sha256 == identity.configuration_request_sha256
+assert verification.bundle_verified == verification.review_result_trusted
 raise SystemExit(response.exit_code)
 ```
 
-The typed SDK validates the one-object protocol, rejects malformed output and process/response disagreement, and assigns disjoint control run IDs to independent concurrent callers. Machine contracts are discoverable through `driftproof capabilities` and [`../schemas/driftproof/`](../schemas/driftproof/).
+The typed SDK validates the one-object protocol, rejects malformed output and process/response disagreement, independently binds bundle-backed response claims, and assigns disjoint control run IDs to independent concurrent callers. Content-bound retries can use `request_with_stable_run_id`. Machine contracts are discoverable through `driftproof capabilities` and [`../schemas/driftproof/`](../schemas/driftproof/).
 
 ## Evidence map
 
@@ -242,6 +248,7 @@ The typed SDK validates the one-object protocol, rejects malformed output and pr
 - Release/delivery adversarial review: [`../reviews/2026-08-31-round-3-release-delivery/`](../reviews/2026-08-31-round-3-release-delivery/)
 - Downloaded-release consumer review: [`../reviews/2026-08-31-round-4-consumer-verifier/`](../reviews/2026-08-31-round-4-consumer-verifier/)
 - Installed demo and runtime-recovery review: [`../reviews/2026-08-31-round-5-installed-demo/`](../reviews/2026-08-31-round-5-installed-demo/)
+- Response authenticity and retry-semantics review: [`../reviews/2026-08-31-round-6-response-binding/`](../reviews/2026-08-31-round-6-response-binding/)
 - Machine-readable submission manifest: [`manifest.json`](manifest.json)
 - Full product and trust-boundary documentation: [`../README.md`](../README.md)
 
@@ -325,11 +332,13 @@ uv run driftproof review /absolute/path/to/dbt-project --run-id reviewer-1
 uv run driftproof verify-report /path/to/bundle</pre>
 <h2>AI-agent workflow</h2>
 <pre>from pathlib import Path
-from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_for_agent
+from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_and_verify_for_agent
 request = ReviewRequest(project="candidate", context="candidate/BUSINESS_CONTEXT.md")
 identity = fingerprint_for_agent(request, base_dir=Path.cwd())
-response = review_for_agent(request, base_dir=Path.cwd())
-assert response.request_sha256 == identity.configuration_request_sha256</pre>
+response, verification = review_and_verify_for_agent(request, base_dir=Path.cwd())
+assert verification.request_identity_verified
+assert verification.request_sha256 == identity.configuration_request_sha256
+assert verification.bundle_verified == verification.review_result_trusted</pre>
 <p>See <a href="../schemas/driftproof/">machine schemas</a>, the <a href="../results/driftproof-comparison/comparison.json">authoritative comparison</a>, and the <a href="manifest.json">submission manifest</a>.</p>
 <div class="boundary"><strong>Fixed boundary:</strong> human approval is always required; no consequential action is taken.</div>
 </body>
@@ -363,6 +372,16 @@ def _manifest(root: Path, metrics: dict[str, Any], markdown: str, html_text: str
             "release_package": ["make", "release"],
             "agent_capabilities": ["driftproof", "capabilities"],
             "agent_schema": ["driftproof", "schema", "agent-response"],
+            "response_verification_schema": [
+                "driftproof",
+                "schema",
+                "response-verification",
+            ],
+            "verify_agent_response": [
+                "driftproof",
+                "verify-response",
+                "response.json",
+            ],
         },
         "generated_files": {
             "START_HERE.md": {

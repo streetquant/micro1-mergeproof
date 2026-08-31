@@ -71,6 +71,7 @@ _REVIEW_QUALIFICATION_ARTIFACTS = (
     "reviews/2026-08-31-round-3-release-delivery/qualification.json",
     "reviews/2026-08-31-round-4-consumer-verifier/qualification.json",
     "reviews/2026-08-31-round-5-installed-demo/qualification.json",
+    "reviews/2026-08-31-round-6-response-binding/qualification.json",
 )
 _REQUIRED_EVIDENCE_ARTIFACTS = (
     "benchmark/manifest.json",

@@ -29,6 +29,7 @@ def test_schema_exports_are_clone_independent_and_self_verifying(tmp_path: Path)
     assert "manifest.json" in exported
     assert "driftproof/onboarding-response.schema.json" in exported
     assert "driftproof/demo-response.schema.json" in exported
+    assert "driftproof/response-verification.schema.json" in exported
     assert "driftproof/index.json" in exported
     assert "mergeproof/index.json" in exported
 

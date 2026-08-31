@@ -55,6 +55,11 @@
       "file": "request.schema.json",
       "name": "request",
       "sha256": "56ce519e71fdc0d2199852cf45332137fff420bb4033be162cde859d754ae68c"
+    },
+    {
+      "file": "response-verification.schema.json",
+      "name": "response_verification",
+      "sha256": "15d64ff96b5dc3aea5fb88fe47cbaa8ff8a6afa5b406482447951b342b6697bc"
     }
   ],
   "source": "driftproof.cli._schema_catalog",

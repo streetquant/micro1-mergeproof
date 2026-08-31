@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "round": "response_authenticity_and_retry_semantics",
+  "findings": [
+    {
+      "id": "R6-BINDING-001",
+      "severity": "critical",
+      "status": "fixed",
+      "finding": "A schema-valid navigation response could claim a false bundle hash, artifact path, verdict, or check index without an independent response-to-bundle comparison.",
+      "repair": "Added `driftproof verify-response` and `verify_response_for_agent`, which verify the complete bundle and compare every bundle-backed response field to the report, certificate, manifest, and deterministic exit mapping.",
+      "validation": [
+        "valid response and bundle",
+        "manifest-hash tampering",
+        "human-report path substitution",
+        "installed-wheel CLI verification"
+      ]
+    },
+    {
+      "id": "R6-IDENTITY-002",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "The SDK's combined verification path could compute a different configuration identity when context was omitted because the CLI fills the default BUSINESS_CONTEXT.md before hashing.",
+      "repair": "Added `configuration_request_sha256_for_agent`, which resolves the same default context and semantic fields as the CLI without executing candidate code.",
+      "validation": [
+        "valid review identity equality",
+        "invalid-project response identity equality",
+        "installed-wheel identity binding"
+      ]
+    },
+    {
+      "id": "R6-RESPONSE-FILE-003",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "The SDK validated process stdout but did not prove that an atomically written response file contained the same protocol object.",
+      "repair": "`review_and_verify_for_agent` now parses the response file, rejects file/process disagreement, and verifies the file rather than trusting only the in-memory object.",
+      "validation": [
+        "response-file equality",
+        "deliberate process/file run-ID disagreement",
+        "fresh-wheel response-file verification"
+      ]
+    },
+    {
+      "id": "R6-PATH-004",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "A relative response path could reach a regular file through a symlinked parent and bypass a direct-file symlink check.",
+      "repair": "Response verification canonicalizes the absolute lexical path and rejects any direct or ancestral symlink alias before reading bytes.",
+      "validation": [
+        "direct response-file symlink",
+        "symlinked parent directory",
+        "canonical regular response path"
+      ]
+    },
+    {
+      "id": "R6-IDEMPOTENCY-005",
+      "severity": "medium",
+      "status": "fixed",
+      "finding": "Documentation recommended stable run IDs for retries but offered no safe deterministic helper tied to candidate and context bytes.",
+      "repair": "Added `stable_run_id_for_agent` and `request_with_stable_run_id`, derived from the content fingerprint while preserving no-clobber output semantics.",
+      "validation": [
+        "repeat equality",
+        "control-destination independence",
+        "candidate mutation changes run ID",
+        "installed-wheel helper"
+      ]
+    },
+    {
+      "id": "R6-ERROR-006",
+      "severity": "medium",
+      "status": "fixed",
+      "finding": "Authenticating an invalid-review envelope could be misread as authenticating a review result.",
+      "repair": "The verification receipt separates `response_envelope_verified`, `review_result_trusted`, and `bundle_verified`; an invalid envelope can be authenticated only with the latter two fixed false.",
+      "validation": [
+        "invalid project",
+        "expected request identity",
+        "no bundle fields",
+        "fixed human/no-action constants"
+      ]
+    }
+  ],
+  "human_approval_required": true,
+  "consequential_action_taken": false
+}

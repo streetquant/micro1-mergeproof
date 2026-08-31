@@ -24,6 +24,7 @@ uv run driftproof capabilities
 uv run driftproof schema request
 uv run driftproof schema fingerprint-response
 uv run driftproof schema agent-response
+uv run driftproof schema response-verification
 uv run driftproof doctor --json
 ```
 
@@ -34,6 +35,7 @@ Committed offline schemas are available at:
 - [`../schemas/driftproof/agent-response.schema.json`](../schemas/driftproof/agent-response.schema.json)
 - [`../schemas/driftproof/navigation-response.schema.json`](../schemas/driftproof/navigation-response.schema.json)
 - [`../schemas/driftproof/error-response.schema.json`](../schemas/driftproof/error-response.schema.json)
+- [`../schemas/driftproof/response-verification.schema.json`](../schemas/driftproof/response-verification.schema.json)
 - [`../schemas/driftproof/preflight-response.schema.json`](../schemas/driftproof/preflight-response.schema.json)
 
 `python scripts/export_schemas.py --check` proves that these files still match the executable runtime models.
@@ -58,15 +60,22 @@ Python orchestrators can use the typed SDK instead of starting a shell or parsin
 ```python
 from pathlib import Path
 
-from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_for_agent
+from driftproof.sdk import (
+    ReviewRequest,
+    fingerprint_for_agent,
+    review_and_verify_for_agent,
+)
 
 request = ReviewRequest(project="candidate", context="candidate/BUSINESS_CONTEXT.md")
 identity = fingerprint_for_agent(request, base_dir=Path.cwd())
-response = review_for_agent(request, base_dir=Path.cwd())
+response, verification = review_and_verify_for_agent(request, base_dir=Path.cwd())
+assert verification.request_identity_verified
+assert verification.request_sha256 == identity.configuration_request_sha256
+assert verification.bundle_verified == verification.review_result_trusted
 raise SystemExit(response.exit_code)
 ```
 
-The SDK invokes the same one-object CLI protocol through an argument vector, validates the response union, and rejects process/response exit disagreement. If neither output nor run ID is supplied, each SDK call receives a unique control run ID so independent concurrent callers cannot collide. Set an explicit run ID only when the orchestrator intentionally manages a stable destination and replacement policy.
+The SDK invokes the same one-object CLI protocol through an argument vector, validates the response union, rejects process/response exit disagreement, and then independently binds every bundle-backed claim to the verified report, certificate, and manifest. `DriftProofResponseVerification` lists the exact fields proven by the bundle and separately lists metadata-only response fields. If neither output nor run ID is supplied, each SDK call receives a unique control run ID so independent concurrent callers cannot collide. For an intentional content-bound retry, use `request_with_stable_run_id`; a changed candidate, context, configuration, or installed tool version produces a different run ID. A stable run ID does not authorize overwriting an existing bundle.
 
 ## Preferred request-file workflow
 
@@ -206,11 +215,9 @@ Example fail-closed dispatcher:
 
 ```bash
 case "$status" in
-  0|10|20)
-    uv run driftproof verify-report /path/from/response
-    ;;
-  30)
-    echo 'No review result is trusted.' >&2
+  0|10|20|30)
+    uv run driftproof verify-response /safe/control/response.json \
+      --expected-request-sha256 "$expected_request_sha256"
     ;;
   *)
     echo "Unknown DriftProof exit code: $status" >&2
@@ -221,15 +228,20 @@ esac
 
 Do not interpolate `verify_argv` into a shell. Execute it as an argument vector, or use a trusted constant command plus the verified bundle path.
 
-## Independent verification
+## Independent response and bundle verification
 
-Before consuming report content:
+Before consuming any path or verdict from an agent response, verify the response file itself:
 
 ```bash
-uv run driftproof verify-report /absolute/path/to/bundle
+uv run driftproof verify-response /safe/control/response.json \
+  --expected-request-sha256 "$expected_request_sha256"
 ```
 
-Verification recomputes the exact entry set, byte lengths, file hashes, report/certificate schemas, certificate self-hash, report hash, verdict/check indexes, human/no-action constants, and manifest identity.
+For a valid review, this first verifies the complete bundle and then proves that the response's candidate ID, verdict, exit code, summary, project/context/build hashes, certificate and manifest hashes, failed/inconclusive indexes, exact artifact paths, and `verify_argv` all match that bundle. Request identity is marked verified only when an independently computed expected hash is supplied. Tool version, run ID, project/context path strings, and response-file path are reported as metadata-only because the bundle does not authenticate those fields.
+
+For an `invalid_review` envelope, response verification can authenticate the fail-closed protocol fields while returning `review_result_trusted: false` and `bundle_verified: false`. Successful verification of an error envelope is not approval and does not create a review result.
+
+`driftproof verify-report /absolute/path/to/bundle` remains available when only the bundle is being consumed. Bundle verification recomputes the exact entry set, byte lengths, file hashes, report/certificate schemas, certificate self-hash, report hash, verdict/check indexes, human/no-action constants, and manifest identity.
 
 After verification, read:
 
@@ -243,7 +255,7 @@ Path existence alone is never evidence of success.
 
 A retry must preserve all review-defining request fields. Do not silently change project/context bytes, timeout, isolation, provider/model, replay fixtures, external-transfer consent, or unconfined-execution policy.
 
-Use a stable run ID for an idempotent retry and a distinct run ID for an independent concurrent review. Default destinations include a hash of the absolute project path, preventing projects with equal basenames from colliding.
+Use `request_with_stable_run_id(request)` for an intentional content-bound retry and the default unique run ID for an independent concurrent review. The stable helper hashes candidate bytes, context bytes, semantic review configuration, and installed tool version; a changed input gets a different run ID. Default destinations also include a hash of the absolute project path, preventing projects with equal basenames from colliding.
 
 Existing outputs are not overwritten implicitly. `replace_output` may remove only a recognized prior or partial DriftProof bundle. If response publication fails after bundle publication, DriftProof removes the newly published recognized bundle before returning `30`.
 

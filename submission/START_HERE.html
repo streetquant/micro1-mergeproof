@@ -27,11 +27,13 @@ uv run driftproof review /absolute/path/to/dbt-project --run-id reviewer-1
 uv run driftproof verify-report /path/to/bundle</pre>
 <h2>AI-agent workflow</h2>
 <pre>from pathlib import Path
-from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_for_agent
+from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_and_verify_for_agent
 request = ReviewRequest(project="candidate", context="candidate/BUSINESS_CONTEXT.md")
 identity = fingerprint_for_agent(request, base_dir=Path.cwd())
-response = review_for_agent(request, base_dir=Path.cwd())
-assert response.request_sha256 == identity.configuration_request_sha256</pre>
+response, verification = review_and_verify_for_agent(request, base_dir=Path.cwd())
+assert verification.request_identity_verified
+assert verification.request_sha256 == identity.configuration_request_sha256
+assert verification.bundle_verified == verification.review_result_trusted</pre>
 <p>See <a href="../schemas/driftproof/">machine schemas</a>, the <a href="../results/driftproof-comparison/comparison.json">authoritative comparison</a>, and the <a href="manifest.json">submission manifest</a>.</p>
 <div class="boundary"><strong>Fixed boundary:</strong> human approval is always required; no consequential action is taken.</div>
 </body>

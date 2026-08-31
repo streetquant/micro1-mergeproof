@@ -1,0 +1,9 @@
+{
+  "cli_boundary_sha256": "4c5ffe55e3e56dca54330561ac3a60d8d1f192956eb51c38c1c5431816b95096",
+  "cli_verification_sha256": "576e8767c22e14ec2378a29c3f2e0ad58804d755cafeedccd0c99a4f78083245",
+  "installed_sdk_receipt_sha256": "a9950530152c5445647ca9e37fdf1363513dcd60153b69c841101d4d5e035ea8",
+  "schema_version": 1,
+  "verified": true,
+  "wheel": "driftproof-0.2.0-py3-none-any.whl",
+  "wheel_sha256": "d1239ddde93a48b895efa17abe3b6c4feeafc69867bd5cc28df74e8648ea93b4"
+}

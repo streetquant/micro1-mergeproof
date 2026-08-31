@@ -404,3 +404,65 @@ class DriftProofAgentProtocolResponse(
     RootModel[DriftProofNavigationResponse | DriftProofErrorResponse]
 ):
     """Complete one-object protocol for autonomous DriftProof callers."""
+
+
+class DriftProofResponseVerification(StrictModel):
+    schema_version: Literal[1] = 1
+    protocol: Literal["driftproof.response-verification.v1"] = "driftproof.response-verification.v1"
+    response_envelope_verified: Literal[True] = True
+    response_status: Literal["valid_review", "invalid_review"]
+    response_exit_code: Literal[0, 10, 20, 30]
+    response_file: str | None = None
+    request_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    expected_request_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    request_identity_verified: bool
+    run_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
+    review_result_trusted: bool
+    bundle: str | None = None
+    bundle_verified: bool
+    bundle_manifest_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    candidate_id: str | None = None
+    verdict: Verdict
+    verify_argv: list[str] | None = None
+    verified_binding_scope: list[str]
+    unbound_response_fields: list[str]
+    human_approval_required: Literal[True] = True
+    consequential_action_taken: Literal[False] = False
+
+    @model_validator(mode="after")
+    def response_verification_is_consistent(self) -> DriftProofResponseVerification:
+        if self.expected_request_sha256 is None and self.request_identity_verified:
+            raise ValueError("request identity cannot be verified without an expected request hash")
+        if self.expected_request_sha256 is not None:
+            if self.request_sha256 != self.expected_request_sha256:
+                raise ValueError("response request identity does not match the expected request")
+            if not self.request_identity_verified:
+                raise ValueError("expected request identity was not marked verified")
+        if self.response_status == "valid_review":
+            if self.response_exit_code not in {0, 10, 20}:
+                raise ValueError("valid review response has an invalid exit code")
+            if not self.review_result_trusted or not self.bundle_verified:
+                raise ValueError("valid review response must bind a verified trusted bundle")
+            if (
+                self.bundle is None
+                or self.bundle_manifest_sha256 is None
+                or self.candidate_id is None
+                or self.verify_argv is None
+            ):
+                raise ValueError("valid review verification is missing bundle-bound fields")
+        else:
+            if self.response_exit_code != 30:
+                raise ValueError("invalid review response must use exit 30")
+            if self.review_result_trusted or self.bundle_verified:
+                raise ValueError("invalid review response cannot establish a trusted result")
+            if any(
+                value is not None
+                for value in (
+                    self.bundle,
+                    self.bundle_manifest_sha256,
+                    self.candidate_id,
+                    self.verify_argv,
+                )
+            ):
+                raise ValueError("invalid review verification cannot claim a bundle")
+        return self

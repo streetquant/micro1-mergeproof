@@ -27,7 +27,7 @@ video-doctor:
 	uv run python scripts/render_demo_video.py --check --expected-commit "$(GIT_HEAD)"
 
 video:
-	uv run python scripts/render_demo_video.py --output "$(VIDEO_OUTPUT)"
+	uv run python scripts/render_demo_video.py --output "$(VIDEO_OUTPUT)" --expected-commit "$(GIT_HEAD)"
 
 video-verify:
 	uv run python scripts/verify_demo_video.py "$(VIDEO_OUTPUT)" --source-root . --expected-commit "$(GIT_HEAD)"

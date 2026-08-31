@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "round": "downloaded_release_consumer_verification",
+  "findings": [
+    {
+      "id": "R4-WRAPPER-001",
+      "severity": "high",
+      "status": "fixed",
+      "finding": "The advertised standalone verifier failed under python scripts/verify_release.py with ModuleNotFoundError even though the internal release-verification function succeeded.",
+      "repair": "When executed as a script, add the repository root to sys.path before importing the typed scripts.package_final_release verifier; retain package-relative semantics under module execution.",
+      "validation": [
+        "make release-verify succeeds against the exact generated release",
+        "standalone subprocess invocation is exercised in the complete packaging round-trip test",
+        "mypy and Ruff pass for the wrapper"
+      ]
+    },
+    {
+      "id": "R4-FRAMING-002",
+      "severity": "medium",
+      "status": "fixed",
+      "finding": "The Make target echoed its command before the JSON receipt, so autonomous consumers could not parse make release-verify as a one-object machine interface.",
+      "repair": "Suppress command echo for release and release-verify while preserving the verifier's JSON stdout and nonzero failure behavior.",
+      "validation": [
+        "make release-verify output parses as exactly one JSON object",
+        "receipt protocol is driftproof.release-verification.v1",
+        "receipt verified is true"
+      ]
+    }
+  ]
+}

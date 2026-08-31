@@ -10,6 +10,9 @@ from types import ModuleType
 
 import pytest
 
+ROOT = Path(__file__).resolve().parents[1]
+VERIFY_RELEASE_SCRIPT = ROOT / "scripts" / "verify_release.py"
+
 
 def load_packaging_module() -> ModuleType:
     path = Path(__file__).resolve().parents[1] / "scripts" / "package_final_release.py"
@@ -289,6 +292,15 @@ def test_complete_release_is_deterministic_and_independently_verifiable(
     }
     assert first_files == second_files
     assert PACKAGING.verify_release_directory(first_output)["verified"] is True
+    completed = subprocess.run(
+        [sys.executable, str(VERIFY_RELEASE_SCRIPT), str(first_output)],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert json.loads(completed.stdout)["verified"] is True
     assert (first_output / "START_HERE.md").read_text(encoding="utf-8") == "# Start here\n"
 
     start_here = first_output / "START_HERE.md"

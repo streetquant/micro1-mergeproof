@@ -66,7 +66,7 @@ reproduce:
 	bash scripts/reproduce.sh
 
 release:
-	uv run python scripts/package_final_release.py --output release/final
+	@uv run python scripts/package_final_release.py --output release/final
 
 release-verify:
-	uv run python scripts/verify_release.py release/final
+	@uv run python scripts/verify_release.py release/final

@@ -1,0 +1,53 @@
+{
+  "artifact_sha256": {
+    "Makefile": "06251b7e5882e5e5f4c38526e7b99037b547bf90386b68b1c325ca76f50f90b5",
+    "README.md": "f4609da5c79b3853da7770661059f00efc8a873cfeeebbf60d8b817ec0af6c51",
+    "documentation_receipt": "e1689b304edaf902eba52f4b8d4845d284a33920e9ce19e2eb152667aabf795b",
+    "findings.json": "e7d115d2ade6e223c4d6f18c8937d85010381829f6f3cb600cadd582db28ba1b",
+    "git_fsck_log": "e17499fb261350a0c9885fd50d02317898b506aeeaf1e12e0c126a27d26878f5",
+    "make_check_log": "696d59b403234e97ec1b531f2c7f94ebe49ea5b091aa585d7a76b4efbb2c7700",
+    "scripts/package_final_release.py": "8d2e1cb93af699a0d5ee94e76742878e3d7e74e31596d005eb68f2b0854566e8",
+    "scripts/render_submission.py": "4e282e6610fd1647abc3ccb5e09617b453e985500916fb96471099151d476bd2",
+    "scripts/verify_release.py": "d48207b844706144d4e9e29a2e41c3b72cd8816310625028da694452d6b9d40d",
+    "tests/test_packaging.py": "e1327129237608e28ba808a57f522d2cd5b6e2715f2e5f11369cf6f4d600bc24"
+  },
+  "consequential_action_taken": false,
+  "finding_count": 2,
+  "human_approval_required": true,
+  "limitations": [
+    "The verified release binds the prior exact-main commit used to expose the wrapper defect; a new release must be rebuilt after this repair is promoted.",
+    "Repository access policy remains externally administered.",
+    "Approval remains advisory and requires a qualified human decision."
+  ],
+  "parent_commit": "98e89b1ceae4aa847f50d8b70ece2d7c2f6bdb70",
+  "qualification": {
+    "complete_release_subprocess_test": true,
+    "focused_packaging_tests_passed": 15,
+    "frozen_replay_verified": true,
+    "full_pytest_passed": 190,
+    "git_diff_check": true,
+    "git_fsck": true,
+    "make_check_status_hash_unchanged": true,
+    "make_target_one_object_json": true,
+    "mypy_strict": true,
+    "ruff_format": true,
+    "ruff_lint": true,
+    "runtime_schema_check": true,
+    "source_and_wheel_builds": true,
+    "standalone_script_import": true,
+    "submission_claim_drift_check": true,
+    "wrapper_protocol_validated": true,
+    "wrapper_verified_release": true
+  },
+  "review_method": "exact-main release build followed by documented downloaded-recipient verification path and one-object machine framing audit",
+  "schema_version": 1,
+  "status": "passed",
+  "verified_release": {
+    "archive_count": 3,
+    "commit": "98e89b1ceae4aa847f50d8b70ece2d7c2f6bdb70",
+    "protocol": "driftproof.release-verification.v1",
+    "receipt_sha256": "f945cf61d7f2c93d25cf3268dbf77f92c076fa1cfbf73379e0d1953c6a2416aa",
+    "sha256sums_sha256": "6908407cb9700fa2588ba263eab95f568830ac613aca44bc37fbeba762498cfd",
+    "tree": "fa9643b67b6fc406b149c835b083042d4656e268"
+  }
+}

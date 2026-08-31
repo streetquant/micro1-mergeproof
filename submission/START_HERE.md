@@ -73,6 +73,7 @@ The typed SDK validates the one-object protocol, rejects malformed output and pr
 - Human/judge adversarial review: [`../reviews/2026-08-31-round-1-human-judge/`](../reviews/2026-08-31-round-1-human-judge/)
 - AI-agent/SDK adversarial review: [`../reviews/2026-08-31-round-2-agent-sdk/`](../reviews/2026-08-31-round-2-agent-sdk/)
 - Release/delivery adversarial review: [`../reviews/2026-08-31-round-3-release-delivery/`](../reviews/2026-08-31-round-3-release-delivery/)
+- Downloaded-release consumer review: [`../reviews/2026-08-31-round-4-consumer-verifier/`](../reviews/2026-08-31-round-4-consumer-verifier/)
 - Machine-readable submission manifest: [`manifest.json`](manifest.json)
 - Full product and trust-boundary documentation: [`../README.md`](../README.md)
 

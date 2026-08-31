@@ -39,8 +39,8 @@
       "sha256": "15f0ca3d9249df0051bd61e7d243a34dbb240f10f33242b308f376d5635947af"
     },
     "START_HERE.md": {
-      "bytes": 4061,
-      "sha256": "37500cb5c149922db239debff7f4f5a87803b6f48cc3bc2ba7f5cc0bce5c53cd"
+      "bytes": 4202,
+      "sha256": "283b97d93cb1991c7e816983dcfc2eb94b253dc55a8e59ead71a7f4a0380bb85"
     }
   },
   "human_approval_required": true,
@@ -112,6 +112,10 @@
     "reviews/2026-08-31-round-3-release-delivery/qualification.json": {
       "bytes": 2952,
       "sha256": "0120515cd5df161831a9fc9ffcd7302841f38b4abb4f2e324b8c0c48cab36c7f"
+    },
+    "reviews/2026-08-31-round-4-consumer-verifier/qualification.json": {
+      "bytes": 2667,
+      "sha256": "3c4125d4054adaddefbd2a44311f60feb514cf1a3a9bba54e7d53488f2697f90"
     },
     "reviews/recovery-promotion/qualification.json": {
       "bytes": 1660,

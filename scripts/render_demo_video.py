@@ -347,6 +347,7 @@ def build_video_plan(root: Path = ROOT, *, source_commit: str | None = None) -> 
             "evidence": [
                 "reviews/2026-08-31-round-7-judge-packet/qualification.json",
                 "reviews/2026-08-31-round-8-standalone-verifier/qualification.json",
+                "reviews/2026-08-31-round-11-exact-source-video/qualification.json",
             ],
         },
         {

@@ -87,8 +87,8 @@
       "sha256": "7ae76c58e29753c6ec2d6c8fea03883585f877d32c6cb9b266d5b12305f1fcbc"
     },
     "START_HERE.md": {
-      "bytes": 6489,
-      "sha256": "ec27cb17ed785b7ae94425f7df3203bb8949e3bb03029bed869b3c41c6c114b7"
+      "bytes": 6646,
+      "sha256": "d5ffd1d560b707425e3769661bc061c8cbfd4c411d68332cb9a918d99930e9aa"
     },
     "TRACE_INDEX.json": {
       "bytes": 8976,
@@ -156,6 +156,10 @@
     "reviews/2026-08-31-round-1-human-judge/qualification.json": {
       "bytes": 2057,
       "sha256": "70748edf12b3ca52780a6d9e339b8433e0e843f5be748342f592dd4f223fbd8f"
+    },
+    "reviews/2026-08-31-round-11-exact-source-video/qualification.json": {
+      "bytes": 5478,
+      "sha256": "1281ee8d3e720db1d9f61bb63596841477ea573aac539770f0a73f138932e483"
     },
     "reviews/2026-08-31-round-2-agent-sdk/qualification.json": {
       "bytes": 2242,

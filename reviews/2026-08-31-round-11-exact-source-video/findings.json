@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "review": "exact-source video and downloaded delivery",
+  "status": "repaired",
+  "findings": [
+    {
+      "id": "R11-F01",
+      "severity": "high",
+      "title": "Documented direct renderer invocation failed before preflight",
+      "attack": "Run python scripts/render_demo_video.py --check from the repository root.",
+      "failure": "The script could not import scripts.verify_demo_video because the repository root was absent from sys.path.",
+      "repair": "Bootstrap the repository root only for direct-script execution and retain normal package imports.",
+      "validation": "The direct command now emits the readiness object and the complete clean render executed through the same entry point."
+    },
+    {
+      "id": "R11-F02",
+      "severity": "high",
+      "title": "Dirty-source bypass weakened the exact-commit claim",
+      "attack": "Render with uncommitted changes while claiming a source commit.",
+      "failure": "An --allow-dirty option permitted bytes not represented by the claimed commit.",
+      "repair": "Remove the bypass and make a clean worktree a mandatory readiness condition.",
+      "validation": "Dirty readiness fails closed; source and tests contain no --allow-dirty surface."
+    },
+    {
+      "id": "R11-F03",
+      "severity": "high",
+      "title": "Video delivery was not authenticated by release archives or the standalone verifier",
+      "attack": "Substitute or omit generated video assets while preserving source archives and outer claims.",
+      "failure": "The partial packager copied root files but did not bind full/evidence archive copies or standalone verification.",
+      "repair": "Bind all six media files, verification metadata, source scripts, root copies, and full/evidence archive members; exclude generated media from source archives.",
+      "validation": "Packager and standalone-verifier tests authenticate root/archive equality and reject symlinked or incomplete media."
+    },
+    {
+      "id": "R11-F04",
+      "severity": "medium",
+      "title": "Make targets resolved the expected commit as an empty Make variable",
+      "attack": "Run make video-doctor from a clean exact remote checkout.",
+      "failure": "$(git rev-parse HEAD) was interpreted by Make rather than the shell, yielding an empty expected SHA.",
+      "repair": "Resolve GIT_HEAD with $(shell git rev-parse HEAD) once per Make invocation and pass it to render and verify targets.",
+      "validation": "Dry-run and clean execution expose the exact 40-character remote SHA."
+    },
+    {
+      "id": "R11-F05",
+      "severity": "medium",
+      "title": "Make command echo contaminated otherwise machine-readable JSON",
+      "attack": "Parse make video-doctor output as one JSON object.",
+      "failure": "Make printed the recipe before the JSON payload.",
+      "repair": "Silence video doctor, render, and verification recipes while preserving stderr and target failure semantics.",
+      "validation": "Target stdout is one JSON object; direct script retains exit 30 for invalid readiness."
+    },
+    {
+      "id": "R11-F06",
+      "severity": "medium",
+      "title": "Renderer hard-coded one speech and image executable",
+      "attack": "Run on a host with espeak or convert but not espeak-ng or magick.",
+      "failure": "The renderer rejected otherwise compatible local tooling.",
+      "repair": "Select espeak-ng/espeak and magick/convert deterministically during non-mutating readiness.",
+      "validation": "Selected absolute tool paths are recorded in the source manifest and readiness receipt."
+    },
+    {
+      "id": "R11-F07",
+      "severity": "medium",
+      "title": "Resolving the media directory before checking symlinks hid the alias",
+      "attack": "Supply a symlinked media directory to release packaging.",
+      "failure": "resolve() erased the fact that the caller supplied a symlink.",
+      "repair": "Reject the caller path as a symlink before strict resolution.",
+      "validation": "A dedicated negative test rejects symlinked media delivery."
+    },
+    {
+      "id": "R11-F08",
+      "severity": "low",
+      "title": "Narration called a hash-bound bundle signed",
+      "attack": "Compare spoken claims with implemented cryptographic guarantees.",
+      "failure": "The word signed overstated a SHA-256 integrity binding as a digital signature.",
+      "repair": "Use the precise phrase hash-bound bundle and prohibit signed bundle in tests.",
+      "validation": "Transcript and slide tests enforce conservative wording and benchmark limitations."
+    }
+  ],
+  "human_approval_required": true,
+  "consequential_action_taken": false
+}

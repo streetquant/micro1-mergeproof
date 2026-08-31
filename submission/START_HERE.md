@@ -104,6 +104,7 @@ The typed SDK validates the one-object protocol, rejects malformed output and pr
 - Response authenticity and retry-semantics review: [`../reviews/2026-08-31-round-6-response-binding/`](../reviews/2026-08-31-round-6-response-binding/)
 - Hostile judge-packet and evidence-binding review: [`../reviews/2026-08-31-round-7-judge-packet/`](../reviews/2026-08-31-round-7-judge-packet/)
 - Standalone downloaded-release verifier review: [`../reviews/2026-08-31-round-8-standalone-verifier/`](../reviews/2026-08-31-round-8-standalone-verifier/)
+- Exact-source video and downloaded-media review: [`../reviews/2026-08-31-round-11-exact-source-video/`](../reviews/2026-08-31-round-11-exact-source-video/)
 - Machine-readable submission manifest: [`manifest.json`](manifest.json)
 - Full product and trust-boundary documentation: [`../README.md`](../README.md)
 

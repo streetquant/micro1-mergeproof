@@ -82,6 +82,7 @@ _REVIEW_QUALIFICATION_ARTIFACTS = (
     "reviews/2026-08-31-round-6-response-binding/qualification.json",
     "reviews/2026-08-31-round-7-judge-packet/qualification.json",
     "reviews/2026-08-31-round-8-standalone-verifier/qualification.json",
+    "reviews/2026-08-31-round-11-exact-source-video/qualification.json",
 )
 _REQUIRED_EVIDENCE_ARTIFACTS = (
     "benchmark/manifest.json",

@@ -22,6 +22,11 @@
       "sha256": "0688842aa4c2c6cb078d163cd07671d8a3187fb22224bfa5e24496b27b8253eb"
     },
     {
+      "file": "fingerprint-response.schema.json",
+      "name": "fingerprint_response",
+      "sha256": "ec24a51213ab28e42d83573d91efd1736ff702804f4a13df46c5a7ac6ea9d5b1"
+    },
+    {
       "file": "navigation-response.schema.json",
       "name": "navigation_response",
       "sha256": "f43ae7ea2e37c45462c9844386426cb941d9c797208945c4e21478558cfff245"

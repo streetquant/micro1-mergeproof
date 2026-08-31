@@ -47,7 +47,9 @@ protocol-smoke:
 	uv run mergeproof schema agent-response >/dev/null
 	uv run driftproof capabilities >/dev/null
 	uv run driftproof schema request >/dev/null
+	uv run driftproof schema fingerprint-response >/dev/null
 	uv run driftproof schema agent-response >/dev/null
+	uv run driftproof fingerprint examples/judge-demo-safe >/dev/null
 
 build:
 	uv build

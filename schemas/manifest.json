@@ -21,9 +21,14 @@
       "sha256": "0688842aa4c2c6cb078d163cd07671d8a3187fb22224bfa5e24496b27b8253eb"
     },
     {
-      "bytes": 1677,
+      "bytes": 6212,
+      "path": "driftproof/fingerprint-response.schema.json",
+      "sha256": "ec24a51213ab28e42d83573d91efd1736ff702804f4a13df46c5a7ac6ea9d5b1"
+    },
+    {
+      "bytes": 1861,
       "path": "driftproof/index.json",
-      "sha256": "8a0460caf4a067d6a0d9f2afc01eae8e5a9796a69878e6a2bcb467d323747788"
+      "sha256": "20e6371813c9c2b238e9182f70d86d204e3caea3e1086aa6740f704c26a373f2"
     },
     {
       "bytes": 4901,

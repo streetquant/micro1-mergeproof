@@ -22,6 +22,7 @@ An invalid response additionally contains `partial_result_trusted: false`.
 ```bash
 uv run driftproof capabilities
 uv run driftproof schema request
+uv run driftproof schema fingerprint-response
 uv run driftproof schema agent-response
 uv run driftproof doctor --json
 ```
@@ -29,12 +30,43 @@ uv run driftproof doctor --json
 Committed offline schemas are available at:
 
 - [`../schemas/driftproof/request.schema.json`](../schemas/driftproof/request.schema.json)
+- [`../schemas/driftproof/fingerprint-response.schema.json`](../schemas/driftproof/fingerprint-response.schema.json)
 - [`../schemas/driftproof/agent-response.schema.json`](../schemas/driftproof/agent-response.schema.json)
 - [`../schemas/driftproof/navigation-response.schema.json`](../schemas/driftproof/navigation-response.schema.json)
 - [`../schemas/driftproof/error-response.schema.json`](../schemas/driftproof/error-response.schema.json)
 - [`../schemas/driftproof/preflight-response.schema.json`](../schemas/driftproof/preflight-response.schema.json)
 
 `python scripts/export_schemas.py --check` proves that these files still match the executable runtime models.
+
+## Pre-execution fingerprint and typed SDK
+
+Before executing candidate code, bind the current candidate tree, visible context, installed tool version, and review configuration:
+
+```bash
+uv run driftproof fingerprint /absolute/path/to/project
+```
+
+The response deliberately exposes two identities:
+
+- `configuration_request_sha256` excludes control destinations, replacement, and run ID;
+- `content_fingerprint_sha256` additionally binds candidate/context bytes and the installed tool version.
+
+For the same semantic request, `configuration_request_sha256` must equal the later valid navigation response's `request_sha256`; SDK-assigned run IDs and other control destinations do not alter either value. External provider responses are not represented as bound by the fingerprint. A changed content fingerprint is a new review input, not an idempotent retry.
+
+Python orchestrators can use the typed SDK instead of starting a shell or parsing prose:
+
+```python
+from pathlib import Path
+
+from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_for_agent
+
+request = ReviewRequest(project="candidate", context="candidate/BUSINESS_CONTEXT.md")
+identity = fingerprint_for_agent(request, base_dir=Path.cwd())
+response = review_for_agent(request, base_dir=Path.cwd())
+raise SystemExit(response.exit_code)
+```
+
+The SDK invokes the same one-object CLI protocol through an argument vector, validates the response union, and rejects process/response exit disagreement. If neither output nor run ID is supplied, each SDK call receives a unique control run ID so independent concurrent callers cannot collide. Set an explicit run ID only when the orchestrator intentionally manages a stable destination and replacement policy.
 
 ## Preferred request-file workflow
 

@@ -1,0 +1,35 @@
+{
+  "candidate_code_executed_by_fingerprint": false,
+  "concurrent_reviews": [
+    {
+      "bundle_manifest_sha256": "3fe5354941efa4fa5b27a7c82cb53124e01d91fb8d81ea88f478d0c6ed9cc16d",
+      "exit_code": 0,
+      "request_sha256": "1a49b5399738145d9914476104ee2acefdfa8198a2c292bc36ffaaa9a031e4f6",
+      "run_id": "sdk-3221642-33174d392054",
+      "verdict": "approve"
+    },
+    {
+      "bundle_manifest_sha256": "be858b2f748d41dba6a926f6d627cecc6de0b33c99f5d94a35e6a2da52b60f6a",
+      "exit_code": 0,
+      "request_sha256": "1a49b5399738145d9914476104ee2acefdfa8198a2c292bc36ffaaa9a031e4f6",
+      "run_id": "sdk-3221642-3df2813b9cf6",
+      "verdict": "approve"
+    }
+  ],
+  "configuration_hash_matches_all_navigation_requests": true,
+  "configuration_request_sha256": "1a49b5399738145d9914476104ee2acefdfa8198a2c292bc36ffaaa9a031e4f6",
+  "consequential_action_taken": false,
+  "content_fingerprint_sha256": "a7ff5798e9475e142eaa668b0241c1bc9879a9955a0aea2a6c5c526b5a4a5d25",
+  "distinct_bundles": true,
+  "distinct_run_ids": true,
+  "fingerprint_repeat_equal": true,
+  "human_approval_required": true,
+  "invalid_response": {
+    "exit_code": 30,
+    "partial_result_trusted": false,
+    "status": "invalid_review"
+  },
+  "protocol": "driftproof.round2-agent-probe.v2",
+  "schema_version": 1,
+  "verified": true
+}

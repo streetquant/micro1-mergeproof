@@ -16,7 +16,6 @@ from mergeproof.providers import ProviderError, build_provider
 from mergeproof.sandbox import _bubblewrap_available
 from mergeproof.utils import (
     atomic_write_text,
-    canonical_json,
     exclusive_atomic_write_text,
     pretty_json,
     redact_secrets,
@@ -29,11 +28,13 @@ from .agent import ContractClarifier
 from .certificate import verify_certificate
 from .contracts import compile_contract
 from .gate import GateExecutionError, review_project
+from .identity import fingerprint_request, request_identity
 from .models import (
     ApprovalCertificate,
     DriftProofAgentProtocolResponse,
     DriftProofContextTemplateResponse,
     DriftProofErrorResponse,
+    DriftProofFingerprintResponse,
     DriftProofNavigationResponse,
     DriftProofOnboardingResponse,
     DriftProofPreflightResponse,
@@ -71,6 +72,8 @@ _SCHEMA_ALIASES = {
     "onboard_response": "onboarding_response",
     "onboarding-response": "onboarding_response",
     "onboarding_response": "onboarding_response",
+    "fingerprint-response": "fingerprint_response",
+    "fingerprint_response": "fingerprint_response",
     "report": "report",
     "gate-report": "report",
     "gate_report": "report",
@@ -222,10 +225,7 @@ def _resolve_review_request(
 
 
 def _request_identity(request: DriftProofReviewRequest) -> str:
-    payload = request.model_dump(mode="json")
-    for control_field in ("output", "work_root", "response_file", "replace_output", "run_id"):
-        payload.pop(control_field, None)
-    return sha256_text(canonical_json(payload))
+    return request_identity(request)
 
 
 def _paths_overlap(left: Path, right: Path) -> bool:
@@ -491,6 +491,7 @@ def _schema_catalog() -> dict[str, dict[str, Any]]:
         "preflight_response": DriftProofPreflightResponse.model_json_schema(),
         "context_template_response": DriftProofContextTemplateResponse.model_json_schema(),
         "onboarding_response": DriftProofOnboardingResponse.model_json_schema(),
+        "fingerprint_response": DriftProofFingerprintResponse.model_json_schema(),
         "report": GateReport.model_json_schema(),
         "certificate": ApprovalCertificate.model_json_schema(),
         "navigation_response": DriftProofNavigationResponse.model_json_schema(),
@@ -868,6 +869,67 @@ def _execute_review_request(
         )
 
 
+@app.command("fingerprint")
+def fingerprint(
+    target: Annotated[
+        str,
+        typer.Argument(help="Candidate project, request JSON, or '-' for request JSON on stdin."),
+    ] = ".",
+    context: Annotated[Path | None, typer.Option()] = None,
+    timeout_seconds: Annotated[int, typer.Option()] = 120,
+    isolation: Annotated[str, typer.Option()] = "auto",
+    allow_unconfined: Annotated[bool, typer.Option()] = False,
+    agent_provider: Annotated[str | None, typer.Option()] = None,
+    agent_model: Annotated[str, typer.Option()] = "openai/gpt-oss-20b",
+    agent_replay_dir: Annotated[Path | None, typer.Option()] = None,
+    allow_external_provider: Annotated[
+        bool,
+        typer.Option("--allow-external-provider"),
+    ] = False,
+) -> None:
+    """Bind candidate, context and review configuration without executing code."""
+
+    try:
+        target_path = Path(target).expanduser()
+        request_mode = target == "-" or target_path.is_file()
+        if request_mode:
+            conflicts = {
+                "context": context is not None,
+                "timeout_seconds": timeout_seconds != 120,
+                "isolation": isolation != "auto",
+                "allow_unconfined": allow_unconfined,
+                "agent_provider": agent_provider is not None,
+                "agent_model": agent_model != "openai/gpt-oss-20b",
+                "agent_replay_dir": agent_replay_dir is not None,
+                "allow_external_provider": allow_external_provider,
+            }
+            supplied = sorted(name for name, present in conflicts.items() if present)
+            if supplied:
+                raise ValueError(
+                    "request JSON may not be combined with fingerprint options: "
+                    + ", ".join(supplied)
+                )
+            request, base = _load_review_request(target)
+            request = _resolve_review_request(request, base)
+        else:
+            request = DriftProofReviewRequest(
+                project=target,
+                context=str(context) if context is not None else None,
+                timeout_seconds=_validate_timeout(timeout_seconds),
+                isolation=_normalize_isolation(isolation),
+                allow_unconfined=allow_unconfined,
+                agent_provider=agent_provider,
+                agent_model=agent_model,
+                agent_replay_dir=(str(agent_replay_dir) if agent_replay_dir is not None else None),
+                allow_external_provider=allow_external_provider,
+            )
+            request = _resolve_review_request(request, Path.cwd())
+        payload = fingerprint_request(request, tool_version=__version__).model_dump(mode="json")
+    except Exception as exc:
+        _fail(exc, json_output=True, context="DriftProof fingerprint")
+    typer.echo(pretty_json(payload))
+
+
 @app.command()
 def review(
     project: Annotated[Path, typer.Argument()] = Path("."),
@@ -1210,6 +1272,7 @@ def capabilities() -> None:
                     "human_review": "driftproof review",
                     "machine_review": "driftproof agent",
                     "onboard": "driftproof onboard",
+                    "fingerprint": "driftproof fingerprint",
                     "preflight": "driftproof preflight",
                     "context_template": "driftproof context-template",
                     "verify_bundle": "driftproof verify-report",
@@ -1220,6 +1283,7 @@ def capabilities() -> None:
                 "usage": {
                     "machine_review": "driftproof agent <project|request.json|->",
                     "onboard": "driftproof onboard <project> [--apply] --json",
+                    "fingerprint": "driftproof fingerprint <project|request.json|->",
                     "preflight": "driftproof preflight <project> --json",
                     "context_template": "driftproof context-template [--output BUSINESS_CONTEXT.md]",
                     "verify_bundle": "driftproof verify-report <bundle>",

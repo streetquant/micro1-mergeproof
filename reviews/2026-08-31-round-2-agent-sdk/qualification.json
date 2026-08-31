@@ -1,0 +1,41 @@
+{
+  "artifact_sha256": {
+    "README.md": "c4ac9aac335b151e4e796c1e94a6d893c277b48d17e708f27ec397680cac4d23",
+    "docs/driftproof-agent-protocol.md": "7839569524163bac49854ab676c1736289d537cf44cafee3d01d6fa548dcabe5",
+    "make_check_log": "bdd4ba37ceab5acf34b22cdc2d73422bb903bdb75eacbb32c6af6ef2fc608289",
+    "schemas/driftproof/fingerprint-response.schema.json": "ec24a51213ab28e42d83573d91efd1736ff702804f4a13df46c5a7ac6ea9d5b1",
+    "schemas/manifest.json": "22557e7f179fc7b94a3e6eddeca94664e7ab2d0445bc4eb8a6c9049780c551e0",
+    "src/driftproof/cli.py": "cc3311e3326cee2ab3b792881d2d5ac005a23fd8a9e160905ec580c73703f68e",
+    "src/driftproof/identity.py": "e65c324ca44ad5b449806fae3058a352a17d5e7962e2d5b1204849d95876c7ec",
+    "src/driftproof/models.py": "6d8571532895abdc5dccb34b40231f0c004463a117d10766ce986116f7b8ad86",
+    "src/driftproof/sdk.py": "d85cd1919a3a8bb8696eac7c270ce4ae672f50522354b42c38cfe3b9e9e61589",
+    "tests/test_driftproof_sdk.py": "6069dfb082a7898412bccdeeea600751eb6f35b3f1cfe83ac3ae4cf961a27529"
+  },
+  "installed_wheel_receipt_sha256": "70ea3c3808f07b04db5b41f40f678c1d93ffb874b9ff6fd0a317e6cdf72c50b2",
+  "limitations": [
+    "The content fingerprint does not claim to bind future external provider responses.",
+    "Unique default SDK run IDs provide disjoint bundles rather than deduplicating identical work.",
+    "Approval remains advisory and cannot authorize merge or deployment."
+  ],
+  "parent_commit": "53cde119adb3e6f805bb0ff927be880fc572808a",
+  "probe_sha256": "1bf105d832421038d6f87903accc6333f46a166a2f066fadf5bc1c8537add5d3",
+  "qualification": {
+    "concurrent_verified_bundles": 2,
+    "configuration_hash_matches_navigation": true,
+    "documentation_verification": true,
+    "frozen_replay_verified": true,
+    "git_diff_check": true,
+    "git_fsck": true,
+    "installed_wheel_sdk": true,
+    "make_check_status_hash_unchanged": true,
+    "mypy_strict": true,
+    "pytest_passed": 183,
+    "ruff_format": true,
+    "ruff_lint": true,
+    "runtime_schema_check": true,
+    "source_and_wheel_builds": true
+  },
+  "review_method": "hostile machine-protocol, retry-identity, installed-wheel, malformed-output, and concurrent-caller probes",
+  "schema_version": 1,
+  "status": "passed"
+}

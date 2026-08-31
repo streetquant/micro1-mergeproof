@@ -1,0 +1,70 @@
+{
+  "findings": [
+    {
+      "finding": "Agents could see a configuration request hash only after review and could not bind candidate/context bytes before execution.",
+      "id": "R2-IDENTITY-001",
+      "repair": "Added `driftproof fingerprint` and `fingerprint_for_agent`, separating configuration identity from a candidate/context/tool-version content fingerprint.",
+      "severity": "high",
+      "status": "fixed",
+      "validation": [
+        "repeat fingerprint equality",
+        "content mutation changes fingerprint",
+        "control destinations/run IDs do not change fingerprint",
+        "fingerprint executes no candidate code",
+        "fingerprint configuration hash equals every concurrent navigation request hash"
+      ]
+    },
+    {
+      "finding": "Python agents had to start and validate the machine CLI protocol themselves.",
+      "id": "R2-SDK-002",
+      "repair": "Added typed `ReviewRequest`, `fingerprint_for_agent`, and `review_for_agent` APIs that use an argv subprocess, validate the strict response union, and enforce process/response exit agreement.",
+      "severity": "high",
+      "status": "fixed",
+      "validation": [
+        "source SDK tests",
+        "fresh-wheel SDK import",
+        "typed exit-30 invalid response",
+        "malformed stdout rejected"
+      ]
+    },
+    {
+      "finding": "Independent callers that omitted both output and run ID could target the same default control path.",
+      "id": "R2-CONCURRENCY-003",
+      "repair": "SDK assigns a process-unique control run ID only when callers provide neither output nor run ID; semantic request identity still excludes the control ID.",
+      "severity": "medium",
+      "status": "fixed",
+      "validation": [
+        "two concurrent calls",
+        "distinct run IDs",
+        "distinct bundle paths",
+        "both bundles independently verified"
+      ]
+    },
+    {
+      "finding": "A wrapper could accidentally accept malformed stdout or a response whose exit code disagreed with the process.",
+      "id": "R2-PROTOCOL-004",
+      "repair": "SDK validates exactly one `DriftProofAgentProtocolResponse`, redacts bounded stderr on parse failure, and rejects exit disagreement.",
+      "severity": "high",
+      "status": "fixed",
+      "validation": [
+        "non-protocol-output test",
+        "typed response/process equality tests",
+        "unknown partial state never returned as success"
+      ]
+    },
+    {
+      "finding": "New agent helpers could have worked only from the source checkout if omitted from the wheel.",
+      "id": "R2-PACKAGE-005",
+      "repair": "Qualified fingerprint and SDK imports from a freshly installed wheel and exercised the installed one-object error path.",
+      "severity": "medium",
+      "status": "fixed",
+      "validation": [
+        "fresh venv wheel install",
+        "installed fingerprint",
+        "installed typed invalid response"
+      ]
+    }
+  ],
+  "round": "agent_sdk_identity_and_concurrency",
+  "schema_version": 1
+}

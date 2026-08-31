@@ -78,6 +78,34 @@ uv run driftproof schema agent-response
 uv run driftproof doctor --json
 ```
 
+Compute content identity before any candidate execution:
+
+```bash
+uv run driftproof fingerprint /absolute/path/to/dbt-project
+```
+
+The response distinguishes the configuration-only request hash from a content fingerprint that binds the candidate tree, visible context, installed DriftProof version, and review configuration. Control destinations and run IDs do not change that content identity. For the same semantic request, `configuration_request_sha256` must equal the later valid review response's `request_sha256`, even when the SDK assigns a unique control run ID. External provider responses are explicitly not claimed to be bound.
+
+Python agents can avoid subprocess and JSON plumbing in their own code:
+
+```python
+from pathlib import Path
+
+from driftproof.sdk import ReviewRequest, fingerprint_for_agent, review_for_agent
+
+request = ReviewRequest(
+    project="candidate-project",
+    context="candidate-project/BUSINESS_CONTEXT.md",
+)
+identity = fingerprint_for_agent(request, base_dir=Path.cwd())
+response = review_for_agent(request, base_dir=Path.cwd())
+print(identity.content_fingerprint_sha256)
+print(response.model_dump_json(indent=2))
+raise SystemExit(response.exit_code)
+```
+
+When neither `output` nor `run_id` is supplied, the SDK assigns a unique control run ID so independent concurrent callers receive disjoint bundles. The semantic request hash excludes that control ID.
+
 Start from [`examples/driftproof-request.json`](examples/driftproof-request.json), validate it against [`schemas/driftproof/request.schema.json`](schemas/driftproof/request.schema.json), then invoke:
 
 ```bash

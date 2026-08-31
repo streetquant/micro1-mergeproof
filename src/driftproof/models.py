@@ -238,6 +238,35 @@ class DriftProofOnboardingResponse(StrictModel):
         return self
 
 
+class DriftProofFingerprintResponse(StrictModel):
+    schema_version: Literal[1] = 1
+    protocol: Literal["driftproof.fingerprint.v1"] = "driftproof.fingerprint.v1"
+    tool_version: str = Field(min_length=1)
+    configuration_request_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    content_fingerprint_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    fingerprint_scope: Literal["candidate_context_and_review_configuration"] = (
+        "candidate_context_and_review_configuration"
+    )
+    project: str
+    context: str
+    project_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    context_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    request: DriftProofReviewRequest
+    agent_argv: list[str] = Field(default_factory=lambda: ["driftproof", "agent", "-"])
+    candidate_code_executed: Literal[False] = False
+    external_provider_response_bound: Literal[False] = False
+    human_approval_required: Literal[True] = True
+    consequential_action_taken: Literal[False] = False
+
+    @model_validator(mode="after")
+    def fingerprint_paths_match_request(self) -> DriftProofFingerprintResponse:
+        if self.request.project != self.project or self.request.context != self.context:
+            raise ValueError("fingerprint paths do not match the resolved request")
+        if self.agent_argv != ["driftproof", "agent", "-"]:
+            raise ValueError("fingerprint agent argv must use the one-object stdin protocol")
+        return self
+
+
 class DriftProofNavigationResponse(StrictModel):
     schema_version: Literal[1] = 1
     protocol: Literal["driftproof.agent.v1"] = "driftproof.agent.v1"

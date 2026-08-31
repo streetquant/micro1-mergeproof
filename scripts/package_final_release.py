@@ -16,6 +16,12 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Literal, overload
 
+ROOT = Path(__file__).resolve().parents[1]
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.verify_demo_video import verify_video_delivery  # noqa: E402
+
 _FIXED_ZIP_TIME = (2026, 8, 30, 0, 0, 0)
 _MAX_MEMBER_BYTES = 95_000_000
 _MAX_ARCHIVE_BYTES = 1_500_000_000
@@ -131,6 +137,20 @@ _DELIVERY_SOURCES = {
     "TRACE_INDEX.json": "submission/TRACE_INDEX.json",
     "submission-manifest.json": "submission/manifest.json",
 }
+_MEDIA_FILES = (
+    "driftproof-demo.mp4",
+    "driftproof-demo-transcript.md",
+    "driftproof-demo-storyboard.json",
+    "driftproof-demo-source-manifest.json",
+    "driftproof-demo-scene-durations.json",
+    "driftproof-demo-verification.json",
+)
+_MEDIA_ARCHIVE_LABELS = {"full", "evidence"}
+_MEDIA_SOURCE_SCRIPTS = (
+    "scripts/render_demo_video.py",
+    "scripts/verify_demo_video.py",
+)
+_OWNED_RELEASE_FILES.update(_MEDIA_FILES)
 _CREDENTIAL_PATTERNS = {
     "github_token": re.compile(rb"(?:ghp|github_pat)_[A-Za-z0-9_]{20,}"),
     "google_api_key": re.compile(rb"AIza[0-9A-Za-z_-]{20,}"),
@@ -674,6 +694,187 @@ def _verify_submission_packet(
     }
 
 
+def _media_file_records(directory: Path) -> dict[str, dict[str, object]]:
+    records: dict[str, dict[str, object]] = {}
+    for name in _MEDIA_FILES:
+        path = directory / name
+        if path.is_symlink() or not path.is_file():
+            raise PackagingError(f"video delivery file is missing or unsafe: {name}")
+        records[name] = {
+            "bytes": path.stat().st_size,
+            "sha256": _sha256(path),
+        }
+    return records
+
+
+def _verify_media_delivery_metadata(
+    directory: Path,
+    media_metadata: object,
+    *,
+    commit: str,
+) -> dict[str, object] | None:
+    observed_media = {
+        name
+        for name in _MEDIA_FILES
+        if (directory / name).exists() or (directory / name).is_symlink()
+    }
+    if media_metadata is None:
+        if observed_media:
+            raise PackagingError("release contains video files without video-delivery metadata")
+        return None
+    if not isinstance(media_metadata, dict) or media_metadata.get("required") is not True:
+        raise PackagingError("video-delivery metadata is malformed")
+    if observed_media != set(_MEDIA_FILES):
+        raise PackagingError(
+            f"video delivery file set mismatch; missing={sorted(set(_MEDIA_FILES) - observed_media)}"
+        )
+    records = _media_file_records(directory)
+    declared_files = media_metadata.get("files")
+    if not isinstance(declared_files, dict) or set(declared_files) != set(_MEDIA_FILES):
+        raise PackagingError("video-delivery metadata file set is incomplete")
+    for name, metadata in records.items():
+        if declared_files.get(name) != metadata:
+            raise PackagingError(f"video-delivery metadata mismatch: {name}")
+
+    verification_path = directory / "driftproof-demo-verification.json"
+    source_manifest_path = directory / "driftproof-demo-source-manifest.json"
+    verification = _load_json_object(verification_path)
+    source_manifest = _load_json_object(source_manifest_path)
+    if (
+        verification.get("protocol") != "driftproof.demo-video-verification.v1"
+        or verification.get("verified") is not True
+        or verification.get("source_commit") != commit
+        or verification.get("human_approval_required") is not True
+        or verification.get("consequential_action_taken") is not False
+    ):
+        raise PackagingError("video verification receipt is invalid or commit-mismatched")
+    if (
+        source_manifest.get("protocol") != "driftproof.demo-video-source.v1"
+        or source_manifest.get("source_commit") != commit
+        or source_manifest.get("human_approval_required") is not True
+        or source_manifest.get("consequential_action_taken") is not False
+    ):
+        raise PackagingError("video source manifest is invalid or commit-mismatched")
+
+    video = verification.get("video")
+    video_path = directory / "driftproof-demo.mp4"
+    if (
+        not isinstance(video, dict)
+        or video.get("file") != "driftproof-demo.mp4"
+        or video.get("bytes") != video_path.stat().st_size
+        or video.get("sha256") != _sha256(video_path)
+        or video.get("complete_decode") is not True
+        or video.get("duration_seconds") is None
+    ):
+        raise PackagingError("video verification receipt does not bind the MP4")
+    duration = video.get("duration_seconds")
+    if not isinstance(duration, (int, float)) or not 90 <= float(duration) < 300:
+        raise PackagingError("video verification receipt has an invalid duration")
+    if (
+        video.get("width") != 1920
+        or video.get("height") != 1080
+        or video.get("video_codec") != "h264"
+        or video.get("pixel_format") != "yuv420p"
+        or video.get("audio_codec") != "aac"
+        or video.get("audio_sample_rate") != 48000
+    ):
+        raise PackagingError("video verification receipt has unexpected media properties")
+
+    verification_assets = verification.get("assets")
+    expected_assets = set(_MEDIA_FILES) - {
+        "driftproof-demo.mp4",
+        "driftproof-demo-verification.json",
+    }
+    if not isinstance(verification_assets, dict) or set(verification_assets) != expected_assets:
+        raise PackagingError("video verification receipt asset set is incomplete")
+    for name in expected_assets:
+        if verification_assets.get(name) != records[name]:
+            raise PackagingError(f"video verification receipt does not bind {name}")
+
+    source_scripts = media_metadata.get("source_scripts")
+    if not isinstance(source_scripts, dict) or set(source_scripts) != set(_MEDIA_SOURCE_SCRIPTS):
+        raise PackagingError("video-delivery source-script metadata is incomplete")
+    for field, relative in (
+        ("renderer", "scripts/render_demo_video.py"),
+        ("verifier", "scripts/verify_demo_video.py"),
+    ):
+        source = source_manifest.get(field)
+        if (
+            not isinstance(source, dict)
+            or source.get("path") != relative
+            or source.get("sha256") != source_scripts.get(relative)
+        ):
+            raise PackagingError(f"video source manifest does not bind the {field}")
+
+    if media_metadata.get("verification") != verification:
+        raise PackagingError("release manifest and video verification receipt differ")
+    if media_metadata.get("archive_directory") != "media":
+        raise PackagingError("video archive directory is unexpected")
+    return {
+        "verified": True,
+        "source_commit": commit,
+        "files": records,
+        "duration_seconds": float(duration),
+        "source_scripts": source_scripts,
+        "verification_sha256": _sha256(verification_path),
+        "source_manifest_sha256": _sha256(source_manifest_path),
+    }
+
+
+def _prepare_media_delivery(
+    root: Path,
+    media_directory: Path,
+    *,
+    commit: str,
+) -> tuple[dict[str, object], dict[str, Path]]:
+    media_input = media_directory.expanduser()
+    if media_input.is_symlink():
+        raise PackagingError("video delivery directory may not be a symlink")
+    media_directory = media_input.resolve(strict=True)
+    if not media_directory.is_dir():
+        raise PackagingError("video delivery directory is missing or unsafe")
+    observed = {path.name for path in media_directory.iterdir()}
+    if observed != set(_MEDIA_FILES):
+        raise PackagingError(
+            f"video delivery source file set mismatch; missing={sorted(set(_MEDIA_FILES) - observed)}, "
+            f"unexpected={sorted(observed - set(_MEDIA_FILES))}"
+        )
+    try:
+        verification = verify_video_delivery(
+            media_directory,
+            source_root=root,
+            expected_commit=commit,
+        )
+    except Exception as exc:
+        raise PackagingError(f"video delivery verification failed: {exc}") from exc
+    paths = {name: media_directory / name for name in _MEDIA_FILES}
+    records = _media_file_records(media_directory)
+    source_scripts: dict[str, str] = {}
+    for relative in _MEDIA_SOURCE_SCRIPTS:
+        payload = _run(root, "git", "show", f"HEAD:{relative}", text=False)
+        assert isinstance(payload, bytes)
+        source_scripts[relative] = hashlib.sha256(payload).hexdigest()
+    metadata: dict[str, object] = {
+        "required": True,
+        "archive_directory": "media",
+        "files": records,
+        "source_scripts": source_scripts,
+        "verification": verification,
+    }
+    return metadata, paths
+
+
+def _copy_media_to_release(output: Path, paths: dict[str, Path]) -> None:
+    for name in _MEDIA_FILES:
+        source = paths[name]
+        destination = output / name
+        if destination.exists() or destination.is_symlink():
+            raise PackagingError(f"video release destination already exists: {destination}")
+        shutil.copyfile(source, destination)
+        if _sha256(destination) != _sha256(source):
+            raise PackagingError(f"video release copy verification failed: {name}")
+
+
 def verify_release_directory(directory: Path) -> dict[str, object]:
     """Verify a downloaded release directory without trusting path existence alone."""
 
@@ -728,6 +929,11 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
     if submission.get("consequential_action_taken") is not False:
         raise PackagingError("submission manifest claims a consequential action")
     submission_packet = _verify_submission_packet(directory, submission)
+    video_delivery = _verify_media_delivery_metadata(
+        directory,
+        manifest.get("video_delivery"),
+        commit=commit,
+    )
 
     verifier_path = directory / "verify-release.pyz"
     verified_verifier = _verify_standalone_verifier(verifier_path)
@@ -829,6 +1035,28 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
                     f"{label} archive does not bind the standalone verifier source"
                 )
 
+        if video_delivery is not None:
+            for label in _MEDIA_ARCHIVE_LABELS:
+                for media_name in _MEDIA_FILES:
+                    archived_media = extracted[label] / "media" / media_name
+                    root_media = directory / media_name
+                    if (
+                        archived_media.is_symlink()
+                        or not archived_media.is_file()
+                        or _sha256(archived_media) != _sha256(root_media)
+                    ):
+                        raise PackagingError(
+                            f"{label} archive video delivery differs from the release root: {media_name}"
+                        )
+            unexpected_source_media = [
+                name for name in _MEDIA_FILES if (extracted["source"] / "media" / name).exists()
+            ]
+            if unexpected_source_media:
+                raise PackagingError(
+                    "source archive unexpectedly contains generated video delivery: "
+                    + ", ".join(sorted(unexpected_source_media))
+                )
+
         full_attestation = extracted["full"] / "RELEASE-ATTESTATION.json"
         if not full_attestation.is_file() or _load_json_object(full_attestation) != attestation:
             raise PackagingError("full archive attestation differs from the release root")
@@ -865,13 +1093,18 @@ def verify_release_directory(directory: Path) -> dict[str, object]:
         "standalone_verifier": verified_verifier,
         "standalone_verification": standalone_verification,
         "submission_packet": submission_packet,
+        "video_delivery": video_delivery,
         "sha256sums_sha256": _sha256(directory / "SHA256SUMS"),
         "human_approval_required": True,
         "consequential_action_taken": False,
     }
 
 
-def package(root: Path, output: Path) -> dict[str, object]:
+def package(
+    root: Path,
+    output: Path,
+    media_directory: Path | None = None,
+) -> dict[str, object]:
     root = root.resolve()
     output_input = output.expanduser()
     if output_input.is_symlink():
@@ -894,8 +1127,19 @@ def package(root: Path, output: Path) -> dict[str, object]:
     if not source_paths or not evidence_paths:
         raise PackagingError("source/evidence selection is unexpectedly empty")
 
+    video_delivery: dict[str, object] | None = None
+    media_paths: dict[str, Path] = {}
+    if media_directory is not None:
+        video_delivery, media_paths = _prepare_media_delivery(
+            root,
+            media_directory,
+            commit=head,
+        )
+
     _prepare_output_directory(output)
     standalone_verifier = _write_standalone_verifier(root, output / "verify-release.pyz")
+    if video_delivery is not None:
+        _copy_media_to_release(output, media_paths)
 
     with tempfile.TemporaryDirectory(prefix="mergeproof-release-") as raw_temp:
         temp = Path(raw_temp)
@@ -905,6 +1149,10 @@ def package(root: Path, output: Path) -> dict[str, object]:
         full_members = _materialize_commit(root, tracked, full_stage)
         source_members = _materialize_commit(root, source_paths, source_stage)
         evidence_members = _materialize_commit(root, evidence_paths, evidence_stage)
+        if video_delivery is not None:
+            media_members = [Member(f"media/{name}", media_paths[name]) for name in _MEDIA_FILES]
+            full_members.extend(media_members)
+            evidence_members.extend(media_members)
 
         bundle = temp / "repository.bundle"
         _run(root, "git", "bundle", "create", str(bundle), "main")
@@ -1007,6 +1255,7 @@ def package(root: Path, output: Path) -> dict[str, object]:
             "assets": assets,
             "delivery_files": delivery_files,
             "standalone_verifier": standalone_verifier,
+            "video_delivery": video_delivery,
             "verification_protocol": "driftproof.release-verification.v1",
             "attestation": attestation,
         }
@@ -1035,8 +1284,16 @@ def main() -> None:
     )
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--output", type=Path, default=Path("release/final"))
+    parser.add_argument(
+        "--media-directory",
+        type=Path,
+        help=(
+            "Verified solution-video delivery directory to include at the release root "
+            "and in the full/evidence archives."
+        ),
+    )
     args = parser.parse_args()
-    manifest = package(args.root, args.output)
+    manifest = package(args.root, args.output, media_directory=args.media_directory)
     print(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True))
 
 

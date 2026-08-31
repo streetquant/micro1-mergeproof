@@ -543,3 +543,141 @@ def test_standalone_verifier_rejects_rehashed_source_substitution(tmp_path: Path
     assert payload["verified"] is False
     assert payload["error_code"] == "release_invalid"
     assert "archive does not bind" in payload["detail"]
+
+
+def _fake_media_delivery(
+    repo: Path,
+    destination: Path,
+) -> tuple[Path, dict[str, object]]:
+    for relative in PACKAGING._MEDIA_SOURCE_SCRIPTS:
+        path = repo / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"# fixture for {relative}\n", encoding="utf-8")
+    git(repo, "add", "scripts")
+    git(repo, "commit", "-q", "-m", "video source fixtures")
+    git(repo, "push", "-q", "origin", "main")
+    commit = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-parse", "HEAD"],
+        text=True,
+    ).strip()
+
+    destination.mkdir()
+    video_path = destination / "driftproof-demo.mp4"
+    transcript_path = destination / "driftproof-demo-transcript.md"
+    storyboard_path = destination / "driftproof-demo-storyboard.json"
+    source_manifest_path = destination / "driftproof-demo-source-manifest.json"
+    durations_path = destination / "driftproof-demo-scene-durations.json"
+    verification_path = destination / "driftproof-demo-verification.json"
+
+    video_path.write_bytes(b"fixture h264/aac delivery")
+    transcript_path.write_text("# DriftProof solution video transcript\n", encoding="utf-8")
+    storyboard_path.write_text('{"fixture": true}\n', encoding="utf-8")
+    durations_path.write_text('{"fixture": true}\n', encoding="utf-8")
+    script_hashes = {
+        relative: PACKAGING._sha256(repo / relative) for relative in PACKAGING._MEDIA_SOURCE_SCRIPTS
+    }
+    source_manifest = {
+        "schema_version": 1,
+        "protocol": "driftproof.demo-video-source.v1",
+        "source_commit": commit,
+        "renderer": {
+            "path": "scripts/render_demo_video.py",
+            "sha256": script_hashes["scripts/render_demo_video.py"],
+        },
+        "verifier": {
+            "path": "scripts/verify_demo_video.py",
+            "sha256": script_hashes["scripts/verify_demo_video.py"],
+        },
+        "human_approval_required": True,
+        "consequential_action_taken": False,
+    }
+    source_manifest_path.write_text(
+        json.dumps(source_manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    asset_paths = {
+        transcript_path.name: transcript_path,
+        storyboard_path.name: storyboard_path,
+        source_manifest_path.name: source_manifest_path,
+        durations_path.name: durations_path,
+    }
+    verification: dict[str, object] = {
+        "schema_version": 1,
+        "protocol": "driftproof.demo-video-verification.v1",
+        "verified": True,
+        "source_commit": commit,
+        "video": {
+            "file": video_path.name,
+            "bytes": video_path.stat().st_size,
+            "sha256": PACKAGING._sha256(video_path),
+            "duration_seconds": 120.0,
+            "width": 1920,
+            "height": 1080,
+            "video_codec": "h264",
+            "pixel_format": "yuv420p",
+            "audio_codec": "aac",
+            "audio_sample_rate": 48000,
+            "complete_decode": True,
+        },
+        "assets": {
+            name: {"bytes": path.stat().st_size, "sha256": PACKAGING._sha256(path)}
+            for name, path in asset_paths.items()
+        },
+        "human_approval_required": True,
+        "consequential_action_taken": False,
+    }
+    verification_path.write_text(
+        json.dumps(verification, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return destination, verification
+
+
+def test_release_with_video_is_bound_at_root_and_inside_archives(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo = initialized_release_repo(tmp_path)
+    media, verification = _fake_media_delivery(repo, tmp_path / "media")
+    monkeypatch.setattr(PACKAGING, "verify_video_delivery", lambda *args, **kwargs: verification)
+    output = tmp_path / "release-with-video"
+
+    result = PACKAGING.package(repo, output, media_directory=media)
+
+    assert result["verification"]["video_delivery"]["verified"] is True
+    assert result["manifest"]["video_delivery"]["required"] is True
+    for name in PACKAGING._MEDIA_FILES:
+        assert (output / name).read_bytes() == (media / name).read_bytes()
+    for asset in result["manifest"]["assets"]:
+        label = asset["file"].split("-final-", 1)[1].split("-", 1)[0]
+        with zipfile.ZipFile(output / asset["file"]) as archive:
+            top = asset["top_level"]
+            for name in PACKAGING._MEDIA_FILES:
+                member = f"{top}/media/{name}"
+                if label in PACKAGING._MEDIA_ARCHIVE_LABELS:
+                    assert archive.read(member) == (media / name).read_bytes()
+                else:
+                    assert member not in archive.namelist()
+    standalone = subprocess.run(
+        [sys.executable, str(output / "verify-release.pyz"), str(output)],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    payload = json.loads(standalone.stdout)
+    assert payload["video_delivery"]["verified"] is True
+    assert payload["video_delivery"]["source_commit"] == result["manifest"]["commit"]
+
+
+def test_release_rejects_symlinked_video_delivery(
+    tmp_path: Path,
+) -> None:
+    repo = initialized_release_repo(tmp_path)
+    target = tmp_path / "real-media"
+    target.mkdir()
+    link = tmp_path / "media-link"
+    link.symlink_to(target, target_is_directory=True)
+
+    with pytest.raises(PackagingError, match="may not be a symlink"):
+        PACKAGING.package(repo, tmp_path / "release", media_directory=link)

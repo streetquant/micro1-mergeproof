@@ -25,12 +25,16 @@ For complete source qualification:
 make check
 ```
 
-For a deterministic release set from clean private `main`:
+For an exact-source solution video and deterministic release set from clean private `main`:
 
 ```bash
 make submission-check
-make release
+make video VIDEO_OUTPUT=release/video
+make video-verify VIDEO_OUTPUT=release/video
+make release MEDIA_DIRECTORY=release/video
 ```
+
+The renderer derives every scene and spoken claim from the exact commit and frozen evidence. The verifier requires a complete decode, one 1920x1080 H.264 stream, one AAC 48 kHz stream, audible narration, a duration below five minutes, and commit-bound transcript/storyboard/source receipts.
 
 A recipient can verify the downloaded release without installing DriftProof or retaining the source checkout:
 

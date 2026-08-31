@@ -252,15 +252,19 @@ bash scripts/reproduce.sh
 
 The complete reproduction verifies the pinned DriftDoctor boundary, regenerates and externally validates the paired dbt candidates, reruns the build-only baseline and DriftProof under the same dbt command, and mechanically compares the safety-metric projection with the committed comparison. Model replay is separately identified by request and fixture hashes; replay demonstrates deterministic processing of recorded responses, not unseen-input generalization.
 
-After the final qualified commit is pushed to private `main`, deterministic source, evidence, and full archives are built with:
+After the final qualified commit is pushed to private `main`, render and authenticate the exact-source solution video, then build deterministic source, evidence, and full archives:
 
 ```bash
 make submission-check
-make release
+make video VIDEO_OUTPUT=release/video
+make video-verify VIDEO_OUTPUT=release/video
+make release MEDIA_DIRECTORY=release/video
 make release-verify
 ```
 
-Release packaging fails closed unless the worktree is clean, local `HEAD` equals private `origin/main`, required evidence and every qualified adversarial review exist in the commit, tracked objects are ordinary files, and the output directory contains no unrelated entries. It fully reads and CRC-verifies all three deterministic archives, safely extracts each one, verifies the embedded Git bundle, and confirms that all eight human/browser/machine/judge entry points are byte-identical at the release root and inside every archive. `make release-verify` repeats those checks from the source checkout. A downloaded delivery is independently verifiable without installing DriftProof or retaining the checkout:
+The video renderer derives its scenes, narration, metrics, limitations, and evidence links from the exact commit. Its verifier requires a complete decode, one 1920×1080 H.264 stream, one AAC 48 kHz stream, audible narration, a duration below five minutes, and commit-bound transcript, storyboard, scene-duration, source-manifest, and verification receipts.
+
+Release packaging fails closed unless the worktree is clean, local `HEAD` equals private `origin/main`, required evidence and every qualified adversarial review exist in the commit, tracked objects are ordinary files, and the output directory contains no unrelated entries. It fully reads and CRC-verifies all three deterministic archives, safely extracts each one, verifies the embedded Git bundle, confirms that all eight human/browser/machine/judge entry points are byte-identical at the release root and inside every archive, and cross-binds the video delivery at the release root and in the full/evidence archives. `make release-verify` repeats those checks from the source checkout. A downloaded delivery is independently verifiable without installing DriftProof or retaining the checkout:
 
 ```bash
 python verify-release.pyz .

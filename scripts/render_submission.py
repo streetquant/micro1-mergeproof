@@ -198,12 +198,16 @@ For complete source qualification:
 make check
 ```
 
-For a deterministic release set from clean private `main`:
+For an exact-source solution video and deterministic release set from clean private `main`:
 
 ```bash
 make submission-check
-make release
+make video VIDEO_OUTPUT=release/video
+make video-verify VIDEO_OUTPUT=release/video
+make release MEDIA_DIRECTORY=release/video
 ```
+
+The renderer derives every scene and spoken claim from the exact commit and frozen evidence. The verifier requires a complete decode, one 1920x1080 H.264 stream, one AAC 48 kHz stream, audible narration, a duration below five minutes, and commit-bound transcript/storyboard/source receipts.
 
 A recipient can verify the downloaded release without installing DriftProof or retaining the source checkout:
 
@@ -353,6 +357,11 @@ uv run driftproof demo</pre>
 <li><a href="AGENT_TRAJECTORIES.json">Representative trajectories for every workflow agent</a></li>
 <li><a href="TRACE_INDEX.json">Content-addressed trace index</a></li>
 </ul>
+<h2>Exact-source solution video</h2>
+<pre>make video VIDEO_OUTPUT=release/video
+make video-verify VIDEO_OUTPUT=release/video
+make release MEDIA_DIRECTORY=release/video</pre>
+<p>The video is derived from the exact source commit and frozen evidence, remains below five minutes, and ships with transcript, storyboard, scene-duration, source-manifest, and verification receipts.</p>
 <h2>Downloaded release verification</h2>
 <pre>python verify-release.pyz .</pre>
 <p>The standalone verifier requires only Python's standard library and Git. It validates checksums, archives, the judge packet, and the embedded Git bundle, then emits one JSON object.</p>
@@ -415,7 +424,9 @@ def _manifest(
             "judge_demo": ["driftproof", "demo", "--json"],
             "source_qualification": ["make", "check"],
             "submission_drift_check": ["make", "submission-check"],
-            "release_package": ["make", "release"],
+            "video_render": ["make", "video", "VIDEO_OUTPUT=release/video"],
+            "video_verify": ["make", "video-verify", "VIDEO_OUTPUT=release/video"],
+            "release_package": ["make", "release", "MEDIA_DIRECTORY=release/video"],
             "downloaded_release_verify": ["python", "verify-release.pyz", "."],
             "agent_capabilities": ["driftproof", "capabilities"],
             "agent_schema": ["driftproof", "schema", "agent-response"],

@@ -18,20 +18,27 @@ uv run driftproof demo
 
 Both fixtures must build green. DriftProof must approve the contract-preserving fixture and reject the green-but-wrong fixture. Open both printed HTML reports.
 
-## 3. Inspect every workflow-agent trace
+## 3. Watch and authenticate the exact-source solution video
+
+- Open `driftproof-demo.mp4` from the downloaded release.
+- Use `driftproof-demo-transcript.md` for searchable narration and accessibility.
+- Confirm `driftproof-demo-verification.json` reports a complete decode, one 1920x1080 H.264 stream, one AAC 48 kHz stream, audible narration, and a duration below five minutes.
+- Confirm the video receipt and `driftproof-demo-source-manifest.json` name the same source commit as `release-manifest.json`.
+
+## 4. Inspect every workflow-agent trace
 
 - Open [`AGENT_TRAJECTORIES.json`](AGENT_TRAJECTORIES.json).
 - Confirm coverage for `baseline_reviewer` and `contract_clarifier`.
 - Confirm instructions, response, retry/usage evidence, deterministic verifier feedback, and human checkpoints are present.
 - Use [`TRACE_INDEX.json`](TRACE_INDEX.json) to verify the canonical source hashes.
 
-## 4. Map evidence to the scoring rubric
+## 5. Map evidence to the scoring rubric
 
 - Open [`RUBRIC_MAP.json`](RUBRIC_MAP.json).
 - Confirm its six criteria total 100 points.
 - Follow the argument vectors; do not paste untrusted fields into a shell.
 
-## 5. Verify a downloaded release independently
+## 6. Verify a downloaded release independently
 
 From the downloaded release directory:
 
@@ -41,7 +48,7 @@ python verify-release.pyz .
 
 This requires only Python's standard library and Git. It validates the exact file set, SHA-256 records, all archives and CRCs, judge-packet cross-bindings, verifier-source identity, and the embedded Git bundle. Exit `30` means the delivery is invalid and no result should be trusted.
 
-## 6. Run qualification when deeper verification is needed
+## 7. Run qualification when deeper verification is needed
 
 ```bash
 make check
@@ -50,7 +57,7 @@ bash scripts/reproduce.sh
 
 `make check` covers formatting, linting, strict typing, schema drift, submission drift, protocol smoke tests, the complete test suite, frozen replay, and package construction. The full reproduction additionally regenerates and externally validates the benchmark.
 
-## 7. Preserve the authority boundary
+## 8. Preserve the authority boundary
 
 - `human_approval_required` must remain `true`.
 - `consequential_action_taken` must remain `false`.

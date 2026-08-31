@@ -32,6 +32,19 @@ _DELIVERY_SOURCES = {
     "TRACE_INDEX.json": "submission/TRACE_INDEX.json",
     "submission-manifest.json": "submission/manifest.json",
 }
+_MEDIA_FILES = (
+    "driftproof-demo.mp4",
+    "driftproof-demo-transcript.md",
+    "driftproof-demo-storyboard.json",
+    "driftproof-demo-source-manifest.json",
+    "driftproof-demo-scene-durations.json",
+    "driftproof-demo-verification.json",
+)
+_MEDIA_ARCHIVE_LABELS = {"full", "evidence"}
+_MEDIA_SOURCE_SCRIPTS = (
+    "scripts/render_demo_video.py",
+    "scripts/verify_demo_video.py",
+)
 _REQUIRED_ROOT = {
     "release-manifest.json",
     "final-release-attestation.json",
@@ -303,6 +316,133 @@ def _verify_submission_packet(
     }
 
 
+def _media_file_records(directory: Path) -> dict[str, dict[str, Any]]:
+    records: dict[str, dict[str, Any]] = {}
+    for name in _MEDIA_FILES:
+        path = _regular_file(directory / name, "video delivery file")
+        records[name] = {
+            "bytes": path.stat().st_size,
+            "sha256": _sha256_file(path),
+        }
+    return records
+
+
+def _verify_video_delivery_metadata(
+    directory: Path,
+    media_metadata: object,
+    *,
+    commit: str,
+) -> dict[str, Any] | None:
+    observed_media = {
+        name
+        for name in _MEDIA_FILES
+        if (directory / name).exists() or (directory / name).is_symlink()
+    }
+    if media_metadata is None:
+        if observed_media:
+            raise ReleaseVerificationError(
+                "release contains video files without video-delivery metadata"
+            )
+        return None
+    if not isinstance(media_metadata, dict) or media_metadata.get("required") is not True:
+        raise ReleaseVerificationError("video-delivery metadata is malformed")
+    if media_metadata.get("archive_directory") != "media":
+        raise ReleaseVerificationError("video archive directory is unexpected")
+    if observed_media != set(_MEDIA_FILES):
+        raise ReleaseVerificationError(
+            f"video delivery file set mismatch; missing={sorted(set(_MEDIA_FILES) - observed_media)}"
+        )
+
+    records = _media_file_records(directory)
+    declared_files = media_metadata.get("files")
+    if not isinstance(declared_files, dict) or set(declared_files) != set(_MEDIA_FILES):
+        raise ReleaseVerificationError("video-delivery metadata file set is incomplete")
+    for name, metadata in records.items():
+        if declared_files.get(name) != metadata:
+            raise ReleaseVerificationError(f"video-delivery metadata mismatch: {name}")
+
+    verification = _load_object(
+        directory / "driftproof-demo-verification.json",
+        "video verification receipt",
+    )
+    source_manifest = _load_object(
+        directory / "driftproof-demo-source-manifest.json",
+        "video source manifest",
+    )
+    if (
+        verification.get("protocol") != "driftproof.demo-video-verification.v1"
+        or verification.get("verified") is not True
+        or verification.get("source_commit") != commit
+        or verification.get("human_approval_required") is not True
+        or verification.get("consequential_action_taken") is not False
+    ):
+        raise ReleaseVerificationError("video verification receipt is invalid or commit-mismatched")
+    if (
+        source_manifest.get("protocol") != "driftproof.demo-video-source.v1"
+        or source_manifest.get("source_commit") != commit
+        or source_manifest.get("human_approval_required") is not True
+        or source_manifest.get("consequential_action_taken") is not False
+    ):
+        raise ReleaseVerificationError("video source manifest is invalid or commit-mismatched")
+
+    video = verification.get("video")
+    video_path = directory / "driftproof-demo.mp4"
+    if (
+        not isinstance(video, dict)
+        or video.get("file") != "driftproof-demo.mp4"
+        or video.get("bytes") != video_path.stat().st_size
+        or video.get("sha256") != _sha256_file(video_path)
+        or video.get("complete_decode") is not True
+        or not isinstance(video.get("duration_seconds"), (int, float))
+        or not 90 <= float(video["duration_seconds"]) < 300
+        or video.get("width") != 1920
+        or video.get("height") != 1080
+        or video.get("video_codec") != "h264"
+        or video.get("pixel_format") != "yuv420p"
+        or video.get("audio_codec") != "aac"
+        or video.get("audio_sample_rate") != 48000
+    ):
+        raise ReleaseVerificationError("video verification receipt does not bind a valid MP4")
+
+    expected_assets = set(_MEDIA_FILES) - {
+        "driftproof-demo.mp4",
+        "driftproof-demo-verification.json",
+    }
+    verification_assets = verification.get("assets")
+    if not isinstance(verification_assets, dict) or set(verification_assets) != expected_assets:
+        raise ReleaseVerificationError("video verification receipt asset set is incomplete")
+    for name in expected_assets:
+        if verification_assets.get(name) != records[name]:
+            raise ReleaseVerificationError(f"video verification receipt does not bind {name}")
+
+    source_scripts = media_metadata.get("source_scripts")
+    if not isinstance(source_scripts, dict) or set(source_scripts) != set(_MEDIA_SOURCE_SCRIPTS):
+        raise ReleaseVerificationError("video source-script metadata is incomplete")
+    for field, relative in (
+        ("renderer", "scripts/render_demo_video.py"),
+        ("verifier", "scripts/verify_demo_video.py"),
+    ):
+        source = source_manifest.get(field)
+        if (
+            not isinstance(source, dict)
+            or source.get("path") != relative
+            or source.get("sha256") != source_scripts.get(relative)
+        ):
+            raise ReleaseVerificationError(f"video source manifest does not bind the {field}")
+
+    if media_metadata.get("verification") != verification:
+        raise ReleaseVerificationError("release manifest and video verification receipt differ")
+    return {
+        "verified": True,
+        "source_commit": commit,
+        "duration_seconds": float(video["duration_seconds"]),
+        "files": records,
+        "source_scripts": source_scripts,
+        "verification_sha256": _sha256_file(directory / "driftproof-demo-verification.json"),
+        "source_manifest_sha256": _sha256_file(directory / "driftproof-demo-source-manifest.json"),
+    }
+
+
 def _run_git_bundle_verification(bundle: bytes, commit: str) -> dict[str, Any]:
     git = shutil.which("git")
     if git is None:
@@ -393,6 +533,11 @@ def verify_release(directory: Path) -> dict[str, Any]:
     if submission.get("protocol") != "driftproof.submission-manifest.v1":
         raise ReleaseVerificationError("unexpected submission manifest protocol")
     packet = _verify_submission_packet(directory, submission)
+    video_delivery = _verify_video_delivery_metadata(
+        directory,
+        manifest.get("video_delivery"),
+        commit=commit,
+    )
 
     verifier_metadata = manifest.get("standalone_verifier")
     verifier_path = directory / "verify-release.pyz"
@@ -499,6 +644,35 @@ def verify_release(directory: Path) -> dict[str, Any]:
                     raise ReleaseVerificationError(
                         f"{label} archive does not bind the standalone verifier source"
                     )
+            if video_delivery is not None:
+                if label in _MEDIA_ARCHIVE_LABELS:
+                    for media_name in _MEDIA_FILES:
+                        media_member = f"{top}/media/{media_name}"
+                        if (
+                            media_member not in names
+                            or archive.read(media_member) != (directory / media_name).read_bytes()
+                        ):
+                            raise ReleaseVerificationError(
+                                f"{label} archive video delivery differs from release root: {media_name}"
+                            )
+                elif any(f"{top}/media/{media_name}" in names for media_name in _MEDIA_FILES):
+                    raise ReleaseVerificationError(
+                        "source archive unexpectedly contains generated video delivery"
+                    )
+                if label in {"full", "source"}:
+                    source_scripts = video_delivery.get("source_scripts")
+                    if not isinstance(source_scripts, dict):
+                        raise ReleaseVerificationError(
+                            "video source-script metadata is unavailable"
+                        )
+                    for relative in _MEDIA_SOURCE_SCRIPTS:
+                        script_member = f"{top}/{relative}"
+                        if script_member not in names or _sha256_bytes(
+                            archive.read(script_member)
+                        ) != source_scripts.get(relative):
+                            raise ReleaseVerificationError(
+                                f"{label} archive does not bind video source: {relative}"
+                            )
             if label == "evidence":
                 for relative in review_paths:
                     if not isinstance(relative, str) or f"{top}/{relative}" not in names:
@@ -525,6 +699,7 @@ def verify_release(directory: Path) -> dict[str, Any]:
         "archives": verified_assets,
         "standalone_verifier": verified_verifier,
         "submission_packet": packet,
+        "video_delivery": video_delivery,
         "repository_bundle": bundle_verification,
         "sha256sums_sha256": _sha256_file(directory / "SHA256SUMS"),
         "human_approval_required": True,

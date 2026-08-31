@@ -1,7 +1,10 @@
 SHELL := /usr/bin/env bash
 .SHELLFLAGS := -euo pipefail -c
 
-.PHONY: setup doctor judge-demo submission submission-check format format-check lint typecheck test smoke replay schemas schema-export schema-check protocol-smoke build check reproduce release release-verify
+VIDEO_OUTPUT ?= release/video
+MEDIA_DIRECTORY ?=
+
+.PHONY: setup doctor judge-demo submission submission-check video-doctor video video-verify format format-check lint typecheck test smoke replay schemas schema-export schema-check protocol-smoke build check reproduce release release-verify
 
 setup:
 	uv sync --locked --extra dev --extra dbt
@@ -19,6 +22,15 @@ submission:
 submission-check:
 	uv run python scripts/render_submission.py --check
 
+video-doctor:
+	uv run python scripts/render_demo_video.py --check --expected-commit "$(git rev-parse HEAD)"
+
+video:
+	uv run python scripts/render_demo_video.py --output "$(VIDEO_OUTPUT)"
+
+video-verify:
+	uv run python scripts/verify_demo_video.py "$(VIDEO_OUTPUT)" --source-root . --expected-commit "$(git rev-parse HEAD)"
+
 format:
 	uv run ruff format src tests scripts
 
@@ -29,7 +41,7 @@ lint:
 	uv run ruff check src tests scripts
 
 typecheck:
-	uv run mypy src/driftproof src/mergeproof scripts/verify_replay.py scripts/package_final_release.py scripts/export_schemas.py scripts/judge_packet.py scripts/render_submission.py scripts/standalone_release_verifier.py scripts/verify_release.py
+	uv run mypy src/driftproof src/mergeproof scripts/verify_replay.py scripts/package_final_release.py scripts/export_schemas.py scripts/judge_packet.py scripts/render_demo_video.py scripts/render_submission.py scripts/standalone_release_verifier.py scripts/verify_demo_video.py scripts/verify_release.py
 
 test:
 	uv run pytest -q
@@ -70,7 +82,9 @@ reproduce:
 	bash scripts/reproduce.sh
 
 release:
-	@uv run python scripts/package_final_release.py --output release/final
+	@args=(--output release/final); \
+	if [[ -n "$(MEDIA_DIRECTORY)" ]]; then args+=(--media-directory "$(MEDIA_DIRECTORY)"); fi; \
+	uv run python scripts/package_final_release.py "${args[@]}"
 
 release-verify:
 	@uv run python scripts/verify_release.py release/final

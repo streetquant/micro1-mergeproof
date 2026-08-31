@@ -11,24 +11,24 @@
   "request_hash": "c3b00ff265e0f3fa79c348163f09a9842123406ca50ed1f6174d597db8084646",
   "response": {
     "data": {
-      "confidence": 0.99,
+      "confidence": 0.95,
       "decision": "approve",
       "findings": [],
-      "summary": "The change correctly treats whitespace-only text as empty, passes all unit tests, and introduces no new issues. Approved for merge."
+      "summary": "The change correctly updates the `valid` function to treat whitespace-only strings as empty, and the added unit test confirms the new behavior. All tests pass and no blockers are identified."
     },
-    "raw_text": "{\"confidence\":0.99,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change correctly treats whitespace-only text as empty, passes all unit tests, and introduces no new issues. Approved for merge.\"}",
+    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change correctly updates the `valid` function to treat whitespace-only strings as empty, and the added unit test confirms the new behavior. All tests pass and no blockers are identified.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1218,
-      "latency_ms": 2778,
+      "latency_ms": 664,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 266,
+      "output_tokens": 223,
       "provider": "groq",
-      "rate_limit_wait_ms": 1935,
+      "rate_limit_wait_ms": 0,
       "request_hash": "c3b00ff265e0f3fa79c348163f09a9842123406ca50ed1f6174d597db8084646",
-      "total_tokens": 1484
+      "total_tokens": 1441
     }
   },
   "schema_version": 1

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DriftProof review — DP-312974D18960</title>
+<style>
+:root { color-scheme:light dark; --bg:#08111d; --panel:#111f31; --text:#edf5ff; --muted:#a9bbd1; --border:#334b64; --pass:#2ec27e; --fail:#ff6b6b; --review:#f6c85f; }
+* { box-sizing:border-box; } body { margin:0; font-family:ui-sans-serif,system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+main { width:min(1180px,94vw); margin:2rem auto 5rem; } header,section { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:1.25rem 1.5rem; margin:1rem 0; }
+h1,h2,h3 { line-height:1.2; } code { overflow-wrap:anywhere; background:#050a12; padding:.1rem .3rem; border-radius:4px; }
+.verdict { display:inline-block; font-weight:800; padding:.45rem .8rem; border-radius:999px; } .verdict.approve { background:var(--pass); color:#06170e; } .verdict.reject { background:var(--fail); color:#220606; } .verdict.human-review { background:var(--review); color:#221904; }
+.boundary { border-left:5px solid var(--review); padding-left:1rem; color:var(--muted); } .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.75rem; } .metric,.rule { border:1px solid var(--border); border-radius:10px; padding:.85rem; } .metric strong { display:block; font-size:1.35rem; }
+table { width:100%; border-collapse:collapse; } th,td { text-align:left; vertical-align:top; padding:.6rem; border-bottom:1px solid var(--border); } .status { text-transform:uppercase; font-size:.75rem; font-weight:800; } .status.pass { color:var(--pass); } .status.fail { color:var(--fail); } .status.inconclusive { color:var(--review); } .muted { color:var(--muted); } dt { color:var(--muted); margin-top:.5rem; } dd { margin-left:0; }
+</style>
+</head>
+<body><main>
+<header>
+<p class="muted">Independent adversarial release gate for agent-authored dbt repairs</p>
+<h1>DP-312974D18960</h1>
+<p><span class="verdict approve">approve</span></p>
+<p>Candidate built successfully and every compiled visible contract check passed. A qualified human must still authorize any merge or deployment.</p>
+<p class="boundary"><strong>Human approval required.</strong> DriftProof performed no merge, deployment, push, publication, or other consequential action.</p>
+<div class="grid">
+<div class="metric"><strong>7</strong>Checks</div>
+<div class="metric"><strong>0</strong>Failed</div>
+<div class="metric"><strong>0</strong>Inconclusive</div>
+<div class="metric"><strong>bubblewrap</strong>Isolation</div>
+</div>
+</header>
+<section><h2>Verification checks</h2><table><thead><tr><th>Status</th><th>Check</th><th>Detail</th><th>Evidence</th></tr></thead><tbody><tr><td><span class="status pass">pass</span></td><td><strong>Candidate builds from the disposable review worktree</strong><br><code>C-C0B46176F241</code></td><td>dbt returned 0 under bubblewrap isolation.</td><td><code>dbt build</code> <code>fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Original candidate project remained unchanged</strong><br><code>C-2EE4ED4DFCAA</code></td><td>The source tree hash is unchanged.</td><td><code>fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f</code> <code>fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Visible business context compiled into executable checks</strong><br><code>C-829C865DC1D5</code></td><td>Compiled 3 rules without using an external benchmark oracle.</td><td><code>BUSINESS_CONTEXT.md</code> <code>d3de6def201fb1f45a368fb635c81036488fb7ff4da089daf306c6e2d34b7d39</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Public output contract is represented</strong><br><code>C-E7A37014CC66</code></td><td>All documented fields are projected by the candidate.</td><td><code>models/mart_customer_revenue.sql</code> <code>models/stg_customer_revenue.sql</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Renamed source field is preserved through an alias</strong><br><code>C-8FA8B51E5395</code></td><td>client_name is visibly aliased to customer_name.</td><td><code>models/stg_customer_revenue.sql</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Invalid numeric input follows the documented NULL policy</strong><br><code>C-2508236DFBEB</code></td><td>Invalid numeric text remains NULL after an explicit DECIMAL try_cast.</td><td><code>models/stg_customer_revenue.sql</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Verification controls were not weakened</strong><br><code>C-3A141B290B9B</code></td><td>No disabled or warning-only validation controls were found.</td><td><code>models/schema.yml</code> <code>models/sources.yml</code> </td></tr></tbody></table></section>
+<section><h2>Visible contract</h2><article class="rule"><div><code>public_contract</code> <code>R-626688F98AA7</code></div><h3>The public mart contract is `customer_id`, `customer_name`, `revenue_amount`.</h3><p>Output: <code>—</code>; fields: <code>customer_id, customer_name, revenue_amount</code></p></article><article class="rule"><div><code>source_alias</code> <code>R-CD72C5C28B55</code></div><h3>The upstream name field may have changed.</h3><p>Output: <code>customer_name</code>; fields: <code>—</code></p></article><article class="rule"><div><code>numeric_null_policy</code> <code>R-553C6652E7F9</code></div><h3>Revenue now arrives as text: valid numeric text becomes DECIMAL and invalid text becomes NULL; invalid values must not be silently coerced to zero or discarded.</h3><p>Output: <code>revenue_amount</code>; fields: <code>—</code></p></article><h3>Unresolved context</h3><ul><li>None</li></ul></section>
+<section><h2>Bounded agent trace</h2><p class="muted">No model agent was invoked.</p></section>
+<section><h2>Integrity</h2><ul><li>Candidate: <code>fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f</code></li><li>Context: <code>d3de6def201fb1f45a368fb635c81036488fb7ff4da089daf306c6e2d34b7d39</code></li><li>Worktree: <code>fddc4ed3581aff669b33300e9f87477561949740ffdd3c47dbdc6892765a020f</code></li><li>Certificate: <code>9351142d703ae9df1d064ce951b511abe97b3a89ea923b7369e6817672bfd804</code></li></ul><p class="muted">Verify with <code>driftproof verify-bundle &lt;directory&gt;</code>.</p></section>
+</main></body></html>

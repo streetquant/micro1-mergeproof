@@ -1,0 +1,28 @@
+{
+  "candidate_id": "DP-6AA24B281651",
+  "certificate_sha256": "3d2ca6ceedd0a98a2d11967eb9396b5ab5f1d346ef1561b4c6a41ef0052700a0",
+  "consequential_action_taken": false,
+  "exit_code": 10,
+  "files": {
+    "approval-certificate.json": {
+      "bytes": 905,
+      "sha256": "e4d06db1600ef5199adcf5eac6c6b6afa63e58e05e39112eac47a7e7e3da9800"
+    },
+    "gate-report.json": {
+      "bytes": 6920,
+      "sha256": "5a9c8d9578540a6ec494bd7a9164659b94e751a4b34159ad8a5ce7150854ae54"
+    },
+    "report.html": {
+      "bytes": 6535,
+      "sha256": "1d52963fd37a1c063b1bfadabbe326dc783b293e180e57d20e8e57443abd7928"
+    },
+    "report.md": {
+      "bytes": 3461,
+      "sha256": "829e74c3e33778eeca5542b9f287559939699633e102d50b96a3743bb989dad5"
+    }
+  },
+  "human_approval_required": true,
+  "schema_version": 1,
+  "tool": "driftproof",
+  "verdict": "reject"
+}

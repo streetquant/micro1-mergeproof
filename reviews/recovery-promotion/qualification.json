@@ -1,0 +1,37 @@
+{
+  "artifact_hashes": {
+    "dist/driftproof-0.2.0-py3-none-any.whl": "df2b234829253fb24da0b8d016c9a3dda685eedef37fed941c56cdbdcfcc7bd4",
+    "dist/driftproof-0.2.0.tar.gz": "cbe766494df7a3c20eb6bdf640e278de557131e31b713141ed5d818eeffe96a7",
+    "pyproject.toml": "2ebcbc1fed2cb4c6e1cf4dd9fe45f36e06ac78ab03e804c59f1f283bd88b634c",
+    "results/driftproof-comparison/comparison.json": "5b06acae698b3a98a22b3cc263403a6085eca569de16a0b0ed1f1dbc3b37846c",
+    "schemas/manifest.json": "32f61ad46ca599ad7af6770cf467df546e0abf8c45243de33211ff2211ae38ea",
+    "uv.lock": "3f206bcae58a894de63ebfa8d7b06484f97d43cd7398278486bc74a67b7f65c8"
+  },
+  "changed_path_count": 288,
+  "created_at": "2026-08-31T06:40:34.235472+00:00",
+  "limitations": [
+    "The benchmark is project-authored and synthetic.",
+    "Replay verifies processing of recorded model responses rather than unseen-input generalization.",
+    "Approval remains advisory and requires a qualified human decision."
+  ],
+  "parent_commit": "323ac7fe926bf71c2213bc5f2f73d5fae6283127",
+  "qualification": {
+    "frozen_replay_verified": true,
+    "git_diff_check": true,
+    "git_fsck": true,
+    "mypy_strict": true,
+    "private_path_scan": true,
+    "protocol_smoke": true,
+    "pytest_passed": 172,
+    "ruff_format": true,
+    "ruff_lint": true,
+    "runtime_schema_check": true,
+    "secret_scan": true,
+    "source_distribution_built": true,
+    "wheel_built": true
+  },
+  "recovery_method": "clean authenticated clone plus byte-preserved candidate tree; corrupt source Git metadata was not reused",
+  "repository_visibility": "private",
+  "schema_version": 1,
+  "status": "qualified_for_promotion"
+}

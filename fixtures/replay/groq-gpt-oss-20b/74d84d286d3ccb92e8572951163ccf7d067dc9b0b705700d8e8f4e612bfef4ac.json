@@ -22,24 +22,24 @@
           ],
           "explanation": "The change adds a new runtime dependency (requests==2.32.5) to requirements.txt, violating the requirement to not add or change runtime dependencies.",
           "severity": "high",
-          "title": "Unintended Dependency Addition"
+          "title": "Unnecessary dependency added"
         }
       ],
-      "summary": "The change introduces a new runtime dependency, which is a material blocker. Reject the merge."
+      "summary": "The change introduces a new runtime dependency, which is disallowed by the task constraints. Rejecting the merge."
     },
-    "raw_text": "{\"confidence\":0.99,\"decision\":\"reject\",\"findings\":[{\"category\":\"dependency_drift\",\"evidence_ids\":[\"diff:candidate.patch:5adefb5f16fd6b71\",\"file:candidate_requirements.txt:5f7902ca11baac3e\"],\"explanation\":\"The change adds a new runtime dependency (requests==2.32.5) to requirements.txt, violating the requirement to not add or change runtime dependencies.\",\"severity\":\"high\",\"title\":\"Unintended Dependency Addition\"}],\"summary\":\"The change introduces a new runtime dependency, which is a material blocker. Reject the merge.\"}",
+    "raw_text": "{\"confidence\":0.99,\"decision\":\"reject\",\"findings\":[{\"category\":\"dependency_drift\",\"evidence_ids\":[\"diff:candidate.patch:5adefb5f16fd6b71\",\"file:candidate_requirements.txt:5f7902ca11baac3e\"],\"explanation\":\"The change adds a new runtime dependency (requests==2.32.5) to requirements.txt, violating the requirement to not add or change runtime dependencies.\",\"severity\":\"high\",\"title\":\"Unnecessary dependency added\"}],\"summary\":\"The change introduces a new runtime dependency, which is disallowed by the task constraints. Rejecting the merge.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1327,
-      "latency_ms": 11861,
+      "latency_ms": 11852,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 265,
+      "output_tokens": 268,
       "provider": "groq",
-      "rate_limit_wait_ms": 10900,
+      "rate_limit_wait_ms": 11110,
       "request_hash": "74d84d286d3ccb92e8572951163ccf7d067dc9b0b705700d8e8f4e612bfef4ac",
-      "total_tokens": 1592
+      "total_tokens": 1595
     }
   },
   "schema_version": 1

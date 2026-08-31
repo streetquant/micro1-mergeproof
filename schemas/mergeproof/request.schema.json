@@ -1,0 +1,139 @@
+{
+  "$defs": {
+    "CommandSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Argv",
+          "type": "array"
+        },
+        "cwd": {
+          "default": ".",
+          "title": "Cwd",
+          "type": "string"
+        },
+        "expected_exit_codes": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Expected Exit Codes",
+          "type": "array"
+        },
+        "label": {
+          "default": "verification",
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "repeat": {
+          "default": 1,
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Repeat",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "default": 15.0,
+          "exclusiveMinimum": 0,
+          "maximum": 120,
+          "title": "Timeout Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "argv"
+      ],
+      "title": "CommandSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "allowed_changed_globs": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Allowed Changed Globs",
+      "type": "array"
+    },
+    "before": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Before",
+      "type": "object"
+    },
+    "candidate": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Candidate",
+      "type": "object"
+    },
+    "id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "task": {
+      "maxLength": 100000,
+      "minLength": 1,
+      "title": "Task",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 300,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "trajectory": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "maxItems": 2000,
+      "title": "Trajectory",
+      "type": "array"
+    },
+    "verification_commands": {
+      "items": {
+        "$ref": "#/$defs/CommandSpec"
+      },
+      "maxItems": 64,
+      "title": "Verification Commands",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "task",
+    "before",
+    "candidate"
+  ],
+  "title": "CaseInput",
+  "type": "object"
+}

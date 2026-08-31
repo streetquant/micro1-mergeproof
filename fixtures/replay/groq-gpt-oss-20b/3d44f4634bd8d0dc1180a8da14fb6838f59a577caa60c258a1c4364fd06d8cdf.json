@@ -14,21 +14,21 @@
       "confidence": 0.95,
       "decision": "approve",
       "findings": [],
-      "summary": "The change safely loads the optional analytics key from the environment variable without embedding credentials in source code, and all tests pass. No blockers identified."
+      "summary": "The change safely loads the optional analytics key from the environment variable without embedding credentials, passes all tests, and respects the allowed file change scope."
     },
-    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change safely loads the optional analytics key from the environment variable without embedding credentials in source code, and all tests pass. No blockers identified.\"}",
+    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change safely loads the optional analytics key from the environment variable without embedding credentials, passes all tests, and respects the allowed file change scope.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1334,
-      "latency_ms": 13691,
+      "latency_ms": 8720,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 349,
+      "output_tokens": 380,
       "provider": "groq",
-      "rate_limit_wait_ms": 11039,
+      "rate_limit_wait_ms": 7831,
       "request_hash": "3d44f4634bd8d0dc1180a8da14fb6838f59a577caa60c258a1c4364fd06d8cdf",
-      "total_tokens": 1683
+      "total_tokens": 1714
     }
   },
   "schema_version": 1

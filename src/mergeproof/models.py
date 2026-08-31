@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import json
 from enum import StrEnum
 from pathlib import PurePosixPath
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator, model_validator
 
 
 class StrictModel(BaseModel):
@@ -117,10 +118,20 @@ class CaseInput(StrictModel):
     def safe_globs(cls, value: list[str]) -> list[str]:
         if len(value) > 256:
             raise ValueError("too many allowed changed-path globs")
-        if any(
-            not item or "\x00" in item or "\\" in item or item.startswith("/") for item in value
-        ):
-            raise ValueError("allowed changed-path globs must be non-empty POSIX-relative patterns")
+        for item in value:
+            parsed = PurePosixPath(item)
+            if (
+                not item
+                or "\x00" in item
+                or "\\" in item
+                or item.startswith(("/", "~"))
+                or parsed.is_absolute()
+                or parsed in {PurePosixPath("."), PurePosixPath("..")}
+                or ".." in parsed.parts
+            ):
+                raise ValueError(
+                    "allowed changed-path globs must be non-empty POSIX-relative patterns without parent traversal"
+                )
         return value
 
     @model_validator(mode="after")
@@ -134,6 +145,14 @@ class CaseInput(StrictModel):
             raise ValueError("case text payload exceeds the 10 MB limit")
         if any(size > 1_000_000 for size in encoded_sizes):
             raise ValueError("an individual case file exceeds the 1 MB limit")
+        auxiliary = json.dumps(
+            {"trajectory": self.trajectory, "metadata": self.metadata},
+            ensure_ascii=False,
+            separators=(",", ":"),
+            default=repr,
+        ).encode("utf-8")
+        if len(auxiliary) > 1_000_000:
+            raise ValueError("trajectory and metadata exceed the 1 MB limit")
         return self
 
 
@@ -222,3 +241,92 @@ class AuditResult(StrictModel):
     duration_ms: int = 0
     provider: str
     model: str
+
+
+class ReviewNavigationResponse(StrictModel):
+    """Stable machine-facing navigation object emitted after a valid review."""
+
+    schema_version: Literal[1]
+    protocol: Literal["mergeproof.agent.v1"] = "mergeproof.agent.v1"
+    status: Literal["valid_review"] = "valid_review"
+    case_id: str
+    decision: Decision
+    confidence: float = Field(ge=0, le=1)
+    exit_code: Literal[0, 10, 20]
+    recommended_action: Literal[
+        "human_approval",
+        "repair_required",
+        "evidence_or_human_escalation",
+    ]
+    bundle: str
+    request: str
+    manifest: str
+    machine_result: str
+    evidence_ledger: str
+    agent_traces: str
+    human_report: str
+    human_report_markdown: str
+    verified_findings: int = Field(ge=0)
+    hypotheses: int = Field(ge=0)
+    bundle_verified: Literal[True]
+    bundle_manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    response_file: str | None = None
+    human_approval_required: Literal[True]
+    consequential_action_taken: Literal[False]
+
+    @model_validator(mode="after")
+    def decision_fields_are_consistent(self) -> ReviewNavigationResponse:
+        expected_exit = {
+            Decision.APPROVE: 0,
+            Decision.REJECT: 10,
+            Decision.HUMAN_REVIEW: 20,
+        }[self.decision]
+        expected_action = {
+            Decision.APPROVE: "human_approval",
+            Decision.REJECT: "repair_required",
+            Decision.HUMAN_REVIEW: "evidence_or_human_escalation",
+        }[self.decision]
+        if self.exit_code != expected_exit:
+            raise ValueError("navigation exit code does not match the review decision")
+        if self.recommended_action != expected_action:
+            raise ValueError("recommended action does not match the review decision")
+        return self
+
+
+class ReviewErrorResponse(StrictModel):
+    """Stable machine-facing object emitted when no review result is valid."""
+
+    schema_version: Literal[1]
+    protocol: Literal["mergeproof.agent.v1"] = "mergeproof.agent.v1"
+    status: Literal["invalid_review"]
+    decision: Literal["human_review"]
+    exit_code: Literal[30]
+    context: str
+    error: str
+    error_code: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
+    detail: str
+    hint: str
+    retryable: bool
+    response_file: str | None = None
+    human_approval_required: Literal[True]
+    consequential_action_taken: Literal[False]
+
+
+class ReviewPreparationResponse(StrictModel):
+    """Machine-facing response emitted after a request is prepared successfully."""
+
+    schema_version: Literal[1]
+    protocol: Literal["mergeproof.prepare.v1"] = "mergeproof.prepare.v1"
+    status: Literal["request_prepared"] = "request_prepared"
+    request: str
+    case_id: str
+    changed_paths: list[str]
+    base_commit: str
+    verification_commands: int = Field(ge=0)
+    response_file: str | None = None
+    human_approval_required: Literal[True]
+    consequential_action_taken: Literal[False]
+
+
+class AgentProtocolResponse(RootModel[ReviewNavigationResponse | ReviewErrorResponse]):
+    """The complete one-object stdout protocol for autonomous review callers."""

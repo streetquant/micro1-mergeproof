@@ -31,7 +31,7 @@ from .prompts import (
 )
 from .providers import LLMProvider, ProviderError
 from .sandbox import SandboxUnavailable, VerificationAnalysis, verify_case
-from .utils import canonical_json, sha256_text, stable_evidence_id
+from .utils import canonical_json, redact_secrets, sha256_text, stable_evidence_id
 
 _PRESERVATION_CONTRACT = re.compile(
     r"(?i)\b(do not change|preserv\w*|must remain|remain unchanged|idempotent|only when)\b"
@@ -69,11 +69,25 @@ def _evidence(kind: str, source: str, content: str, **metadata: Any) -> Evidence
     )
 
 
+def _redacted_evidence(kind: str, source: str, content: str, **metadata: Any) -> EvidenceRecord:
+    redacted = redact_secrets(content)
+    projection = dict(metadata)
+    if redacted != content:
+        projection.update(
+            {
+                "content_redacted": True,
+                "original_sha256": sha256_text(content),
+                "original_chars": len(content),
+            }
+        )
+    return _evidence(kind, source, redacted, **projection)
+
+
 def build_static_evidence(case: CaseInput) -> list[EvidenceRecord]:
     evidence = [
-        _evidence("task", "task.md", case.task),
-        _evidence("diff", "candidate.patch", _tree_diff(case.before, case.candidate)),
-        _evidence("trajectory", "trajectory.json", canonical_json(case.trajectory)),
+        _redacted_evidence("task", "task.md", case.task),
+        _redacted_evidence("diff", "candidate.patch", _tree_diff(case.before, case.candidate)),
+        _redacted_evidence("trajectory", "trajectory.json", canonical_json(case.trajectory)),
         _evidence(
             "policy",
             "allowed-changed-globs.json",
@@ -88,7 +102,7 @@ def build_static_evidence(case: CaseInput) -> list[EvidenceRecord]:
         ),
     ]
     for path, content in sorted(case.candidate.items()):
-        evidence.append(_evidence("file", f"candidate/{path}", content))
+        evidence.append(_redacted_evidence("file", f"candidate/{path}", content))
     return evidence
 
 
@@ -483,6 +497,15 @@ def run_advanced(case: CaseInput, provider: LLMProvider) -> AuditResult:
         )
         usage.append(contract_response.usage)
         contract = Contract.model_validate(contract_response.data)
+        if not any(
+            (
+                contract.requirements,
+                contract.invariants,
+                contract.ambiguities,
+                contract.acceptance_checks,
+            )
+        ):
+            raise ProviderError("contract analyst returned an empty contract")
         contract_record = _evidence(
             "agent",
             "contract-analysis.json",
@@ -555,7 +578,7 @@ def run_advanced(case: CaseInput, provider: LLMProvider) -> AuditResult:
             )
         )
     except (ProviderError, ValidationError) as exc:
-        deterministic_findings.append(_provider_failure_finding(task_id, exc))
+        critic_findings.append(_provider_failure_finding(task_id, exc))
         gate_violations.append(str(exc))
 
     findings = _deduplicate_findings([*deterministic_findings, *critic_findings])

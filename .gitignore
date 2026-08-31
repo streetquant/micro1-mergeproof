@@ -17,6 +17,8 @@ build/
 *.egg-info/
 outputs/live/
 artifacts/private/
+release/
+.mergeproof/
 mergeproof-review/
 mergeproof-request.json
 results/**/work/

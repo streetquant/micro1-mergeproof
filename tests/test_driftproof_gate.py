@@ -6,7 +6,7 @@ import pytest
 
 from driftproof.certificate import verify_certificate
 from driftproof.gate import GateExecutionError, baseline_green_gate, review_project
-from driftproof.models import CheckStatus, Verdict
+from driftproof.models import AgentTrace, CheckStatus, ContractRule, ContractSpec, RuleKind, Verdict
 
 
 def make_dbt_project(tmp_path: Path, *, model_sql: str, context: str) -> Path:
@@ -96,6 +96,57 @@ def test_unsupported_context_escalates_to_human(tmp_path: Path) -> None:
     )
     assert report.verdict == Verdict.HUMAN_REVIEW
     assert report.inconclusive_check_ids
+
+
+class PartialClarifier:
+    def clarify(self, contract: ContractSpec, snapshot: object) -> tuple[ContractSpec, AgentTrace]:
+        public_sentence = "The published columns are `sales`, `refunds`, and `net_revenue`."
+        unresolved_sentence = (
+            "Finance policy treats refunded cash as a deduction from booked sales."
+        )
+        rule = ContractRule(
+            id="R-PARTIAL",
+            kind=RuleKind.PUBLIC_CONTRACT,
+            source_text=public_sentence,
+            fields=["sales", "refunds", "net_revenue"],
+        )
+        return (
+            ContractSpec(
+                context_sha256=contract.context_sha256,
+                rules=[rule],
+                unknown_sentences=[unresolved_sentence],
+            ),
+            AgentTrace(
+                provider="fixture",
+                model="fixture",
+                request_hash="a" * 64,
+                accepted_rule_ids=[rule.id],
+                unresolved_sentences=[unresolved_sentence],
+            ),
+        )
+
+
+def test_partial_clarification_cannot_approve_unresolved_policy(tmp_path: Path) -> None:
+    project = make_dbt_project(
+        tmp_path / "project",
+        model_sql="select 10 as sales, 2 as refunds, 12 as net_revenue\n",
+        context=(
+            "Finance policy treats refunded cash as a deduction from booked sales. "
+            "The published columns are `sales`, `refunds`, and `net_revenue`."
+        ),
+    )
+    report, certificate = review_project(
+        project,
+        work_root=tmp_path / "work",
+        isolation="disposable_copy",
+        allow_unconfined=True,
+        clarifier=PartialClarifier(),  # type: ignore[arg-type]
+    )
+
+    assert report.verdict == Verdict.HUMAN_REVIEW
+    assert report.inconclusive_check_ids
+    assert certificate.verdict == Verdict.HUMAN_REVIEW
+    assert any("remain unresolved" in check.detail for check in report.checks)
 
 
 def test_remote_profile_is_rejected_before_execution(tmp_path: Path) -> None:

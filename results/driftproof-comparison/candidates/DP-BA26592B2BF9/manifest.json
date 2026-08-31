@@ -1,0 +1,28 @@
+{
+  "candidate_id": "DP-BA26592B2BF9",
+  "certificate_sha256": "b29009866be83db3c7e57773cf1ed77efe5e9c60741aae9674905c084e127dc4",
+  "consequential_action_taken": false,
+  "exit_code": 20,
+  "files": {
+    "approval-certificate.json": {
+      "bytes": 889,
+      "sha256": "a3794f69693ba9a4ab5efc4dfdc35b136283e6c18cb52ac727edf9ffdcf1d155"
+    },
+    "gate-report.json": {
+      "bytes": 5364,
+      "sha256": "c43fa720d76e34bd1326b56e5962f33d55b13798eb9993eae4bdfb4fb5480645"
+    },
+    "report.html": {
+      "bytes": 5979,
+      "sha256": "1468aba3a1608dc3d5605adbb9fd37209942b9c2e2d5f933fbec3e4f9861b3ad"
+    },
+    "report.md": {
+      "bytes": 3210,
+      "sha256": "9cc66afc1456b57528cb7dfd2f128e8b020e0721619ed48279cbb1cc31352060"
+    }
+  },
+  "human_approval_required": true,
+  "schema_version": 1,
+  "tool": "driftproof",
+  "verdict": "human_review"
+}

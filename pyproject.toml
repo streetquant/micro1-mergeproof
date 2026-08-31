@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "driftproof"
-version = "0.1.0"
+version = "0.2.0"
 description = "Independent adversarial release gate for agent-authored dbt repairs"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -36,11 +36,20 @@ dev = [
 driftproof = "driftproof.cli:app"
 mergeproof = "mergeproof.cli:app"
 
+[tool.hatch.build.targets.sdist]
+include = [
+  "/pyproject.toml",
+  "/README.md",
+  "/src/driftproof",
+  "/src/mergeproof",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/driftproof", "src/mergeproof"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-config --strict-markers"
+pythonpath = ["."]
 testpaths = ["tests"]
 
 [tool.ruff]

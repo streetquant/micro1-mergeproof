@@ -1,0 +1,95 @@
+{
+  "additionalProperties": false,
+  "description": "Stable machine-facing object emitted when no review result is valid.",
+  "properties": {
+    "consequential_action_taken": {
+      "const": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "context": {
+      "title": "Context",
+      "type": "string"
+    },
+    "decision": {
+      "const": "human_review",
+      "title": "Decision",
+      "type": "string"
+    },
+    "detail": {
+      "title": "Detail",
+      "type": "string"
+    },
+    "error": {
+      "title": "Error",
+      "type": "string"
+    },
+    "error_code": {
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "title": "Error Code",
+      "type": "string"
+    },
+    "exit_code": {
+      "const": 30,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "hint": {
+      "title": "Hint",
+      "type": "string"
+    },
+    "human_approval_required": {
+      "const": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "protocol": {
+      "const": "mergeproof.agent.v1",
+      "default": "mergeproof.agent.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "response_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Response File"
+    },
+    "retryable": {
+      "title": "Retryable",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "status": {
+      "const": "invalid_review",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "decision",
+    "exit_code",
+    "context",
+    "error",
+    "error_code",
+    "detail",
+    "hint",
+    "retryable",
+    "human_approval_required",
+    "consequential_action_taken"
+  ],
+  "title": "ReviewErrorResponse",
+  "type": "object"
+}

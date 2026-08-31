@@ -13,22 +13,35 @@
     "data": {
       "confidence": 0.95,
       "decision": "approve",
-      "findings": [],
-      "summary": "Implemented case‑insensitive parsing of FEATURE_ENABLED with correct true/false values and error handling; all tests pass."
+      "findings": [
+        {
+          "category": "other",
+          "evidence_ids": [
+            "diff:candidate.patch:413ee8cf40eed693",
+            "file:candidate_src_flags.py:52de5fb352ac5eb3",
+            "file:candidate_tests_test_flags.py:dc70e8468d37f19c",
+            "trajectory:trajectory.json:10c73a41ce1fdd6b"
+          ],
+          "explanation": "The implementation correctly parses FEATURE_ENABLED case‑insensitively, matches the specification, and unit tests confirm expected behavior. No security, dependency, or scope issues are present.",
+          "severity": "low",
+          "title": "No issues detected"
+        }
+      ],
+      "summary": "Change implements the requested FEATURE_ENABLED parsing logic correctly and passes all tests; safe to merge."
     },
-    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"Implemented case‑insensitive parsing of FEATURE_ENABLED with correct true/false values and error handling; all tests pass.\"}",
+    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[{\"category\":\"other\",\"evidence_ids\":[\"diff:candidate.patch:413ee8cf40eed693\",\"file:candidate_src_flags.py:52de5fb352ac5eb3\",\"file:candidate_tests_test_flags.py:dc70e8468d37f19c\",\"trajectory:trajectory.json:10c73a41ce1fdd6b\"],\"explanation\":\"The implementation correctly parses FEATURE_ENABLED case‑insensitively, matches the specification, and unit tests confirm expected behavior. No security, dependency, or scope issues are present.\",\"severity\":\"low\",\"title\":\"No issues detected\"}],\"summary\":\"Change implements the requested FEATURE_ENABLED parsing logic correctly and passes all tests; safe to merge.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1651,
-      "latency_ms": 13353,
+      "latency_ms": 7185,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 304,
+      "output_tokens": 582,
       "provider": "groq",
-      "rate_limit_wait_ms": 10754,
+      "rate_limit_wait_ms": 6239,
       "request_hash": "8de00f48dcc2946c5d72ec83ce9d78f69c69f92935d283f087f8a252a6aed5fa",
-      "total_tokens": 1955
+      "total_tokens": 2233
     }
   },
   "schema_version": 1

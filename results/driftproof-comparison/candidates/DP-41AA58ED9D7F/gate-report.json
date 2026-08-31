@@ -1,32 +1,33 @@
 {
+  "agent_trace": null,
   "build": {
     "command": [
       "dbt",
       "build",
       "--project-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-41AA58ED9D7F",
+      "<WORKTREE>",
       "--profiles-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-41AA58ED9D7F",
+      "<WORKTREE>",
       "--no-use-colors"
     ],
-    "duration_ms": 3745,
-    "isolation": "disposable_copy",
+    "duration_ms": 5665,
+    "isolation": "bubblewrap",
     "passed": true,
     "returncode": 0,
     "stderr": "",
-    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 2 models, 3 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 5 START sql table model analytics.stg_customers ........................... [RUN]\n1 of 5 OK created sql table model analytics.stg_customers ...................... [OK in <DURATION>]\n2 of 5 START sql table model analytics.mart_customers .......................... [RUN]\n2 of 5 OK created sql table model analytics.mart_customers ..................... [OK in <DURATION>]\n3 of 5 START test not_null_mart_customers_customer_id .......................... [RUN]\n3 of 5 PASS not_null_mart_customers_customer_id ................................ [PASS in <DURATION>]\n4 of 5 START test not_null_mart_customers_display_name ......................... [RUN]\n4 of 5 PASS not_null_mart_customers_display_name ............................... [PASS in <DURATION>]\n5 of 5 START test unique_mart_customers_customer_id ............................ [RUN]\n5 of 5 PASS unique_mart_customers_customer_id .................................. [PASS in <DURATION>]\nFinished running 2 table models, 3 data tests in 0 hours 0 minutes and 0.60 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=5 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=5\n",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 2 models, 3 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 5 START sql table model analytics.stg_customers ........................... [RUN]\n1 of 5 OK created sql table model analytics.stg_customers ...................... [OK in <DURATION>]\n2 of 5 START sql table model analytics.mart_customers .......................... [RUN]\n2 of 5 OK created sql table model analytics.mart_customers ..................... [OK in <DURATION>]\n3 of 5 START test not_null_mart_customers_customer_id .......................... [RUN]\n3 of 5 PASS not_null_mart_customers_customer_id ................................ [PASS in <DURATION>]\n4 of 5 START test not_null_mart_customers_display_name ......................... [RUN]\n4 of 5 PASS not_null_mart_customers_display_name ............................... [PASS in <DURATION>]\n5 of 5 START test unique_mart_customers_customer_id ............................ [RUN]\n5 of 5 PASS unique_mart_customers_customer_id .................................. [PASS in <DURATION>]\nFinished running 2 table models, 3 data tests in 0 hours 0 minutes and 0.62 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=5 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=5\n",
     "worktree_sha256": "e9c08f885610acdca71c04871f234f3527ad8181980f69983fd6ab2829256c5b"
   },
   "candidate_id": "DP-41AA58ED9D7F",
-  "certificate_sha256": "2fba7f402d241986c2d8e6cde3e297ad54ef0168a5e0b80306dd94610fc161dd",
+  "certificate_sha256": "ba14d73c6bd10df5c252ab18293c8f625978132219d0a76ebc599453f6e9881e",
   "checks": [
     {
-      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "detail": "dbt returned 0 under bubblewrap isolation.",
       "evidence": [
         "dbt build",
         "e9c08f885610acdca71c04871f234f3527ad8181980f69983fd6ab2829256c5b"
       ],
-      "id": "C-046C625A4D7B",
+      "id": "C-C0B46176F241",
       "metadata": {},
       "rule_id": null,
       "status": "pass",

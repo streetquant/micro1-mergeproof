@@ -1,0 +1,28 @@
+{
+  "candidate_id": "DP-312974D18960",
+  "certificate_sha256": "9351142d703ae9df1d064ce951b511abe97b3a89ea923b7369e6817672bfd804",
+  "consequential_action_taken": false,
+  "exit_code": 0,
+  "files": {
+    "approval-certificate.json": {
+      "bytes": 904,
+      "sha256": "76da8e05c84a89bb35e625c6b076007e8d455e0b410fb446fa0d1984c6437532"
+    },
+    "gate-report.json": {
+      "bytes": 6931,
+      "sha256": "8a9c9c3c48e1afcc829009b257dc53c982b772771617781c6326d6e9b318d6ae"
+    },
+    "report.html": {
+      "bytes": 6597,
+      "sha256": "705529a4f7977b54171ea7ee8d752c35f9c2f2f423d957f8420a15f5dab93fe0"
+    },
+    "report.md": {
+      "bytes": 3522,
+      "sha256": "a03df898283a6193a03ff39e37aafb515cddf81b6bf185764310edbbaa50a557"
+    }
+  },
+  "human_approval_required": true,
+  "schema_version": 1,
+  "tool": "driftproof",
+  "verdict": "approve"
+}

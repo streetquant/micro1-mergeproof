@@ -18,29 +18,28 @@
           "category": "test_failure",
           "evidence_ids": [
             "diff:candidate.patch:bd7cc6baddd52255",
-            "file:candidate_src_records.py:09dc9ed01e75d1c8",
             "file:candidate_tests_test_records.py:bf44a8c5f34387f6"
           ],
-          "explanation": "The updated parse_row implementation splits on commas and then strips quotes from each part, which incorrectly handles quoted fields containing commas. The provided test expects ['alpha', 'beta,gamma', 'delta'] for input 'alpha,\"beta,gamma\",delta', but the implementation would produce ['alpha', 'beta', 'gamma', 'delta']. This indicates a test failure and incorrect behavior.",
+          "explanation": "The updated parse_row implementation splits on commas and then strips quotes from each part, which incorrectly handles quoted fields containing commas. For the input 'alpha,\"beta,gamma\",delta', it would produce ['alpha', 'beta', 'gamma', 'delta'] instead of the expected ['alpha', 'beta,gamma', 'delta'], causing the test_quoted_comma to fail.",
           "severity": "high",
           "title": "Incorrect CSV quoting handling"
         }
       ],
-      "summary": "The change fails to correctly parse quoted CSV fields containing commas, causing test failures and incorrect behavior. Merge should be rejected."
+      "summary": "The change fails to correctly parse quoted CSV fields containing commas, leading to test failures. Merge should be rejected."
     },
-    "raw_text": "{\"confidence\":0.95,\"decision\":\"reject\",\"findings\":[{\"category\":\"test_failure\",\"evidence_ids\":[\"diff:candidate.patch:bd7cc6baddd52255\",\"file:candidate_src_records.py:09dc9ed01e75d1c8\",\"file:candidate_tests_test_records.py:bf44a8c5f34387f6\"],\"explanation\":\"The updated parse_row implementation splits on commas and then strips quotes from each part, which incorrectly handles quoted fields containing commas. The provided test expects ['alpha', 'beta,gamma', 'delta'] for input 'alpha,\\\"beta,gamma\\\",delta', but the implementation would produce ['alpha', 'beta', 'gamma', 'delta']. This indicates a test failure and incorrect behavior.\",\"severity\":\"high\",\"title\":\"Incorrect CSV quoting handling\"}],\"summary\":\"The change fails to correctly parse quoted CSV fields containing commas, causing test failures and incorrect behavior. Merge should be rejected.\"}",
+    "raw_text": "{\"confidence\":0.95,\"decision\":\"reject\",\"findings\":[{\"category\":\"test_failure\",\"evidence_ids\":[\"diff:candidate.patch:bd7cc6baddd52255\",\"file:candidate_tests_test_records.py:bf44a8c5f34387f6\"],\"explanation\":\"The updated parse_row implementation splits on commas and then strips quotes from each part, which incorrectly handles quoted fields containing commas. For the input 'alpha,\\\"beta,gamma\\\",delta', it would produce ['alpha', 'beta', 'gamma', 'delta'] instead of the expected ['alpha', 'beta,gamma', 'delta'], causing the test_quoted_comma to fail.\",\"severity\":\"high\",\"title\":\"Incorrect CSV quoting handling\"}],\"summary\":\"The change fails to correctly parse quoted CSV fields containing commas, leading to test failures. Merge should be rejected.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1360,
-      "latency_ms": 12983,
+      "latency_ms": 11978,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 449,
+      "output_tokens": 425,
       "provider": "groq",
-      "rate_limit_wait_ms": 11171,
+      "rate_limit_wait_ms": 11117,
       "request_hash": "3ddfe536e336b9959055420ef1d9f55dbfaa0d0d2ef85e9ada277f163c24e865",
-      "total_tokens": 1809
+      "total_tokens": 1785
     }
   },
   "schema_version": 1

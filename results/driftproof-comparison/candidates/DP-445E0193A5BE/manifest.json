@@ -1,0 +1,28 @@
+{
+  "candidate_id": "DP-445E0193A5BE",
+  "certificate_sha256": "20def177b8fcb890b90bca3af23c07d46f78bf8c8849a6a65afced1a9ca32868",
+  "consequential_action_taken": false,
+  "exit_code": 10,
+  "files": {
+    "approval-certificate.json": {
+      "bytes": 885,
+      "sha256": "1d56fb4fa451c3fd167d38d46d3fb5ebdc4ceaed5b7a96a42e24ce80a92c9487"
+    },
+    "gate-report.json": {
+      "bytes": 5954,
+      "sha256": "30b0e5dd24b1b24373f7c189bc0e1047c337ddccafdd91d39807f6b79f0073a4"
+    },
+    "report.html": {
+      "bytes": 5959,
+      "sha256": "3101568471abdfe72c2292227ebf5518e81b31f06b790ffb984efb2104c1d75f"
+    },
+    "report.md": {
+      "bytes": 3177,
+      "sha256": "366ca0a72e0d8a6da50f0d7c09bc4dc36a565f10652667f4a48e240d85edd6c2"
+    }
+  },
+  "human_approval_required": true,
+  "schema_version": 1,
+  "tool": "driftproof",
+  "verdict": "reject"
+}

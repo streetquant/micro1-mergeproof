@@ -1,0 +1,28 @@
+{
+  "candidate_id": "DP-3CA23D190F13",
+  "certificate_sha256": "2c53f773174db954f683a10973c23d3153008dd2549cba36d2b379501140b2c7",
+  "consequential_action_taken": false,
+  "exit_code": 10,
+  "files": {
+    "approval-certificate.json": {
+      "bytes": 885,
+      "sha256": "b080c3166c792e2fb2e8fa8011b68bc6df8bd7155b1da7432537ad4f3cd93399"
+    },
+    "gate-report.json": {
+      "bytes": 5207,
+      "sha256": "1f2604db2be80d18a9e42c7662b0a19387ec9ddf26b1198dd9ea534296fa00cc"
+    },
+    "report.html": {
+      "bytes": 5795,
+      "sha256": "985f68158236cc025bdafe3289e0be3ece4235de6f4bd23ee5de1369dd743ae6"
+    },
+    "report.md": {
+      "bytes": 3032,
+      "sha256": "523e80331cb9fe671bca73abb9f0515ca2c0c5cc5d712e9762043840c3857250"
+    }
+  },
+  "human_approval_required": true,
+  "schema_version": 1,
+  "tool": "driftproof",
+  "verdict": "reject"
+}

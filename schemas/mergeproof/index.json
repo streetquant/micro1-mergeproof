@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "schemas": [
+    {
+      "file": "agent-response.schema.json",
+      "name": "agent_response",
+      "sha256": "379924e72ef8976fb29592abd6cb406aac833bb08c3ab6f7f813335b4aaca06b"
+    },
+    {
+      "file": "agent-trace.schema.json",
+      "name": "agent_trace",
+      "sha256": "05249b000a862fd1ff2ff03e2b28aee60a177cca50f91f6c7b5543ee6ffe93bb"
+    },
+    {
+      "file": "command.schema.json",
+      "name": "command",
+      "sha256": "bfbb3b4462b13b88108ea315e0f578f46566886d4b01e248ebe6c20297e7ec41"
+    },
+    {
+      "file": "error-response.schema.json",
+      "name": "error_response",
+      "sha256": "fde1838117aa931783c8b62dd643215649ef5bbb08826226e1c407e9b430b409"
+    },
+    {
+      "file": "evidence-record.schema.json",
+      "name": "evidence_record",
+      "sha256": "cab919c5baf32e53b09c77b72db7f73d65625e9be60b5c76269d0cb86d504978"
+    },
+    {
+      "file": "finding.schema.json",
+      "name": "finding",
+      "sha256": "795886a22abfec62594ff684311c9778d4c2cdfe81cbb97bf730a9c19eafc78c"
+    },
+    {
+      "file": "navigation-response.schema.json",
+      "name": "navigation_response",
+      "sha256": "9a039114c20c854a625374b5874bd7af8d74a338e7f92b4e6305b02a1f418732"
+    },
+    {
+      "file": "preparation-response.schema.json",
+      "name": "preparation_response",
+      "sha256": "3e1c5d37a7e398a22da9b6d99a9b5edcb160ebdfb9caeb16d823599e7caf289c"
+    },
+    {
+      "file": "request.schema.json",
+      "name": "request",
+      "sha256": "dbe8510a4248bfcdb44d8729d00ef5448ac493fa6f80dead7acf9a0966808f88"
+    },
+    {
+      "file": "result.schema.json",
+      "name": "result",
+      "sha256": "eac1415151a78a791c436201af8d9cce2a3b9f768aea526f2fbc9d40f9927244"
+    }
+  ],
+  "source": "mergeproof.cli._schema_catalog",
+  "tool": "mergeproof"
+}

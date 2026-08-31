@@ -1,0 +1,17 @@
+{
+  "bundle": "results/agent-fallback-deterministic",
+  "candidate_id": "DP-AGENT-FALLBACK-UNSAFE",
+  "certificate": "results/agent-fallback-deterministic/approval-certificate.json",
+  "certificate_sha256": "8679da417c604d683c5d126b9ddb66f1355a13e37de7353e7235706b73923bc7",
+  "consequential_action_taken": false,
+  "exit_code": 20,
+  "failed_checks": 0,
+  "human_approval_required": true,
+  "human_report": "results/agent-fallback-deterministic/report.html",
+  "inconclusive_checks": 2,
+  "manifest": "results/agent-fallback-deterministic/manifest.json",
+  "report": "results/agent-fallback-deterministic/gate-report.json",
+  "schema_version": 1,
+  "summary": "Candidate requires qualified human review because the visible contract could not be verified conclusively: C-19CFACF0103C, C-CF6D36F15526.",
+  "verdict": "human_review"
+}

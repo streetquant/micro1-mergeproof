@@ -72,6 +72,30 @@ def verify_schema_v2_envelope(result: dict[str, Any]) -> None:
         raise SystemExit(f"trace output hash mismatch for {result['case_id']}")
 
 
+def complete_request_hashes(results: list[dict[str, Any]], *, label: str) -> set[str]:
+    if len(results) != 24:
+        raise SystemExit(f"expected 24 {label} results, found {len(results)}")
+    request_hashes: list[str] = []
+    for result in results:
+        verify_schema_v2_envelope(result)
+        if result.get("gate_violations"):
+            raise SystemExit(f"{label} gate violations for {result['case_id']}")
+        if any(
+            finding.get("category") == "provider_failure"
+            for finding in result.get("findings", [])
+            if isinstance(finding, dict)
+        ):
+            raise SystemExit(f"{label} provider failure for {result['case_id']}")
+        usage = result["usage"]
+        request_hash = usage[0].get("request_hash")
+        if not isinstance(request_hash, str) or len(request_hash) != 64:
+            raise SystemExit(f"invalid {label} request hash for {result['case_id']}")
+        request_hashes.append(request_hash)
+    if len(set(request_hashes)) != 24:
+        raise SystemExit(f"{label} request hashes are not unique")
+    return set(request_hashes)
+
+
 def comparable_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
     category = metrics["issue_category_micro"]
     return {
@@ -92,6 +116,21 @@ def file_sha256(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def fixture_manifest(paths: list[Path]) -> list[dict[str, object]]:
+    return [
+        {
+            "name": path.name,
+            "bytes": path.stat().st_size,
+            "sha256": file_sha256(path),
+        }
+        for path in paths
+    ]
+
+
+def fixture_manifest_sha256(paths: list[Path]) -> str:
+    return sha256_text(canonical_json(fixture_manifest(paths)))
+
+
 def main() -> None:
     fixture_paths = sorted(FIXTURE_DIR.glob("*.json"))
     if len(fixture_paths) != 24:
@@ -108,19 +147,37 @@ def main() -> None:
 
     live_results = load_jsonl(LIVE_DIR / "raw-results.jsonl")
     replay_results = load_jsonl(REPLAY_DIR / "raw-results.jsonl")
-    for result in replay_results:
-        verify_schema_v2_envelope(result)
+    live_request_hashes = complete_request_hashes(live_results, label="live")
+    replay_request_hashes = complete_request_hashes(replay_results, label="replay")
+    fixture_hashes = {path.stem for path in fixture_paths}
+    if live_request_hashes != replay_request_hashes or live_request_hashes != fixture_hashes:
+        raise SystemExit("live, replay, and fixture request identities differ")
     if [normalize_result(item) for item in live_results] != [
         normalize_result(item) for item in replay_results
     ]:
         raise SystemExit("live and replay semantic results differ")
 
     live_metrics = json.loads((LIVE_DIR / "metrics.json").read_text(encoding="utf-8"))
+    for label, metrics in (("live", live_metrics), ("replay", replay_metrics)):
+        if metrics.get("model_usage", {}).get("calls") != 24:
+            raise SystemExit(f"expected 24 {label} model usages")
     if comparable_metrics(live_metrics) != comparable_metrics(replay_metrics):
         raise SystemExit("live and replay comparable metrics differ")
 
+    assembly_path = LIVE_DIR / "assembly-receipt.json"
+    if not assembly_path.is_file() or assembly_path.is_symlink():
+        raise SystemExit("live baseline assembly receipt is missing or unsafe")
+    assembly = json.loads(assembly_path.read_text(encoding="utf-8"))
+    if (
+        assembly.get("fixture_count") != 24
+        or assembly.get("unique_request_hashes") != 24
+        or assembly.get("gold_loaded_only_after_complete_predictions_written") is not True
+    ):
+        raise SystemExit("live baseline assembly receipt failed integrity checks")
+
+    fixture_records = fixture_manifest(fixture_paths)
     verification = {
-        "schema_version": 1,
+        "schema_version": 2,
         "verified": True,
         "model": MODEL,
         "case_count": len(live_results),
@@ -129,9 +186,11 @@ def main() -> None:
         "replay_raw_results_sha256": file_sha256(REPLAY_DIR / "raw-results.jsonl"),
         "live_metrics_sha256": file_sha256(LIVE_DIR / "metrics.json"),
         "replay_metrics_sha256": file_sha256(REPLAY_DIR / "metrics.json"),
-        "fixture_directory_sha256": sha256_bytes(
-            "".join(f"{file_sha256(path)}  {path.name}\n" for path in fixture_paths).encode()
-        ),
+        "live_manifest_sha256": file_sha256(LIVE_DIR / "manifest.json"),
+        "live_assembly_receipt_sha256": file_sha256(assembly_path),
+        "replay_manifest_sha256": file_sha256(REPLAY_DIR / "manifest.json"),
+        "fixture_manifest": fixture_records,
+        "fixture_manifest_sha256": fixture_manifest_sha256(fixture_paths),
         "cases_sha256": file_sha256(ROOT / "benchmark/cases.json"),
         "gold_sha256": file_sha256(ROOT / "benchmark/gold.json"),
         "pyproject_sha256": file_sha256(ROOT / "pyproject.toml"),

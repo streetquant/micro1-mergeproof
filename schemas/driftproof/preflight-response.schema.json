@@ -1,0 +1,147 @@
+{
+  "$defs": {
+    "RuleKind": {
+      "enum": [
+        "public_contract",
+        "source_alias",
+        "derived_concat",
+        "numeric_null_policy",
+        "dependency_exists",
+        "preserve_field",
+        "latest_record",
+        "required_identifier",
+        "categorical_mapping",
+        "macro_keyword",
+        "timezone_date",
+        "subtraction_formula"
+      ],
+      "title": "RuleKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "compiled_rules": {
+      "minimum": 0,
+      "title": "Compiled Rules",
+      "type": "integer"
+    },
+    "consequential_action_taken": {
+      "const": false,
+      "default": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "context": {
+      "title": "Context",
+      "type": "string"
+    },
+    "context_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Sha256",
+      "type": "string"
+    },
+    "deterministic_contract_complete": {
+      "title": "Deterministic Contract Complete",
+      "type": "boolean"
+    },
+    "human_approval_required": {
+      "const": true,
+      "default": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "models": {
+      "minimum": 0,
+      "title": "Models",
+      "type": "integer"
+    },
+    "project": {
+      "title": "Project",
+      "type": "string"
+    },
+    "project_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Project Sha256",
+      "type": "string"
+    },
+    "protocol": {
+      "const": "driftproof.preflight.v1",
+      "default": "driftproof.preflight.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "recommended_action": {
+      "enum": [
+        "run_review",
+        "clarify_business_context"
+      ],
+      "title": "Recommended Action",
+      "type": "string"
+    },
+    "references": {
+      "minimum": 0,
+      "title": "References",
+      "type": "integer"
+    },
+    "review_can_run": {
+      "const": true,
+      "default": true,
+      "title": "Review Can Run",
+      "type": "boolean"
+    },
+    "rule_kinds": {
+      "items": {
+        "$ref": "#/$defs/RuleKind"
+      },
+      "title": "Rule Kinds",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "sql_files": {
+      "minimum": 0,
+      "title": "Sql Files",
+      "type": "integer"
+    },
+    "status": {
+      "const": "valid_input",
+      "default": "valid_input",
+      "title": "Status",
+      "type": "string"
+    },
+    "unresolved_sentences": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unresolved Sentences",
+      "type": "array"
+    },
+    "yaml_files": {
+      "minimum": 0,
+      "title": "Yaml Files",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "project",
+    "context",
+    "project_sha256",
+    "context_sha256",
+    "sql_files",
+    "yaml_files",
+    "models",
+    "references",
+    "compiled_rules",
+    "rule_kinds",
+    "unresolved_sentences",
+    "deterministic_contract_complete",
+    "recommended_action"
+  ],
+  "title": "DriftProofPreflightResponse",
+  "type": "object"
+}

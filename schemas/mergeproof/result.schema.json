@@ -1,0 +1,418 @@
+{
+  "$defs": {
+    "AgentTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted_output": {
+          "additionalProperties": true,
+          "title": "Accepted Output",
+          "type": "object"
+        },
+        "agent": {
+          "title": "Agent",
+          "type": "string"
+        },
+        "gate_violations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Gate Violations",
+          "type": "array"
+        },
+        "input_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Input Evidence Ids",
+          "type": "array"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "output_sha256": {
+          "title": "Output Sha256",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "request_hash": {
+          "title": "Request Hash",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "usage": {
+          "$ref": "#/$defs/ModelUsage"
+        }
+      },
+      "required": [
+        "agent",
+        "provider",
+        "model",
+        "request_hash",
+        "output_sha256",
+        "usage"
+      ],
+      "title": "AgentTrace",
+      "type": "object"
+    },
+    "Contract": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptance_checks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Acceptance Checks",
+          "type": "array"
+        },
+        "ambiguities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Ambiguities",
+          "type": "array"
+        },
+        "invariants": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Invariants",
+          "type": "array"
+        },
+        "requirements": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Requirements",
+          "type": "array"
+        }
+      },
+      "title": "Contract",
+      "type": "object"
+    },
+    "Decision": {
+      "enum": [
+        "approve",
+        "reject",
+        "human_review"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "EvidenceRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "source",
+        "sha256",
+        "content"
+      ],
+      "title": "EvidenceRecord",
+      "type": "object"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/FindingCategory"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "status": {
+          "$ref": "#/$defs/FindingStatus",
+          "default": "verified"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "severity",
+        "title",
+        "explanation"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "FindingCategory": {
+      "enum": [
+        "behavioral_regression",
+        "edge_case_failure",
+        "test_failure",
+        "test_skip",
+        "unverified_claim",
+        "out_of_scope_change",
+        "dependency_drift",
+        "secret_exposure",
+        "path_traversal",
+        "flaky_behavior",
+        "unsafe_command",
+        "insufficient_evidence",
+        "provider_failure",
+        "other"
+      ],
+      "title": "FindingCategory",
+      "type": "string"
+    },
+    "FindingStatus": {
+      "enum": [
+        "verified",
+        "hypothesis"
+      ],
+      "title": "FindingStatus",
+      "type": "string"
+    },
+    "ModelUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "title": "Agent",
+          "type": "string"
+        },
+        "estimated_cost_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Estimated Cost Usd"
+        },
+        "http_attempts": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Http Attempts",
+          "type": "integer"
+        },
+        "input_tokens": {
+          "default": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "default": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "output_tokens": {
+          "default": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "rate_limit_wait_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Rate Limit Wait Ms",
+          "type": "integer"
+        },
+        "request_hash": {
+          "title": "Request Hash",
+          "type": "string"
+        },
+        "total_tokens": {
+          "default": 0,
+          "title": "Total Tokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "provider",
+        "model",
+        "agent",
+        "request_hash"
+      ],
+      "title": "ModelUsage",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agent_traces": {
+      "items": {
+        "$ref": "#/$defs/AgentTrace"
+      },
+      "title": "Agent Traces",
+      "type": "array"
+    },
+    "case_id": {
+      "title": "Case Id",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "consequential_action_taken": {
+      "const": false,
+      "default": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "contract": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Contract"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "decision": {
+      "$ref": "#/$defs/Decision"
+    },
+    "duration_ms": {
+      "default": 0,
+      "title": "Duration Ms",
+      "type": "integer"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRecord"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "gate_violations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Gate Violations",
+      "type": "array"
+    },
+    "human_approval_required": {
+      "const": true,
+      "default": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "mode": {
+      "title": "Mode",
+      "type": "string"
+    },
+    "model": {
+      "title": "Model",
+      "type": "string"
+    },
+    "provider": {
+      "title": "Provider",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 2,
+      "default": 2,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "usage": {
+      "items": {
+        "$ref": "#/$defs/ModelUsage"
+      },
+      "title": "Usage",
+      "type": "array"
+    },
+    "valid_evidence_rate": {
+      "default": 1.0,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Valid Evidence Rate",
+      "type": "number"
+    }
+  },
+  "required": [
+    "case_id",
+    "mode",
+    "decision",
+    "summary",
+    "confidence",
+    "provider",
+    "model"
+  ],
+  "title": "AuditResult",
+  "type": "object"
+}

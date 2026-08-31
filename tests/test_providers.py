@@ -39,11 +39,20 @@ def test_replay_provider_requires_exact_request_hash(tmp_path: Path) -> None:
     write_json(
         tmp_path / f"{request_hash}.json",
         {
+            "schema_version": 1,
+            "request_hash": request_hash,
+            "provider": "gemini",
+            "model": model,
+            "agent": agent,
+            "request": {
+                "system_sha256": stable_request_hash("system", model, system, ""),
+                "user_sha256": stable_request_hash("user", model, "", user),
+            },
             "response": {
                 "data": data,
                 "raw_text": json.dumps(data),
                 "usage": usage.model_dump(mode="json"),
-            }
+            },
         },
     )
     provider = ReplayProvider(model=model, replay_dir=tmp_path)
@@ -51,6 +60,66 @@ def test_replay_provider_requires_exact_request_hash(tmp_path: Path) -> None:
     assert response.data == data
     assert response.usage.provider == "replay"
     assert response.usage.latency_ms == 0
+
+
+def test_replay_provider_rejects_tampered_identity(tmp_path: Path) -> None:
+    agent = "reviewer"
+    model = "fixture-model"
+    system = "system"
+    user = "user"
+    request_hash = stable_request_hash(agent, model, system, user)
+    usage = ModelUsage(
+        provider="gemini",
+        model=model,
+        agent=agent,
+        request_hash=request_hash,
+    )
+    payload: dict[str, Any] = {
+        "schema_version": 1,
+        "request_hash": request_hash,
+        "provider": "gemini",
+        "model": model,
+        "agent": agent,
+        "request": {
+            "system_sha256": stable_request_hash("system", model, system, ""),
+            "user_sha256": stable_request_hash("user", model, "", user),
+        },
+        "response": {
+            "data": {"decision": "approve"},
+            "raw_text": '{"decision":"approve"}',
+            "usage": usage.model_dump(mode="json"),
+        },
+    }
+    fixture = tmp_path / f"{request_hash}.json"
+
+    payload["agent"] = "different-agent"
+    write_json(fixture, payload)
+    with pytest.raises(ProviderError, match="agent role"):
+        ReplayProvider(model=model, replay_dir=tmp_path).complete_json(
+            agent=agent, system=system, user=user
+        )
+
+    payload["agent"] = agent
+    request = payload["request"]
+    assert isinstance(request, dict)
+    request["system_sha256"] = "0" * 64
+    write_json(fixture, payload)
+    with pytest.raises(ProviderError, match="system-prompt"):
+        ReplayProvider(model=model, replay_dir=tmp_path).complete_json(
+            agent=agent, system=system, user=user
+        )
+
+    request["system_sha256"] = stable_request_hash("system", model, system, "")
+    response_payload = payload["response"]
+    assert isinstance(response_payload, dict)
+    usage_payload = response_payload["usage"]
+    assert isinstance(usage_payload, dict)
+    usage_payload["request_hash"] = "f" * 64
+    write_json(fixture, payload)
+    with pytest.raises(ProviderError, match="usage request hash"):
+        ReplayProvider(model=model, replay_dir=tmp_path).complete_json(
+            agent=agent, system=system, user=user
+        )
 
 
 class CredentialErrorProvider(LLMProvider):
@@ -240,3 +309,17 @@ def test_openai_compatible_provider_paces_sequential_calls(
     assert provider._pace() == 0
     assert provider._pace() == 7000
     assert waits == [pytest.approx(7.0)]
+
+
+def test_missing_replay_fixture_does_not_expose_the_host_directory(tmp_path: Path) -> None:
+    replay_dir = tmp_path / "private" / "replay"
+    provider = ReplayProvider(model="fixture-model", replay_dir=replay_dir)
+    request_hash = stable_request_hash("reviewer", "fixture-model", "system", "user")
+
+    with pytest.raises(ProviderError) as exc_info:
+        provider.complete_json(agent="reviewer", system="system", user="user")
+
+    message = str(exc_info.value)
+    assert request_hash in message
+    assert f"{request_hash}.json" in message
+    assert str(tmp_path) not in message

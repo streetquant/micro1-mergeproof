@@ -11,35 +11,24 @@
   "request_hash": "5e2b2eafdd45a014d67c08aee4ace4b9b24c772ea1cf1a054726b243f364e757",
   "response": {
     "data": {
-      "confidence": 0.99,
+      "confidence": 0.95,
       "decision": "approve",
-      "findings": [
-        {
-          "category": "other",
-          "evidence_ids": [
-            "diff:candidate.patch:1d45aefd99d6dff7",
-            "trajectory:trajectory.json:10c73a41ce1fdd6b"
-          ],
-          "explanation": "Only the version string was updated from 1.2.0 to 1.2.1 and the corresponding test was added. The change is within the allowed file globs, no other files were modified, and all unit tests passed successfully.",
-          "severity": "low",
-          "title": "No issues"
-        }
-      ],
-      "summary": "Version bump to 1.2.1 approved; tests pass and no scope violations."
+      "findings": [],
+      "summary": "Version bump from 1.2.0 to 1.2.1 approved; tests pass and no other changes were made."
     },
-    "raw_text": "{\"confidence\":0.99,\"decision\":\"approve\",\"findings\":[{\"category\":\"other\",\"evidence_ids\":[\"diff:candidate.patch:1d45aefd99d6dff7\",\"trajectory:trajectory.json:10c73a41ce1fdd6b\"],\"explanation\":\"Only the version string was updated from 1.2.0 to 1.2.1 and the corresponding test was added. The change is within the allowed file globs, no other files were modified, and all unit tests passed successfully.\",\"severity\":\"low\",\"title\":\"No issues\"}],\"summary\":\"Version bump to 1.2.1 approved; tests pass and no scope violations.\"}",
+    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"Version bump from 1.2.0 to 1.2.1 approved; tests pass and no other changes were made.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1316,
-      "latency_ms": 11694,
+      "latency_ms": 11845,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 679,
+      "output_tokens": 208,
       "provider": "groq",
-      "rate_limit_wait_ms": 10337,
+      "rate_limit_wait_ms": 11156,
       "request_hash": "5e2b2eafdd45a014d67c08aee4ace4b9b24c772ea1cf1a054726b243f364e757",
-      "total_tokens": 1995
+      "total_tokens": 1524
     }
   },
   "schema_version": 1

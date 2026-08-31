@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DriftProof review — DP-A3A3BE60E1C3</title>
+<style>
+:root { color-scheme:light dark; --bg:#08111d; --panel:#111f31; --text:#edf5ff; --muted:#a9bbd1; --border:#334b64; --pass:#2ec27e; --fail:#ff6b6b; --review:#f6c85f; }
+* { box-sizing:border-box; } body { margin:0; font-family:ui-sans-serif,system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+main { width:min(1180px,94vw); margin:2rem auto 5rem; } header,section { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:1.25rem 1.5rem; margin:1rem 0; }
+h1,h2,h3 { line-height:1.2; } code { overflow-wrap:anywhere; background:#050a12; padding:.1rem .3rem; border-radius:4px; }
+.verdict { display:inline-block; font-weight:800; padding:.45rem .8rem; border-radius:999px; } .verdict.approve { background:var(--pass); color:#06170e; } .verdict.reject { background:var(--fail); color:#220606; } .verdict.human-review { background:var(--review); color:#221904; }
+.boundary { border-left:5px solid var(--review); padding-left:1rem; color:var(--muted); } .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.75rem; } .metric,.rule { border:1px solid var(--border); border-radius:10px; padding:.85rem; } .metric strong { display:block; font-size:1.35rem; }
+table { width:100%; border-collapse:collapse; } th,td { text-align:left; vertical-align:top; padding:.6rem; border-bottom:1px solid var(--border); } .status { text-transform:uppercase; font-size:.75rem; font-weight:800; } .status.pass { color:var(--pass); } .status.fail { color:var(--fail); } .status.inconclusive { color:var(--review); } .muted { color:var(--muted); } dt { color:var(--muted); margin-top:.5rem; } dd { margin-left:0; }
+</style>
+</head>
+<body><main>
+<header>
+<p class="muted">Independent adversarial release gate for agent-authored dbt repairs</p>
+<h1>DP-A3A3BE60E1C3</h1>
+<p><span class="verdict reject">reject</span></p>
+<p>Candidate is not approval-ready; failed checks: C-07FC77401F1B.</p>
+<p class="boundary"><strong>Human approval required.</strong> DriftProof performed no merge, deployment, push, publication, or other consequential action.</p>
+<div class="grid">
+<div class="metric"><strong>6</strong>Checks</div>
+<div class="metric"><strong>1</strong>Failed</div>
+<div class="metric"><strong>1</strong>Inconclusive</div>
+<div class="metric"><strong>bubblewrap</strong>Isolation</div>
+</div>
+</header>
+<section><h2>Verification checks</h2><table><thead><tr><th>Status</th><th>Check</th><th>Detail</th><th>Evidence</th></tr></thead><tbody><tr><td><span class="status pass">pass</span></td><td><strong>Candidate builds from the disposable review worktree</strong><br><code>C-C0B46176F241</code></td><td>dbt returned 0 under bubblewrap isolation.</td><td><code>dbt build</code> <code>d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Original candidate project remained unchanged</strong><br><code>C-2EE4ED4DFCAA</code></td><td>The source tree hash is unchanged.</td><td><code>d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26</code> <code>d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Visible business context compiled into executable checks</strong><br><code>C-AB2C57D37E34</code></td><td>Compiled 1 rules without using an external benchmark oracle.</td><td><code>BUSINESS_CONTEXT.md</code> <code>2caff91ad4a0b18c5b3c23db4d9935a13abc321b3393e15deffa2f7cb7017d96</code> </td></tr><tr><td><span class="status fail">fail</span></td><td><strong>Latest-record selection follows the greatest documented timestamp</strong><br><code>C-07FC77401F1B</code></td><td>Expected a latest-record operator ordered by effective_at DESC.</td><td><code>models/fct_revenue.sql</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Verification controls were not weakened</strong><br><code>C-3A141B290B9B</code></td><td>No disabled or warning-only validation controls were found.</td><td><code>models/schema.yml</code> <code>models/sources.yml</code> </td></tr><tr><td><span class="status inconclusive">inconclusive</span></td><td><strong>Every visible business statement was resolved or verified</strong><br><code>C-CF6D36F15526</code></td><td>2 visible business statements remain unresolved; approval is not permitted.</td><td><code>BUSINESS_CONTEXT.md</code> <code>2caff91ad4a0b18c5b3c23db4d9935a13abc321b3393e15deffa2f7cb7017d96</code> </td></tr></tbody></table></section>
+<section><h2>Visible contract</h2><article class="rule"><div><code>latest_record</code> <code>R-2027CE509E44</code></div><h3>Customer tier is a slowly changing attribute; when multiple tier records exist, use the record with the greatest `effective_at` for that customer.</h3><p>Output: <code>—</code>; fields: <code>order_id, effective_at</code></p></article><h3>Unresolved context</h3><ul><li>The finance fact grain is one row per `order_id`.</li><li>Revenue must never be multiplied by dimension history.</li></ul></section>
+<section><h2>Bounded agent trace</h2><p class="muted">No model agent was invoked.</p></section>
+<section><h2>Integrity</h2><ul><li>Candidate: <code>d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26</code></li><li>Context: <code>2caff91ad4a0b18c5b3c23db4d9935a13abc321b3393e15deffa2f7cb7017d96</code></li><li>Worktree: <code>d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26</code></li><li>Certificate: <code>d1614fd23613d96a6dd5c9c19371ac5f4eb05c7de1393bec588d5641d2ddf106</code></li></ul><p class="muted">Verify with <code>driftproof verify-bundle &lt;directory&gt;</code>.</p></section>
+</main></body></html>

@@ -1,0 +1,138 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "consequential_action_taken": {
+      "const": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "context": {
+      "title": "Context",
+      "type": "string"
+    },
+    "detail": {
+      "title": "Detail",
+      "type": "string"
+    },
+    "error": {
+      "title": "Error",
+      "type": "string"
+    },
+    "error_code": {
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "title": "Error Code",
+      "type": "string"
+    },
+    "exit_code": {
+      "const": 30,
+      "default": 30,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "hint": {
+      "title": "Hint",
+      "type": "string"
+    },
+    "human_approval_required": {
+      "const": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "partial_result_trusted": {
+      "const": false,
+      "default": false,
+      "title": "Partial Result Trusted",
+      "type": "boolean"
+    },
+    "protocol": {
+      "const": "driftproof.agent.v1",
+      "default": "driftproof.agent.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "recommended_action": {
+      "const": "repair_input_or_runtime",
+      "default": "repair_input_or_runtime",
+      "title": "Recommended Action",
+      "type": "string"
+    },
+    "request_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Request Sha256"
+    },
+    "response_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Response File"
+    },
+    "retryable": {
+      "title": "Retryable",
+      "type": "boolean"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Run Id"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "status": {
+      "const": "invalid_review",
+      "default": "invalid_review",
+      "title": "Status",
+      "type": "string"
+    },
+    "tool_version": {
+      "minLength": 1,
+      "title": "Tool Version",
+      "type": "string"
+    },
+    "verdict": {
+      "const": "human_review",
+      "default": "human_review",
+      "title": "Verdict",
+      "type": "string"
+    }
+  },
+  "required": [
+    "tool_version",
+    "context",
+    "error",
+    "error_code",
+    "detail",
+    "hint",
+    "retryable",
+    "human_approval_required",
+    "consequential_action_taken"
+  ],
+  "title": "DriftProofErrorResponse",
+  "type": "object"
+}

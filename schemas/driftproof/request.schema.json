@@ -1,0 +1,162 @@
+{
+  "additionalProperties": false,
+  "description": "Versioned declarative input for one dbt review.",
+  "properties": {
+    "agent_model": {
+      "default": "openai/gpt-oss-20b",
+      "title": "Agent Model",
+      "type": "string"
+    },
+    "agent_provider": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Agent Provider"
+    },
+    "agent_record_dir": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Agent Record Dir"
+    },
+    "agent_replay_dir": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Agent Replay Dir"
+    },
+    "allow_external_provider": {
+      "default": false,
+      "title": "Allow External Provider",
+      "type": "boolean"
+    },
+    "allow_unconfined": {
+      "default": false,
+      "title": "Allow Unconfined",
+      "type": "boolean"
+    },
+    "context": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Context"
+    },
+    "isolation": {
+      "default": "auto",
+      "enum": [
+        "auto",
+        "disposable_copy",
+        "bubblewrap"
+      ],
+      "title": "Isolation",
+      "type": "string"
+    },
+    "output": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Output"
+    },
+    "project": {
+      "minLength": 1,
+      "title": "Project",
+      "type": "string"
+    },
+    "protocol": {
+      "const": "driftproof.request.v1",
+      "default": "driftproof.request.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "replace_output": {
+      "default": false,
+      "title": "Replace Output",
+      "type": "boolean"
+    },
+    "response_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Response File"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Run Id"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "timeout_seconds": {
+      "default": 120,
+      "maximum": 900,
+      "minimum": 1,
+      "title": "Timeout Seconds",
+      "type": "integer"
+    },
+    "work_root": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Work Root"
+    }
+  },
+  "required": [
+    "project"
+  ],
+  "title": "DriftProofReviewRequest",
+  "type": "object"
+}

@@ -11,24 +11,24 @@
   "request_hash": "05475e7b37daff36d7e01836472dae7c1432e0a1760223f622c88f6181eab899",
   "response": {
     "data": {
-      "confidence": 0.95,
+      "confidence": 0.99,
       "decision": "approve",
       "findings": [],
-      "summary": "The change correctly implements integer increment and passes all tests with no detected issues."
+      "summary": "The change correctly increments an integer and preserves its type, passes all unit tests, and respects the allowed file changes. No issues were found."
     },
-    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change correctly implements integer increment and passes all tests with no detected issues.\"}",
+    "raw_text": "{\"confidence\":0.99,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change correctly increments an integer and preserves its type, passes all unit tests, and respects the allowed file changes. No issues were found.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1244,
-      "latency_ms": 11676,
+      "latency_ms": 11831,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 143,
+      "output_tokens": 168,
       "provider": "groq",
-      "rate_limit_wait_ms": 10802,
+      "rate_limit_wait_ms": 11248,
       "request_hash": "05475e7b37daff36d7e01836472dae7c1432e0a1760223f622c88f6181eab899",
-      "total_tokens": 1387
+      "total_tokens": 1412
     }
   },
   "schema_version": 1

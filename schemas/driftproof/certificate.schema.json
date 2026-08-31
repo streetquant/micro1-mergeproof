@@ -1,0 +1,102 @@
+{
+  "$defs": {
+    "Verdict": {
+      "enum": [
+        "approve",
+        "reject",
+        "human_review"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "build_worktree_sha256": {
+      "title": "Build Worktree Sha256",
+      "type": "string"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "certificate_type": {
+      "const": "driftproof.approval-certificate.v1",
+      "default": "driftproof.approval-certificate.v1",
+      "title": "Certificate Type",
+      "type": "string"
+    },
+    "consequential_action_taken": {
+      "const": false,
+      "default": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "context_sha256": {
+      "title": "Context Sha256",
+      "type": "string"
+    },
+    "failed_check_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Failed Check Ids",
+      "type": "array"
+    },
+    "human_approval_required": {
+      "const": true,
+      "default": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "inconclusive_check_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Inconclusive Check Ids",
+      "type": "array"
+    },
+    "passed_check_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Passed Check Ids",
+      "type": "array"
+    },
+    "project_sha256": {
+      "title": "Project Sha256",
+      "type": "string"
+    },
+    "report_sha256": {
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "self_sha256": {
+      "default": "",
+      "title": "Self Sha256",
+      "type": "string"
+    },
+    "verdict": {
+      "$ref": "#/$defs/Verdict"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "verdict",
+    "report_sha256",
+    "project_sha256",
+    "context_sha256",
+    "build_worktree_sha256",
+    "passed_check_ids",
+    "failed_check_ids",
+    "inconclusive_check_ids"
+  ],
+  "title": "ApprovalCertificate",
+  "type": "object"
+}

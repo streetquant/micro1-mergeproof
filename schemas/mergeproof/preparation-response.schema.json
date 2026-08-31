@@ -1,0 +1,81 @@
+{
+  "additionalProperties": false,
+  "description": "Machine-facing response emitted after a request is prepared successfully.",
+  "properties": {
+    "base_commit": {
+      "title": "Base Commit",
+      "type": "string"
+    },
+    "case_id": {
+      "title": "Case Id",
+      "type": "string"
+    },
+    "changed_paths": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Changed Paths",
+      "type": "array"
+    },
+    "consequential_action_taken": {
+      "const": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "human_approval_required": {
+      "const": true,
+      "title": "Human Approval Required",
+      "type": "boolean"
+    },
+    "protocol": {
+      "const": "mergeproof.prepare.v1",
+      "default": "mergeproof.prepare.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "request": {
+      "title": "Request",
+      "type": "string"
+    },
+    "response_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Response File"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "status": {
+      "const": "request_prepared",
+      "default": "request_prepared",
+      "title": "Status",
+      "type": "string"
+    },
+    "verification_commands": {
+      "minimum": 0,
+      "title": "Verification Commands",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "request",
+    "case_id",
+    "changed_paths",
+    "base_commit",
+    "verification_commands",
+    "human_approval_required",
+    "consequential_action_taken"
+  ],
+  "title": "ReviewPreparationResponse",
+  "type": "object"
+}

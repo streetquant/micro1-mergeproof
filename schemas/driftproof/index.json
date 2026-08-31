@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "schemas": [
+    {
+      "file": "agent-response.schema.json",
+      "name": "agent_response",
+      "sha256": "740930a2d0cafd10acbb4a2968a30e4c4e31b3a414df4d5e3e089e62e17ed40f"
+    },
+    {
+      "file": "certificate.schema.json",
+      "name": "certificate",
+      "sha256": "c7253a7a87508b008f08de1dfbcdcf494d2d3a7da7d25d14fb89b39c93832ee6"
+    },
+    {
+      "file": "context-template-response.schema.json",
+      "name": "context_template_response",
+      "sha256": "75145262c5033216afca91aaefcdba7419e48324a86f68a0c450fc88e1b96ac3"
+    },
+    {
+      "file": "error-response.schema.json",
+      "name": "error_response",
+      "sha256": "0688842aa4c2c6cb078d163cd07671d8a3187fb22224bfa5e24496b27b8253eb"
+    },
+    {
+      "file": "navigation-response.schema.json",
+      "name": "navigation_response",
+      "sha256": "f43ae7ea2e37c45462c9844386426cb941d9c797208945c4e21478558cfff245"
+    },
+    {
+      "file": "preflight-response.schema.json",
+      "name": "preflight_response",
+      "sha256": "2e1525e8b82187a7957a7500bc7c3ac01ea381c80bce30eef6a04a8a02d60965"
+    },
+    {
+      "file": "report.schema.json",
+      "name": "report",
+      "sha256": "13223130d3f4995f3fa69473eaf822e902512a35d74a9486834552d9f06c0a38"
+    },
+    {
+      "file": "request.schema.json",
+      "name": "request",
+      "sha256": "56ce519e71fdc0d2199852cf45332137fff420bb4033be162cde859d754ae68c"
+    }
+  ],
+  "source": "driftproof.cli._schema_catalog",
+  "tool": "driftproof"
+}

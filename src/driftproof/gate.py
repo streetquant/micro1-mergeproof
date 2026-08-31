@@ -95,6 +95,7 @@ def review_project(
     isolation: Literal["auto", "disposable_copy", "bubblewrap"] = "auto",
     allow_unconfined: bool = False,
     clarifier: ContractClarifier | None = None,
+    replace_output: bool = False,
 ) -> tuple[GateReport, ApprovalCertificate]:
     project = project.resolve()
     context_path = (context_path or project / "BUSINESS_CONTEXT.md").resolve()
@@ -138,12 +139,16 @@ def review_project(
         ),
     ]
     if agent_trace is not None:
+        clarifier_complete = (
+            bool(agent_trace.accepted_rule_ids) and not agent_trace.unresolved_sentences
+        )
         checks.append(
             _check(
                 "Bounded Contract Clarifier produced only admitted typed rules",
-                CheckStatus.PASS if agent_trace.accepted_rule_ids else CheckStatus.INCONCLUSIVE,
+                CheckStatus.PASS if clarifier_complete else CheckStatus.INCONCLUSIVE,
                 f"Accepted {len(agent_trace.accepted_rule_ids)} typed rules; "
-                f"rejected {len(agent_trace.rejected_proposals)} proposals.",
+                f"rejected {len(agent_trace.rejected_proposals)} proposals; "
+                f"left {len(agent_trace.unresolved_sentences)} sentences unresolved.",
                 evidence=[agent_trace.request_hash, *agent_trace.accepted_rule_ids],
             )
         )
@@ -166,6 +171,15 @@ def review_project(
             )
         )
         checks.extend(verify_contract(before, contract))
+    if contract.unknown_sentences:
+        checks.append(
+            _check(
+                "Every visible business statement was resolved or verified",
+                CheckStatus.INCONCLUSIVE,
+                f"{len(contract.unknown_sentences)} visible business statements remain unresolved; approval is not permitted.",
+                evidence=[context_path.name, contract.context_sha256],
+            )
+        )
 
     failed = [check.id for check in checks if check.status == CheckStatus.FAIL]
     inconclusive = [check.id for check in checks if check.status == CheckStatus.INCONCLUSIVE]
@@ -190,7 +204,7 @@ def review_project(
     if certificate_errors:
         raise GateExecutionError(f"certificate verification failed: {certificate_errors}")
     if output_dir is not None:
-        write_gate_bundle(output_dir, report, certificate)
+        write_gate_bundle(output_dir, report, certificate, replace=replace_output)
     return report, certificate
 
 

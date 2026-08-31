@@ -1,0 +1,78 @@
+{
+  "$defs": {
+    "RuleKind": {
+      "enum": [
+        "public_contract",
+        "source_alias",
+        "derived_concat",
+        "numeric_null_policy",
+        "dependency_exists",
+        "preserve_field",
+        "latest_record",
+        "required_identifier",
+        "categorical_mapping",
+        "macro_keyword",
+        "timezone_date",
+        "subtraction_formula"
+      ],
+      "title": "RuleKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "consequential_action_taken": {
+      "const": false,
+      "default": false,
+      "title": "Consequential Action Taken",
+      "type": "boolean"
+    },
+    "content": {
+      "title": "Content",
+      "type": "string"
+    },
+    "content_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Sha256",
+      "type": "string"
+    },
+    "output": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Output"
+    },
+    "protocol": {
+      "const": "driftproof.context-template.v1",
+      "default": "driftproof.context-template.v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "supported_rule_kinds": {
+      "items": {
+        "$ref": "#/$defs/RuleKind"
+      },
+      "title": "Supported Rule Kinds",
+      "type": "array"
+    }
+  },
+  "required": [
+    "content",
+    "content_sha256",
+    "supported_rule_kinds"
+  ],
+  "title": "DriftProofContextTemplateResponse",
+  "type": "object"
+}

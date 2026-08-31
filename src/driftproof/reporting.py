@@ -3,10 +3,12 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import shutil
+import tempfile
 from pathlib import Path
 from typing import Any
 
-from mergeproof.utils import pretty_json
+from mergeproof.utils import atomic_write_text, pretty_json
 
 from .certificate import verify_certificate, write_bundle
 from .models import ApprovalCertificate, GateReport, Verdict
@@ -38,36 +40,44 @@ def _sha256_file(path: Path) -> str:
 
 
 def _atomic_text(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.tmp")
-    temporary.write_text(content, encoding="utf-8")
-    temporary.replace(path)
+    atomic_write_text(path, content)
 
 
-def _prepare_bundle_directory(output_dir: Path) -> None:
+def prepare_gate_output(output_dir: Path, *, replace: bool = False) -> None:
+    """Reserve a dedicated bundle path without reusing stale evidence implicitly."""
+
     if output_dir.is_symlink():
         raise GateBundleError(f"bundle directory may not be a symlink: {output_dir}")
     if output_dir.exists() and not output_dir.is_dir():
         raise GateBundleError(f"bundle output must be a directory: {output_dir}")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    unexpected = sorted(
-        item.name for item in output_dir.iterdir() if item.name not in BUNDLE_ENTRY_NAMES
-    )
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    if not output_dir.exists():
+        return
+
+    entries = {item.name for item in output_dir.iterdir()}
+    unexpected = sorted(entries - BUNDLE_ENTRY_NAMES)
     if unexpected:
         raise GateBundleError(
-            f"bundle directory contains unexpected entries: {unexpected}; "
-            "use an empty or prior DriftProof bundle directory"
+            f"bundle directory contains unrelated entries: {unexpected}; choose a dedicated output path"
         )
+    if not entries:
+        output_dir.rmdir()
+        return
+    if not replace:
+        raise GateBundleError(
+            f"bundle output already exists: {output_dir}; choose a new path or pass --replace-output"
+        )
+    shutil.rmtree(output_dir)
 
 
 def _markdown(report: GateReport, certificate: ApprovalCertificate) -> str:
     lines = [
         f"# DriftProof review: {report.candidate_id}",
         "",
-        f"**Verdict:** `{report.verdict.value}`  ",
-        f"**Build isolation:** `{report.build.isolation}`  ",
-        f"**Build return code:** `{report.build.returncode}`  ",
-        f"**Certificate:** `{certificate.self_sha256}`",
+        f"- **Verdict:** `{report.verdict.value}`",
+        f"- **Build isolation:** `{report.build.isolation}`",
+        f"- **Build return code:** `{report.build.returncode}`",
+        f"- **Certificate:** `{certificate.self_sha256}`",
         "",
         "> **Human approval boundary:** DriftProof did not merge, deploy, push, publish, or otherwise execute a consequential action. A qualified human remains responsible for the final decision.",
         "",
@@ -216,12 +226,12 @@ table {{ width:100%; border-collapse:collapse; }} th,td {{ text-align:left; vert
 </main></body></html>\n"""
 
 
-def write_gate_bundle(
+def _write_gate_bundle_files(
     output_dir: Path,
     report: GateReport,
     certificate: ApprovalCertificate,
 ) -> dict[str, Any]:
-    _prepare_bundle_directory(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=False)
     write_bundle(output_dir, report, certificate)
     _atomic_text(output_dir / "report.md", _markdown(report, certificate))
     _atomic_text(output_dir / "report.html", _html(report, certificate))
@@ -245,6 +255,37 @@ def write_gate_bundle(
     }
     _atomic_text(output_dir / "manifest.json", pretty_json(manifest) + "\n")
     return manifest
+
+
+def write_gate_bundle(
+    output_dir: Path,
+    report: GateReport,
+    certificate: ApprovalCertificate,
+    *,
+    replace: bool = False,
+) -> dict[str, Any]:
+    """Build, verify, and publish a complete DriftProof bundle atomically."""
+
+    prepare_gate_output(output_dir, replace=replace)
+    temporary = Path(
+        tempfile.mkdtemp(
+            prefix=f".{output_dir.name or 'driftproof-bundle'}.",
+            dir=output_dir.parent,
+        )
+    )
+    temporary.rmdir()
+    try:
+        manifest = _write_gate_bundle_files(temporary, report, certificate)
+        verification = verify_gate_bundle(temporary)
+        if verification["verdict"] != report.verdict.value:
+            raise GateBundleError("verified bundle verdict drifted from the report")
+        if output_dir.exists():
+            raise GateBundleError(f"bundle output appeared during publication: {output_dir}")
+        temporary.replace(output_dir)
+        return manifest
+    finally:
+        if temporary.exists():
+            shutil.rmtree(temporary)
 
 
 def verify_gate_bundle(output_dir: Path) -> dict[str, Any]:

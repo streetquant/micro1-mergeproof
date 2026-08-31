@@ -1,16 +1,17 @@
 {
+  "agent_trace": null,
   "build": {
     "command": [
       "dbt",
       "build",
       "--project-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-A3A3BE60E1C3",
+      "<WORKTREE>",
       "--profiles-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-A3A3BE60E1C3",
+      "<WORKTREE>",
       "--no-use-colors"
     ],
-    "duration_ms": 3458,
-    "isolation": "disposable_copy",
+    "duration_ms": 5484,
+    "isolation": "bubblewrap",
     "passed": true,
     "returncode": 0,
     "stderr": "",
@@ -18,15 +19,15 @@
     "worktree_sha256": "d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26"
   },
   "candidate_id": "DP-A3A3BE60E1C3",
-  "certificate_sha256": "f6eafd6fe456384f6ef2eb0433ff950fa0331ba2a2707b8bdaf462096022b1d5",
+  "certificate_sha256": "d1614fd23613d96a6dd5c9c19371ac5f4eb05c7de1393bec588d5641d2ddf106",
   "checks": [
     {
-      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "detail": "dbt returned 0 under bubblewrap isolation.",
       "evidence": [
         "dbt build",
         "d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26"
       ],
-      "id": "C-046C625A4D7B",
+      "id": "C-C0B46176F241",
       "metadata": {},
       "rule_id": null,
       "status": "pass",
@@ -84,6 +85,18 @@
       "rule_id": null,
       "status": "pass",
       "title": "Verification controls were not weakened"
+    },
+    {
+      "detail": "2 visible business statements remain unresolved; approval is not permitted.",
+      "evidence": [
+        "BUSINESS_CONTEXT.md",
+        "2caff91ad4a0b18c5b3c23db4d9935a13abc321b3393e15deffa2f7cb7017d96"
+      ],
+      "id": "C-CF6D36F15526",
+      "metadata": {},
+      "rule_id": null,
+      "status": "inconclusive",
+      "title": "Every visible business statement was resolved or verified"
     }
   ],
   "consequential_action_taken": false,
@@ -115,7 +128,9 @@
     "C-07FC77401F1B"
   ],
   "human_approval_required": true,
-  "inconclusive_check_ids": [],
+  "inconclusive_check_ids": [
+    "C-CF6D36F15526"
+  ],
   "project_sha256": "d142d852744768a67d0616c97b53691336b5ab0e3187901ca8650a6a965eff26",
   "schema_version": 1,
   "summary": "Candidate is not approval-ready; failed checks: C-07FC77401F1B.",

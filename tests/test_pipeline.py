@@ -104,6 +104,27 @@ def test_static_evidence_includes_policy_and_commands() -> None:
     assert len({item.id for item in evidence}) == len(evidence)
 
 
+def test_static_evidence_redacts_secret_shaped_content_with_provenance() -> None:
+    secret = "sk-" + "live_" + "ABCDEFGHIJKLMNOPQRSTUV"
+    case = CaseInput(
+        id="secret-evidence",
+        title="Secret evidence",
+        task=f"Remove {secret} from the candidate.",
+        before={"config.py": "TOKEN = 'old'\n"},
+        candidate={"config.py": f"TOKEN = '{secret}'\n"},
+        allowed_changed_globs=["config.py"],
+    )
+
+    evidence = build_static_evidence(case)
+
+    assert secret not in "\n".join(item.content for item in evidence)
+    assert any("[REDACTED_SECRET]" in item.content for item in evidence)
+    redacted = [item for item in evidence if item.metadata.get("content_redacted")]
+    assert redacted
+    assert all(len(str(item.metadata["original_sha256"])) == 64 for item in redacted)
+    assert all(int(item.metadata["original_chars"]) > 0 for item in redacted)
+
+
 def test_unknown_evidence_reference_prevents_approval() -> None:
     provider = StaticProvider(
         {
@@ -213,6 +234,36 @@ def test_material_critic_hypothesis_forces_human_review(monkeypatch: MonkeyPatch
         "skeptical_reviewer",
     ]
     assert result.findings[0].status == FindingStatus.HYPOTHESIS
+
+
+def test_empty_contract_is_fail_closed(monkeypatch: MonkeyPatch) -> None:
+    case = sample_case()
+    evidence = build_static_evidence(case)
+    monkeypatch.setattr(
+        "mergeproof.pipeline._deterministic_review",
+        lambda _case: (
+            evidence,
+            [],
+            StaticAnalysis(),
+            VerificationAnalysis(),
+        ),
+    )
+
+    result = run_advanced(
+        case,
+        StaticProvider(
+            {
+                "requirements": [],
+                "invariants": [],
+                "ambiguities": [],
+                "acceptance_checks": [],
+            }
+        ),
+    )
+
+    assert result.decision == Decision.HUMAN_REVIEW
+    assert "empty contract" in result.gate_violations[0]
+    assert any(item.category.value == "provider_failure" for item in result.findings)
 
 
 def test_provider_failure_is_fail_closed() -> None:

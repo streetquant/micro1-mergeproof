@@ -1,7 +1,23 @@
 from __future__ import annotations
 
 from .models import Contract, EvidenceRecord, Finding, FindingCategory
-from .utils import pretty_json
+from .utils import pretty_json, redact_secrets
+
+_MAX_EVIDENCE_RECORDS = 128
+_MAX_EVIDENCE_ITEM_CHARS = 8_000
+_MAX_EVIDENCE_TOTAL_CHARS = 24_000
+_EVIDENCE_KIND_PRIORITY = {
+    "task": 0,
+    "diff": 1,
+    "policy": 2,
+    "commands": 3,
+    "scan": 4,
+    "command": 5,
+    "sandbox": 6,
+    "agent": 7,
+    "trajectory": 8,
+    "file": 9,
+}
 
 BASELINE_SYSTEM = (
     """You are the one-shot baseline reviewer for MergeProof.
@@ -40,11 +56,83 @@ Every proposed finding must cite one or more exact evidence IDs. Use only these 
 )
 
 
-def _evidence_payload(evidence: list[EvidenceRecord]) -> list[dict[str, str]]:
-    return [
-        {"id": item.id, "kind": item.kind, "source": item.source, "content": item.content}
-        for item in evidence
-    ]
+def _evidence_payload(evidence: list[EvidenceRecord]) -> object:
+    """Project local evidence into a bounded, provider-safe representation.
+
+    Local evidence records and hashes remain unchanged. Small, non-sensitive
+    inputs preserve the historical list shape so existing replay identities
+    remain stable.
+    """
+
+    clean_small = (
+        len(evidence) <= _MAX_EVIDENCE_RECORDS
+        and all(len(item.content) <= _MAX_EVIDENCE_ITEM_CHARS for item in evidence)
+        and sum(len(item.content) for item in evidence) <= _MAX_EVIDENCE_TOTAL_CHARS
+        and all(redact_secrets(item.content) == item.content for item in evidence)
+    )
+    if clean_small:
+        return [
+            {
+                "id": item.id,
+                "kind": item.kind,
+                "source": item.source,
+                "content": item.content,
+            }
+            for item in evidence
+        ]
+
+    ordered = sorted(
+        enumerate(evidence),
+        key=lambda pair: (_EVIDENCE_KIND_PRIORITY.get(pair[1].kind, 50), pair[0]),
+    )
+    selected = [item for _, item in ordered[:_MAX_EVIDENCE_RECORDS]]
+    remaining = _MAX_EVIDENCE_TOTAL_CHARS
+    records: list[dict[str, object]] = []
+    redacted_records = 0
+    truncated_records = 0
+
+    for item in selected:
+        redacted = redact_secrets(item.content)
+        was_redacted = redacted != item.content
+        limit = min(_MAX_EVIDENCE_ITEM_CHARS, max(remaining, 0))
+        included = redacted[:limit]
+        was_truncated = len(included) < len(redacted)
+        record: dict[str, object] = {
+            "id": item.id,
+            "kind": item.kind,
+            "source": item.source,
+            "content": included,
+        }
+        if was_redacted or was_truncated:
+            record["projection"] = {
+                "local_sha256": item.sha256,
+                "original_chars": len(item.content),
+                "included_chars": len(included),
+                "redacted": was_redacted,
+                "truncated": was_truncated,
+            }
+        records.append(record)
+        remaining -= len(included)
+        redacted_records += int(was_redacted)
+        truncated_records += int(was_truncated)
+
+    omitted_records = len(evidence) - len(selected)
+    projection_needed = bool(redacted_records or truncated_records or omitted_records)
+    if not projection_needed:
+        return records
+    return {
+        "records": records,
+        "projection": {
+            "input_records": len(evidence),
+            "included_records": len(records),
+            "omitted_records": omitted_records,
+            "redacted_records": redacted_records,
+            "truncated_records": truncated_records,
+            "max_records": _MAX_EVIDENCE_RECORDS,
+            "per_record_char_limit": _MAX_EVIDENCE_ITEM_CHARS,
+            "total_content_char_limit": _MAX_EVIDENCE_TOTAL_CHARS,
+        },
+    }
 
 
 def _review_schema() -> dict[str, object]:

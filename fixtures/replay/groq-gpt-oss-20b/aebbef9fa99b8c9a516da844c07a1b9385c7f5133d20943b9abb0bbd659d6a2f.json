@@ -20,26 +20,26 @@
             "diff:candidate.patch:a0503b00ed77709a",
             "file:candidate_src_ports.py:4d1a01ff58976205"
           ],
-          "explanation": "The updated parse_port allows port 0 because the range check is 0 <= port <= 65535, but the task requires ports 1 through 65535 inclusive. This violates the specification and introduces a regression.",
+          "explanation": "The updated parse_port allows port 0 because the range check is 0 <= port <= 65535, whereas the task requires ports 1 through 65535 inclusive. This violates the specified behavior and introduces a regression.",
           "severity": "high",
           "title": "parse_port accepts port 0"
         }
       ],
       "summary": "The change does not meet the requirement to reject port 0; therefore it must be rejected."
     },
-    "raw_text": "{\"confidence\":0.9,\"decision\":\"reject\",\"findings\":[{\"category\":\"behavioral_regression\",\"evidence_ids\":[\"diff:candidate.patch:a0503b00ed77709a\",\"file:candidate_src_ports.py:4d1a01ff58976205\"],\"explanation\":\"The updated parse_port allows port 0 because the range check is 0 <= port <= 65535, but the task requires ports 1 through 65535 inclusive. This violates the specification and introduces a regression.\",\"severity\":\"high\",\"title\":\"parse_port accepts port 0\"}],\"summary\":\"The change does not meet the requirement to reject port 0; therefore it must be rejected.\"}",
+    "raw_text": "{\"confidence\":0.9,\"decision\":\"reject\",\"findings\":[{\"category\":\"behavioral_regression\",\"evidence_ids\":[\"diff:candidate.patch:a0503b00ed77709a\",\"file:candidate_src_ports.py:4d1a01ff58976205\"],\"explanation\":\"The updated parse_port allows port 0 because the range check is 0 <= port <= 65535, whereas the task requires ports 1 through 65535 inclusive. This violates the specified behavior and introduces a regression.\",\"severity\":\"high\",\"title\":\"parse_port accepts port 0\"}],\"summary\":\"The change does not meet the requirement to reject port 0; therefore it must be rejected.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1385,
-      "latency_ms": 12510,
+      "latency_ms": 11452,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 406,
+      "output_tokens": 407,
       "provider": "groq",
-      "rate_limit_wait_ms": 10843,
+      "rate_limit_wait_ms": 10740,
       "request_hash": "aebbef9fa99b8c9a516da844c07a1b9385c7f5133d20943b9abb0bbd659d6a2f",
-      "total_tokens": 1791
+      "total_tokens": 1792
     }
   },
   "schema_version": 1

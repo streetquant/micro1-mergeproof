@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DriftProof review — DP-540F992519BB</title>
+<style>
+:root { color-scheme:light dark; --bg:#08111d; --panel:#111f31; --text:#edf5ff; --muted:#a9bbd1; --border:#334b64; --pass:#2ec27e; --fail:#ff6b6b; --review:#f6c85f; }
+* { box-sizing:border-box; } body { margin:0; font-family:ui-sans-serif,system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+main { width:min(1180px,94vw); margin:2rem auto 5rem; } header,section { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:1.25rem 1.5rem; margin:1rem 0; }
+h1,h2,h3 { line-height:1.2; } code { overflow-wrap:anywhere; background:#050a12; padding:.1rem .3rem; border-radius:4px; }
+.verdict { display:inline-block; font-weight:800; padding:.45rem .8rem; border-radius:999px; } .verdict.approve { background:var(--pass); color:#06170e; } .verdict.reject { background:var(--fail); color:#220606; } .verdict.human-review { background:var(--review); color:#221904; }
+.boundary { border-left:5px solid var(--review); padding-left:1rem; color:var(--muted); } .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.75rem; } .metric,.rule { border:1px solid var(--border); border-radius:10px; padding:.85rem; } .metric strong { display:block; font-size:1.35rem; }
+table { width:100%; border-collapse:collapse; } th,td { text-align:left; vertical-align:top; padding:.6rem; border-bottom:1px solid var(--border); } .status { text-transform:uppercase; font-size:.75rem; font-weight:800; } .status.pass { color:var(--pass); } .status.fail { color:var(--fail); } .status.inconclusive { color:var(--review); } .muted { color:var(--muted); } dt { color:var(--muted); margin-top:.5rem; } dd { margin-left:0; }
+</style>
+</head>
+<body><main>
+<header>
+<p class="muted">Independent adversarial release gate for agent-authored dbt repairs</p>
+<h1>DP-540F992519BB</h1>
+<p><span class="verdict human-review">human_review</span></p>
+<p>Candidate requires qualified human review because the visible contract could not be verified conclusively: C-56E06F939337.</p>
+<p class="boundary"><strong>Human approval required.</strong> DriftProof performed no merge, deployment, push, publication, or other consequential action.</p>
+<div class="grid">
+<div class="metric"><strong>6</strong>Checks</div>
+<div class="metric"><strong>0</strong>Failed</div>
+<div class="metric"><strong>1</strong>Inconclusive</div>
+<div class="metric"><strong>bubblewrap</strong>Isolation</div>
+</div>
+</header>
+<section><h2>Verification checks</h2><table><thead><tr><th>Status</th><th>Check</th><th>Detail</th><th>Evidence</th></tr></thead><tbody><tr><td><span class="status pass">pass</span></td><td><strong>Candidate builds from the disposable review worktree</strong><br><code>C-C0B46176F241</code></td><td>dbt returned 0 under bubblewrap isolation.</td><td><code>dbt build</code> <code>d94f989044c9f7145b373aa870a907b74eb7984e48df1156c0f493d6bec9f77b</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Original candidate project remained unchanged</strong><br><code>C-2EE4ED4DFCAA</code></td><td>The source tree hash is unchanged.</td><td><code>d94f989044c9f7145b373aa870a907b74eb7984e48df1156c0f493d6bec9f77b</code> <code>d94f989044c9f7145b373aa870a907b74eb7984e48df1156c0f493d6bec9f77b</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Visible business context compiled into executable checks</strong><br><code>C-AB2C57D37E34</code></td><td>Compiled 1 rules without using an external benchmark oracle.</td><td><code>BUSINESS_CONTEXT.md</code> <code>508b5af714676ab5d16ea0576cae8015864cf1b6b43d8784f85ac77f4cc131e7</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Categorical mapping and validation match the documented table</strong><br><code>C-A5A72F0D1591</code></td><td>Every mapping and accepted output remains explicit.</td><td><code>models/schema.yml</code> <code>models/sources.yml</code> <code>models/stg_order_status.sql</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Verification controls were not weakened</strong><br><code>C-3A141B290B9B</code></td><td>No disabled or warning-only validation controls were found.</td><td><code>models/schema.yml</code> <code>models/sources.yml</code> </td></tr><tr><td><span class="status inconclusive">inconclusive</span></td><td><strong>Every visible business statement was resolved or verified</strong><br><code>C-56E06F939337</code></td><td>1 visible business statements remain unresolved; approval is not permitted.</td><td><code>BUSINESS_CONTEXT.md</code> <code>508b5af714676ab5d16ea0576cae8015864cf1b6b43d8784f85ac77f4cc131e7</code> </td></tr></tbody></table></section>
+<section><h2>Visible contract</h2><article class="rule"><div><code>categorical_mapping</code> <code>R-8061F5A1C387</code></div><h3>Business status mapping is: `paid -&gt; revenue`, `refunded -&gt; refund`, `chargeback -&gt; loss`.</h3><p>Output: <code>—</code>; fields: <code>paid, revenue, refunded, refund, chargeback, loss</code></p></article><h3>Unresolved context</h3><ul><li>Validation must explicitly allow exactly the mapped business statuses rather than being removed.</li></ul></section>
+<section><h2>Bounded agent trace</h2><p class="muted">No model agent was invoked.</p></section>
+<section><h2>Integrity</h2><ul><li>Candidate: <code>d94f989044c9f7145b373aa870a907b74eb7984e48df1156c0f493d6bec9f77b</code></li><li>Context: <code>508b5af714676ab5d16ea0576cae8015864cf1b6b43d8784f85ac77f4cc131e7</code></li><li>Worktree: <code>d94f989044c9f7145b373aa870a907b74eb7984e48df1156c0f493d6bec9f77b</code></li><li>Certificate: <code>e19122c36e538bc73ed469895472eb0dde6ded64d25bc7a92635514552b0ae37</code></li></ul><p class="muted">Verify with <code>driftproof verify-bundle &lt;directory&gt;</code>.</p></section>
+</main></body></html>

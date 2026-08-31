@@ -1,0 +1,270 @@
+{
+  "$defs": {
+    "Decision": {
+      "enum": [
+        "approve",
+        "reject",
+        "human_review"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "ReviewErrorResponse": {
+      "additionalProperties": false,
+      "description": "Stable machine-facing object emitted when no review result is valid.",
+      "properties": {
+        "consequential_action_taken": {
+          "const": false,
+          "title": "Consequential Action Taken",
+          "type": "boolean"
+        },
+        "context": {
+          "title": "Context",
+          "type": "string"
+        },
+        "decision": {
+          "const": "human_review",
+          "title": "Decision",
+          "type": "string"
+        },
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "error": {
+          "title": "Error",
+          "type": "string"
+        },
+        "error_code": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Error Code",
+          "type": "string"
+        },
+        "exit_code": {
+          "const": 30,
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "hint": {
+          "title": "Hint",
+          "type": "string"
+        },
+        "human_approval_required": {
+          "const": true,
+          "title": "Human Approval Required",
+          "type": "boolean"
+        },
+        "protocol": {
+          "const": "mergeproof.agent.v1",
+          "default": "mergeproof.agent.v1",
+          "title": "Protocol",
+          "type": "string"
+        },
+        "response_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response File"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "status": {
+          "const": "invalid_review",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "status",
+        "decision",
+        "exit_code",
+        "context",
+        "error",
+        "error_code",
+        "detail",
+        "hint",
+        "retryable",
+        "human_approval_required",
+        "consequential_action_taken"
+      ],
+      "title": "ReviewErrorResponse",
+      "type": "object"
+    },
+    "ReviewNavigationResponse": {
+      "additionalProperties": false,
+      "description": "Stable machine-facing navigation object emitted after a valid review.",
+      "properties": {
+        "agent_traces": {
+          "title": "Agent Traces",
+          "type": "string"
+        },
+        "bundle": {
+          "title": "Bundle",
+          "type": "string"
+        },
+        "bundle_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Bundle Manifest Sha256",
+          "type": "string"
+        },
+        "bundle_verified": {
+          "const": true,
+          "title": "Bundle Verified",
+          "type": "boolean"
+        },
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "consequential_action_taken": {
+          "const": false,
+          "title": "Consequential Action Taken",
+          "type": "boolean"
+        },
+        "decision": {
+          "$ref": "#/$defs/Decision"
+        },
+        "evidence_ledger": {
+          "title": "Evidence Ledger",
+          "type": "string"
+        },
+        "exit_code": {
+          "enum": [
+            0,
+            10,
+            20
+          ],
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "human_approval_required": {
+          "const": true,
+          "title": "Human Approval Required",
+          "type": "boolean"
+        },
+        "human_report": {
+          "title": "Human Report",
+          "type": "string"
+        },
+        "human_report_markdown": {
+          "title": "Human Report Markdown",
+          "type": "string"
+        },
+        "hypotheses": {
+          "minimum": 0,
+          "title": "Hypotheses",
+          "type": "integer"
+        },
+        "machine_result": {
+          "title": "Machine Result",
+          "type": "string"
+        },
+        "manifest": {
+          "title": "Manifest",
+          "type": "string"
+        },
+        "protocol": {
+          "const": "mergeproof.agent.v1",
+          "default": "mergeproof.agent.v1",
+          "title": "Protocol",
+          "type": "string"
+        },
+        "recommended_action": {
+          "enum": [
+            "human_approval",
+            "repair_required",
+            "evidence_or_human_escalation"
+          ],
+          "title": "Recommended Action",
+          "type": "string"
+        },
+        "request": {
+          "title": "Request",
+          "type": "string"
+        },
+        "response_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response File"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "status": {
+          "const": "valid_review",
+          "default": "valid_review",
+          "title": "Status",
+          "type": "string"
+        },
+        "verified_findings": {
+          "minimum": 0,
+          "title": "Verified Findings",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "case_id",
+        "decision",
+        "confidence",
+        "exit_code",
+        "recommended_action",
+        "bundle",
+        "request",
+        "manifest",
+        "machine_result",
+        "evidence_ledger",
+        "agent_traces",
+        "human_report",
+        "human_report_markdown",
+        "verified_findings",
+        "hypotheses",
+        "bundle_verified",
+        "bundle_manifest_sha256",
+        "human_approval_required",
+        "consequential_action_taken"
+      ],
+      "title": "ReviewNavigationResponse",
+      "type": "object"
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/ReviewNavigationResponse"
+    },
+    {
+      "$ref": "#/$defs/ReviewErrorResponse"
+    }
+  ],
+  "description": "The complete one-object stdout protocol for autonomous review callers.",
+  "title": "AgentProtocolResponse"
+}

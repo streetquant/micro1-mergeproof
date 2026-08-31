@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import platform
 import statistics
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -19,19 +22,50 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _source_tree_sha256(root: Path = Path(".")) -> str:
-    candidates = [
+def _source_tree_sha256(
+    root: Path = Path("."),
+    *,
+    extra_paths: tuple[Path, ...] = (),
+) -> str:
+    root = root.resolve()
+    candidates = {
         *sorted((root / "src" / "mergeproof").glob("**/*.py")),
         root / "pyproject.toml",
         root / "uv.lock",
-    ]
+        root / "scripts" / "verify_replay.py",
+        root / "scripts" / "reproduce.sh",
+        *(path.resolve() for path in extra_paths),
+    }
     records: list[bytes] = []
-    for path in candidates:
-        if not path.is_file():
+    for index, path in enumerate(sorted(candidates, key=lambda item: str(item))):
+        if not path.is_file() or path.is_symlink():
             continue
-        relative = path.relative_to(root).as_posix().encode()
-        records.extend((relative, b"\0", hashlib.sha256(path.read_bytes()).digest(), b"\n"))
+        try:
+            label = path.relative_to(root).as_posix()
+        except ValueError:
+            label = f"external/{index}/{path.name}"
+        records.extend(
+            (
+                label.encode(),
+                b"\0",
+                str(path.stat().st_size).encode(),
+                b"\0",
+                hashlib.sha256(path.read_bytes()).digest(),
+                b"\n",
+            )
+        )
     return hashlib.sha256(b"".join(records)).hexdigest()
+
+
+def _runtime_environment() -> dict[str, str]:
+    return {
+        "python_implementation": platform.python_implementation(),
+        "python_version": platform.python_version(),
+        "platform_system": platform.system(),
+        "platform_release": platform.release(),
+        "machine": platform.machine(),
+        "byteorder": sys.byteorder,
+    }
 
 
 def load_cases(path: Path) -> list[CaseInput]:
@@ -197,11 +231,6 @@ def run_benchmark(
             raise ValueError(f"unknown case: {only_case}")
     if limit is not None:
         cases = cases[:limit]
-    gold = load_gold(gold_path)
-    missing_gold = sorted({case.id for case in cases} - set(gold))
-    if missing_gold:
-        raise ValueError(f"missing gold labels: {missing_gold}")
-
     runner, provider_name, model_name = _runner_for_mode(mode, provider)
     output_dir.mkdir(parents=True, exist_ok=True)
     results: list[AuditResult] = []
@@ -211,6 +240,28 @@ def run_benchmark(
             result = runner(case)
             results.append(result)
             handle.write(canonical_json(result.model_dump(mode="json")) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+    prediction_manifest_path = output_dir / "predictions-manifest.json"
+    write_json(
+        prediction_manifest_path,
+        {
+            "schema_version": 1,
+            "mode": mode,
+            "provider": provider_name,
+            "model": model_name,
+            "case_ids": [case.id for case in cases],
+            "raw_results": raw_path.name,
+            "raw_results_sha256": _sha256_file(raw_path),
+            "predictions_completed_before_gold_load": True,
+        },
+    )
+
+    gold = load_gold(gold_path)
+    missing_gold = sorted({case.id for case in cases} - set(gold))
+    if missing_gold:
+        raise ValueError(f"missing gold labels: {missing_gold}")
 
     metrics = compute_metrics(results, gold)
     metrics.update({"mode": mode, "provider": provider_name, "model": model_name})
@@ -220,17 +271,21 @@ def run_benchmark(
     write_json(
         manifest_path,
         {
-            "schema_version": 2,
+            "schema_version": 3,
             "mode": mode,
             "provider": provider_name,
             "model": model_name,
             "case_ids": [case.id for case in cases],
             "cases_sha256": _sha256_file(cases_path),
             "gold_sha256": _sha256_file(gold_path),
-            "source_tree_sha256": _source_tree_sha256(),
+            "source_tree_sha256": _source_tree_sha256(extra_paths=(cases_path, gold_path)),
+            "predictions_committed_before_gold_load": True,
+            "predictions_manifest": prediction_manifest_path.name,
+            "predictions_manifest_sha256": _sha256_file(prediction_manifest_path),
             "raw_results": raw_path.name,
             "raw_results_sha256": _sha256_file(raw_path),
             "metrics_sha256": _sha256_file(metrics_path),
+            "runtime_environment": _runtime_environment(),
         },
     )
     return results, metrics

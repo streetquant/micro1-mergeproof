@@ -4,9 +4,9 @@
   "human_review_rate": 0.0,
   "primary_metric": "safe_approval_macro_f1",
   "runtime_ms": {
-    "median": 3641.0,
-    "p95": 4402,
-    "total": 111556
+    "median": 5511.5,
+    "p95": 7091,
+    "total": 139127
   },
   "safe_approval_macro_f1": 0.3333333333333333,
   "safe_class": {

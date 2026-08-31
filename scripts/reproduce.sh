@@ -18,12 +18,19 @@ uv sync --locked --extra dev --extra dbt
 printf '\n== Source qualification ==\n'
 uv run ruff format --check src tests scripts
 uv run ruff check src tests scripts
-uv run mypy src/driftproof src/mergeproof scripts/verify_replay.py
+uv run mypy src/driftproof src/mergeproof scripts/verify_replay.py scripts/package_final_release.py scripts/export_schemas.py
+uv run python scripts/export_schemas.py --check | tee "$WORK_ROOT/schema-verification.json"
+uv run mergeproof capabilities > "$WORK_ROOT/mergeproof-capabilities.json"
+uv run driftproof capabilities > "$WORK_ROOT/driftproof-capabilities.json"
+uv run mergeproof schema agent-response > "$WORK_ROOT/mergeproof-agent-response.schema.json"
+uv run driftproof schema request > "$WORK_ROOT/driftproof-request.schema.json"
+uv run driftproof schema agent-response > "$WORK_ROOT/driftproof-agent-response.schema.json"
 uv run pytest -q
 uv build
 
 printf '\n== Verified-mode readiness ==\n'
-uv run mergeproof doctor --json | tee "$WORK_ROOT/doctor.json"
+uv run mergeproof doctor --json | tee "$WORK_ROOT/mergeproof-doctor.json"
+uv run driftproof doctor --json | tee "$WORK_ROOT/driftproof-doctor.json"
 
 printf '\n== Frozen model-response replay ==\n'
 uv run python scripts/verify_replay.py | tee "$WORK_ROOT/replay-verification.json"

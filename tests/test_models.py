@@ -66,3 +66,27 @@ def test_case_rejects_oversized_file() -> None:
             before={},
             candidate={"large.txt": "x" * 1_000_001},
         )
+
+
+def test_case_rejects_parent_traversal_glob() -> None:
+    with pytest.raises(ValidationError, match="parent traversal"):
+        CaseInput(
+            id="bad-glob",
+            title="bad glob",
+            task="Review the file.",
+            before={},
+            candidate={"value.py": "pass\n"},
+            allowed_changed_globs=["../**"],
+        )
+
+
+def test_case_rejects_oversized_auxiliary_payload() -> None:
+    with pytest.raises(ValidationError, match="trajectory and metadata"):
+        CaseInput(
+            id="oversized-metadata",
+            title="oversized metadata",
+            task="Review the file.",
+            before={},
+            candidate={"value.py": "pass\n"},
+            metadata={"blob": "x" * 1_000_001},
+        )

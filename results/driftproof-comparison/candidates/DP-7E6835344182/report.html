@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DriftProof review — DP-7E6835344182</title>
+<style>
+:root { color-scheme:light dark; --bg:#08111d; --panel:#111f31; --text:#edf5ff; --muted:#a9bbd1; --border:#334b64; --pass:#2ec27e; --fail:#ff6b6b; --review:#f6c85f; }
+* { box-sizing:border-box; } body { margin:0; font-family:ui-sans-serif,system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+main { width:min(1180px,94vw); margin:2rem auto 5rem; } header,section { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:1.25rem 1.5rem; margin:1rem 0; }
+h1,h2,h3 { line-height:1.2; } code { overflow-wrap:anywhere; background:#050a12; padding:.1rem .3rem; border-radius:4px; }
+.verdict { display:inline-block; font-weight:800; padding:.45rem .8rem; border-radius:999px; } .verdict.approve { background:var(--pass); color:#06170e; } .verdict.reject { background:var(--fail); color:#220606; } .verdict.human-review { background:var(--review); color:#221904; }
+.boundary { border-left:5px solid var(--review); padding-left:1rem; color:var(--muted); } .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.75rem; } .metric,.rule { border:1px solid var(--border); border-radius:10px; padding:.85rem; } .metric strong { display:block; font-size:1.35rem; }
+table { width:100%; border-collapse:collapse; } th,td { text-align:left; vertical-align:top; padding:.6rem; border-bottom:1px solid var(--border); } .status { text-transform:uppercase; font-size:.75rem; font-weight:800; } .status.pass { color:var(--pass); } .status.fail { color:var(--fail); } .status.inconclusive { color:var(--review); } .muted { color:var(--muted); } dt { color:var(--muted); margin-top:.5rem; } dd { margin-left:0; }
+</style>
+</head>
+<body><main>
+<header>
+<p class="muted">Independent adversarial release gate for agent-authored dbt repairs</p>
+<h1>DP-7E6835344182</h1>
+<p><span class="verdict reject">reject</span></p>
+<p>Candidate is not approval-ready; failed checks: C-88B26083405B.</p>
+<p class="boundary"><strong>Human approval required.</strong> DriftProof performed no merge, deployment, push, publication, or other consequential action.</p>
+<div class="grid">
+<div class="metric"><strong>5</strong>Checks</div>
+<div class="metric"><strong>1</strong>Failed</div>
+<div class="metric"><strong>0</strong>Inconclusive</div>
+<div class="metric"><strong>bubblewrap</strong>Isolation</div>
+</div>
+</header>
+<section><h2>Verification checks</h2><table><thead><tr><th>Status</th><th>Check</th><th>Detail</th><th>Evidence</th></tr></thead><tbody><tr><td><span class="status pass">pass</span></td><td><strong>Candidate builds from the disposable review worktree</strong><br><code>C-C0B46176F241</code></td><td>dbt returned 0 under bubblewrap isolation.</td><td><code>dbt build</code> <code>8293237c98d417fd185f3eb0e84f7efe5ed293064b474fec21bb6f18c2b2d24c</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Original candidate project remained unchanged</strong><br><code>C-2EE4ED4DFCAA</code></td><td>The source tree hash is unchanged.</td><td><code>8293237c98d417fd185f3eb0e84f7efe5ed293064b474fec21bb6f18c2b2d24c</code> <code>8293237c98d417fd185f3eb0e84f7efe5ed293064b474fec21bb6f18c2b2d24c</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Visible business context compiled into executable checks</strong><br><code>C-AB2C57D37E34</code></td><td>Compiled 1 rules without using an external benchmark oracle.</td><td><code>BUSINESS_CONTEXT.md</code> <code>732f7c4b698ecb118aa8926c623a9c91922c2a7655e1d340c64aef1e4c2ff856</code> </td></tr><tr><td><span class="status fail">fail</span></td><td><strong>Invalid numeric input follows the documented NULL policy</strong><br><code>C-88B26083405B</code></td><td>The numeric conversion is missing or replaces invalid values instead of preserving NULL.</td><td><code>models/stg_orders.sql</code> </td></tr><tr><td><span class="status pass">pass</span></td><td><strong>Verification controls were not weakened</strong><br><code>C-3A141B290B9B</code></td><td>No disabled or warning-only validation controls were found.</td><td><code>models/schema.yml</code> <code>models/sources.yml</code> </td></tr></tbody></table></section>
+<section><h2>Visible contract</h2><article class="rule"><div><code>numeric_null_policy</code> <code>R-A8F67D835778</code></div><h3>`amount` is numeric downstream. Source text that is valid numeric data should be converted to DECIMAL. Invalid numeric text must become NULL rather than be coerced to zero or dropped.</h3><p>Output: <code>amount</code>; fields: <code>—</code></p></article><h3>Unresolved context</h3><ul><li>None</li></ul></section>
+<section><h2>Bounded agent trace</h2><p class="muted">No model agent was invoked.</p></section>
+<section><h2>Integrity</h2><ul><li>Candidate: <code>8293237c98d417fd185f3eb0e84f7efe5ed293064b474fec21bb6f18c2b2d24c</code></li><li>Context: <code>732f7c4b698ecb118aa8926c623a9c91922c2a7655e1d340c64aef1e4c2ff856</code></li><li>Worktree: <code>8293237c98d417fd185f3eb0e84f7efe5ed293064b474fec21bb6f18c2b2d24c</code></li><li>Certificate: <code>7c2a6de0fd092130a157c877b7440327f85981fd405c9345bde52ba0a5beed7a</code></li></ul><p class="muted">Verify with <code>driftproof verify-bundle &lt;directory&gt;</code>.</p></section>
+</main></body></html>

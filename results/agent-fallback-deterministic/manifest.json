@@ -1,0 +1,28 @@
+{
+  "candidate_id": "DP-AGENT-FALLBACK-UNSAFE",
+  "certificate_sha256": "8679da417c604d683c5d126b9ddb66f1355a13e37de7353e7235706b73923bc7",
+  "consequential_action_taken": false,
+  "exit_code": 20,
+  "files": {
+    "approval-certificate.json": {
+      "bytes": 854,
+      "sha256": "c26822bf9d47e8e65d8b2cc173928cd9de099910c8925dfd0187611e6594504b"
+    },
+    "gate-report.json": {
+      "bytes": 3672,
+      "sha256": "b34d82252f8fdb3311858ba3bf47a625dc53e78f93d070d7778a50eab379ee59"
+    },
+    "report.html": {
+      "bytes": 5163,
+      "sha256": "02aa00fd6e78efe237004c4b7b0bd255772a5b749df115a54bd66e047173362d"
+    },
+    "report.md": {
+      "bytes": 2646,
+      "sha256": "9725ad4c8abedfda0e5d139a1e503b7be1d91d404cba031d5db77200606232ee"
+    }
+  },
+  "human_approval_required": true,
+  "schema_version": 1,
+  "tool": "driftproof",
+  "verdict": "human_review"
+}

@@ -1,16 +1,17 @@
 {
+  "agent_trace": null,
   "build": {
     "command": [
       "dbt",
       "build",
       "--project-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-7FD36DF2E7C0",
+      "<WORKTREE>",
       "--profiles-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-7FD36DF2E7C0",
+      "<WORKTREE>",
       "--no-use-colors"
     ],
-    "duration_ms": 25402,
-    "isolation": "disposable_copy",
+    "duration_ms": 5379,
+    "isolation": "bubblewrap",
     "passed": true,
     "returncode": 0,
     "stderr": "",
@@ -18,15 +19,15 @@
     "worktree_sha256": "6b3985ad7bdb980dea8060d9b5ed3cdb64aeb696df875a38993a147acf8ef4f5"
   },
   "candidate_id": "DP-7FD36DF2E7C0",
-  "certificate_sha256": "b16e3d4fbe10e68c55c88ed8cc25853fac963c77e7bfe924f4b7aa58603e380f",
+  "certificate_sha256": "7284b1707c274c52628140adf1839fbb28fa861e96a5ee633a13ad878a892991",
   "checks": [
     {
-      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "detail": "dbt returned 0 under bubblewrap isolation.",
       "evidence": [
         "dbt build",
         "6b3985ad7bdb980dea8060d9b5ed3cdb64aeb696df875a38993a147acf8ef4f5"
       ],
-      "id": "C-046C625A4D7B",
+      "id": "C-C0B46176F241",
       "metadata": {},
       "rule_id": null,
       "status": "pass",

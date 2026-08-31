@@ -1,32 +1,33 @@
 {
+  "agent_trace": null,
   "build": {
     "command": [
       "dbt",
       "build",
       "--project-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-1356AA7EA9E1",
+      "<WORKTREE>",
       "--profiles-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-1356AA7EA9E1",
+      "<WORKTREE>",
       "--no-use-colors"
     ],
-    "duration_ms": 3421,
-    "isolation": "disposable_copy",
+    "duration_ms": 5357,
+    "isolation": "bubblewrap",
     "passed": true,
     "returncode": 0,
     "stderr": "",
-    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 1 model, 2 data tests, 1 source, 501 macros\nConcurrency: 1 threads (target='dev')\n1 of 3 START sql table model analytics.stg_payments ............................ [RUN]\n1 of 3 OK created sql table model analytics.stg_payments ....................... [OK in <DURATION>]\n2 of 3 START test not_null_stg_payments_payment_id ............................. [RUN]\n2 of 3 PASS not_null_stg_payments_payment_id ................................... [PASS in <DURATION>]\n3 of 3 START test unique_stg_payments_payment_id ............................... [RUN]\n3 of 3 PASS unique_stg_payments_payment_id ..................................... [PASS in <DURATION>]\nFinished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.38 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 1 model, 2 data tests, 1 source, 501 macros\nConcurrency: 1 threads (target='dev')\n1 of 3 START sql table model analytics.stg_payments ............................ [RUN]\n1 of 3 OK created sql table model analytics.stg_payments ....................... [OK in <DURATION>]\n2 of 3 START test not_null_stg_payments_payment_id ............................. [RUN]\n2 of 3 PASS not_null_stg_payments_payment_id ................................... [PASS in <DURATION>]\n3 of 3 START test unique_stg_payments_payment_id ............................... [RUN]\n3 of 3 PASS unique_stg_payments_payment_id ..................................... [PASS in <DURATION>]\nFinished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.41 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
     "worktree_sha256": "8d93d8ce327cbbdfc53df481f62a7d02f70c878a8385fdabc1c358e4a3dd70b5"
   },
   "candidate_id": "DP-1356AA7EA9E1",
-  "certificate_sha256": "e8bf61d032e73b1ba7166a709e2edef6d0d6e62f31c2a3e3cdb6bbc199483c7e",
+  "certificate_sha256": "76f0298205c161ffb3fefb1523421daaf718b3c430c7bcb4ac8fcb25c79d3dab",
   "checks": [
     {
-      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "detail": "dbt returned 0 under bubblewrap isolation.",
       "evidence": [
         "dbt build",
         "8d93d8ce327cbbdfc53df481f62a7d02f70c878a8385fdabc1c358e4a3dd70b5"
       ],
-      "id": "C-046C625A4D7B",
+      "id": "C-C0B46176F241",
       "metadata": {},
       "rule_id": null,
       "status": "pass",
@@ -81,6 +82,18 @@
       "rule_id": null,
       "status": "pass",
       "title": "Verification controls were not weakened"
+    },
+    {
+      "detail": "2 visible business statements remain unresolved; approval is not permitted.",
+      "evidence": [
+        "BUSINESS_CONTEXT.md",
+        "89e1b61bd32efdce140ac8fbc1f064df7c9b44609f159fc9f735725c20302cf0"
+      ],
+      "id": "C-CF6D36F15526",
+      "metadata": {},
+      "rule_id": null,
+      "status": "inconclusive",
+      "title": "Every visible business statement was resolved or verified"
     }
   ],
   "consequential_action_taken": false,
@@ -109,7 +122,9 @@
     "C-75CBA4CDAE8A"
   ],
   "human_approval_required": true,
-  "inconclusive_check_ids": [],
+  "inconclusive_check_ids": [
+    "C-CF6D36F15526"
+  ],
   "project_sha256": "8d93d8ce327cbbdfc53df481f62a7d02f70c878a8385fdabc1c358e4a3dd70b5",
   "schema_version": 1,
   "summary": "Candidate is not approval-ready; failed checks: C-75CBA4CDAE8A.",

@@ -1,0 +1,19 @@
+{
+  "agent_model": "openai/gpt-oss-20b",
+  "agent_provider": null,
+  "agent_record_dir": null,
+  "agent_replay_dir": null,
+  "allow_external_provider": false,
+  "allow_unconfined": false,
+  "context": "agent-fallback-unsafe/BUSINESS_CONTEXT.md",
+  "isolation": "bubblewrap",
+  "output": "../.work/example-review",
+  "project": "agent-fallback-unsafe",
+  "protocol": "driftproof.request.v1",
+  "replace_output": false,
+  "response_file": "../.work/example-response.json",
+  "run_id": "example-001",
+  "schema_version": 1,
+  "timeout_seconds": 120,
+  "work_root": "../.work/example-runs"
+}

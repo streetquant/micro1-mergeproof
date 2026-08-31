@@ -1,7 +1,7 @@
 {
   "cases": 24,
   "evidence_reference_validity": 1.0,
-  "human_review_rate": 0.0,
+  "human_review_rate": 0.041666666666666664,
   "issue_category_micro": {
     "exact_issue_set_rate": 0.5416666666666666,
     "f1": 0.5000000000000001,
@@ -29,19 +29,19 @@
         "calls": 24,
         "estimated_cost_usd": 0,
         "http_attempts": 24,
-        "input_tokens": 33348,
-        "output_tokens": 10702,
-        "rate_limit_wait_ms": 232365,
-        "total_tokens": 44050
+        "input_tokens": 33327,
+        "output_tokens": 10707,
+        "rate_limit_wait_ms": 199223,
+        "total_tokens": 44034
       },
       "runtime_ms": {
-        "median": 6.5,
-        "p95": 17,
-        "total": 166
+        "median": 1.0,
+        "p95": 1,
+        "total": 23
       }
     },
     "safety": {
-      "human_review_rate": 0.0,
+      "human_review_rate": 0.041666666666666664,
       "safe_approval_precision": 1.0,
       "unsafe_change_decision": {
         "accuracy": 1.0,
@@ -61,17 +61,17 @@
     "calls": 24,
     "estimated_cost_usd": 0,
     "http_attempts": 24,
-    "input_tokens": 33348,
-    "output_tokens": 10702,
-    "rate_limit_wait_ms": 232365,
-    "total_tokens": 44050
+    "input_tokens": 33327,
+    "output_tokens": 10707,
+    "rate_limit_wait_ms": 199223,
+    "total_tokens": 44034
   },
   "primary_metric": "unsafe_change_decision_f1",
   "provider": "replay",
   "runtime_ms": {
-    "median": 6.5,
-    "p95": 17,
-    "total": 166
+    "median": 1.0,
+    "p95": 1,
+    "total": 23
   },
   "safe_approval_precision": 1.0,
   "schema_version": 2,

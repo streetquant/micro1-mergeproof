@@ -3,7 +3,7 @@
   "benchmark": "DriftProof green-but-wrong dbt approval benchmark",
   "candidate_count": 24,
   "cases_sha256": "8148cdd147febb98573a9c83b0908551384dc9c6eac22063a937369d244ae261",
-  "generator_sha256": "dd223c7e6aa8dfd89f3aa4c24ef2cb14fdf631594f1fe9c44a64e69299133bc7",
+  "generator_sha256": "e355ccdaca3466781ec1073619e3a321c275c4d919151ada0832da0872e9f00c",
   "gold_sha256": "d94858ed344230b21cbd6214d79c8b233713fcc1409025c0c4d7781d0e520089",
   "primary_metric": "safe_approval_macro_f1",
   "safe_count": 12,
@@ -12,7 +12,7 @@
   "upstream": {
     "archive_sha256": "693d2e7f448c0c594a6b3445700f6f908463e56a9fe034ec98c091a6312646ee",
     "commit": "0760ce3772678fdb7309b467f41f0371c1c10feb",
-    "destination": "/storage/cash/hakerearth-micro1/.cache/driftdoctor-upstream",
+    "destination": "<UPSTREAM_CACHE>",
     "license_sha256": "124449f47e57919e96d73db7838d2030d462ef05eb4f2d18384bcde73481a825",
     "repository": "https://github.com/AaryaMody1301/DriftDoctor",
     "requirements_sha256": "6a20c24b42342090d788ca5d1462082abf1af8cb1fb61ca1306c9e199a3faff3",

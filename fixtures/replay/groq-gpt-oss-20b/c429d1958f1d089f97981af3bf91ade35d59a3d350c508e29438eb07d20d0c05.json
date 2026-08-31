@@ -11,24 +11,34 @@
   "request_hash": "c429d1958f1d089f97981af3bf91ade35d59a3d350c508e29438eb07d20d0c05",
   "response": {
     "data": {
-      "confidence": 0.95,
+      "confidence": 0.9,
       "decision": "approve",
-      "findings": [],
-      "summary": "The change correctly implements port validation and passes the provided tests, meeting the task requirements."
+      "findings": [
+        {
+          "category": "insufficient_evidence",
+          "evidence_ids": [
+            "diff:candidate.patch:f15efc870e1dd95f"
+          ],
+          "explanation": "The tests cover only the lower and upper boundaries and zero, but do not test values such as negative numbers, values above 65535, or non‑numeric strings. While the implementation correctly rejects out‑of‑range values, the test suite is incomplete.",
+          "severity": "low",
+          "title": "Incomplete test coverage"
+        }
+      ],
+      "summary": "The change correctly enforces port bounds and is within the allowed change scope. Tests confirm boundary behavior, though additional edge cases are not covered. No material blockers are present."
     },
-    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change correctly implements port validation and passes the provided tests, meeting the task requirements.\"}",
+    "raw_text": "{\"confidence\":0.9,\"decision\":\"approve\",\"findings\":[{\"category\":\"insufficient_evidence\",\"evidence_ids\":[\"diff:candidate.patch:f15efc870e1dd95f\"],\"explanation\":\"The tests cover only the lower and upper boundaries and zero, but do not test values such as negative numbers, values above 65535, or non‑numeric strings. While the implementation correctly rejects out‑of‑range values, the test suite is incomplete.\",\"severity\":\"low\",\"title\":\"Incomplete test coverage\"}],\"summary\":\"The change correctly enforces port bounds and is within the allowed change scope. Tests confirm boundary behavior, though additional edge cases are not covered. No material blockers are present.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1406,
-      "latency_ms": 11339,
+      "latency_ms": 12125,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 301,
+      "output_tokens": 662,
       "provider": "groq",
-      "rate_limit_wait_ms": 10188,
+      "rate_limit_wait_ms": 11008,
       "request_hash": "c429d1958f1d089f97981af3bf91ade35d59a3d350c508e29438eb07d20d0c05",
-      "total_tokens": 1707
+      "total_tokens": 2068
     }
   },
   "schema_version": 1

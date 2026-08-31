@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import re
 import time
@@ -63,6 +64,8 @@ class LLMProvider(ABC):
         started = time.perf_counter()
         try:
             raw_text, token_usage = self._request(system=system, user=user)
+            if len(raw_text) > 2_000_000:
+                raise ValueError("provider response exceeded the 2 MB safety bound")
             data = extract_json_object(raw_text)
         except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
             raise ProviderError(f"{self.name} request failed: {redact_secrets(str(exc))}") from exc
@@ -238,22 +241,49 @@ class ReplayProvider(LLMProvider):
     def __init__(self, *, model: str, replay_dir: Path) -> None:
         super().__init__(model=model, record_dir=None)
         self.replay_dir = replay_dir
-        self._pending_hash: str | None = None
 
     def complete_json(self, *, agent: str, system: str, user: str) -> ProviderResponse:
         request_hash = stable_request_hash(agent, self.model, system, user)
         path = self.replay_dir / f"{request_hash}.json"
-        if not path.is_file():
-            raise ProviderError(f"missing replay fixture: {path}")
-        import json
-
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        response = payload["response"]
-        usage = ModelUsage.model_validate(response["usage"])
+        if not path.is_file() or path.is_symlink():
+            raise ProviderError(f"missing replay fixture for request {request_hash}: {path.name}")
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(payload, dict):
+                raise ValueError("fixture root must be an object")
+            if payload.get("request_hash") != request_hash:
+                raise ValueError("fixture request hash does not match the request")
+            if payload.get("model") != self.model:
+                raise ValueError("fixture model does not match the configured model")
+            if payload.get("agent") != agent:
+                raise ValueError("fixture agent role does not match the request")
+            request = payload["request"]
+            if not isinstance(request, dict):
+                raise ValueError("fixture request metadata must be an object")
+            if request.get("system_sha256") != stable_request_hash(
+                "system", self.model, system, ""
+            ):
+                raise ValueError("fixture system-prompt identity mismatch")
+            if request.get("user_sha256") != stable_request_hash("user", self.model, "", user):
+                raise ValueError("fixture user-prompt identity mismatch")
+            response = payload["response"]
+            if not isinstance(response, dict):
+                raise ValueError("fixture response must be an object")
+            usage = ModelUsage.model_validate(response["usage"])
+            if usage.request_hash != request_hash:
+                raise ValueError("fixture usage request hash mismatch")
+            data = response["data"]
+            if not isinstance(data, dict):
+                raise ValueError("fixture response data must be an object")
+            raw_text = str(response["raw_text"])
+            if len(raw_text) > 2_000_000:
+                raise ValueError("replay response exceeded the 2 MB safety bound")
+        except (OSError, KeyError, TypeError, ValueError) as exc:
+            raise ProviderError(
+                f"invalid replay fixture {path.name}: {redact_secrets(str(exc))}"
+            ) from exc
         usage = usage.model_copy(update={"provider": self.name, "latency_ms": 0})
-        return ProviderResponse(
-            data=dict(response["data"]), raw_text=str(response["raw_text"]), usage=usage
-        )
+        return ProviderResponse(data=dict(data), raw_text=raw_text, usage=usage)
 
     def _request(self, *, system: str, user: str) -> tuple[str, dict[str, int]]:
         raise NotImplementedError

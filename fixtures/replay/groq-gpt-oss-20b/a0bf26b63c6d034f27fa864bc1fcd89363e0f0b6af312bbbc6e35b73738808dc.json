@@ -17,29 +17,30 @@
         {
           "category": "test_failure",
           "evidence_ids": [
+            "diff:candidate.patch:f1b276a98a2fb601",
             "file:candidate_src_calc.py:fad9a65291d17b76",
             "file:candidate_tests_test_calc.py:7b159df2574e8536"
           ],
-          "explanation": "The implementation returns the default value when the denominator is negative, but the task requires returning the default only when the denominator is zero. This causes the test `test_negative_denominator_is_divided` to fail, indicating a behavioral regression.",
+          "explanation": "The implementation returns the default value when the denominator is negative, but the task requires returning the default only when the denominator is zero. This causes the test `test_negative_denominator_is_divided` to fail, violating the intended behavior.",
           "severity": "high",
-          "title": "Incorrect division logic"
+          "title": "Incorrect division logic for negative denominators"
         }
       ],
-      "summary": "The change does not correctly implement the requested behavior and would cause test failures; it should be rejected."
+      "summary": "The change fails to meet the task requirements and causes test failures; it should be rejected."
     },
-    "raw_text": "{\"confidence\":0.95,\"decision\":\"reject\",\"findings\":[{\"category\":\"test_failure\",\"evidence_ids\":[\"file:candidate_src_calc.py:fad9a65291d17b76\",\"file:candidate_tests_test_calc.py:7b159df2574e8536\"],\"explanation\":\"The implementation returns the default value when the denominator is negative, but the task requires returning the default only when the denominator is zero. This causes the test `test_negative_denominator_is_divided` to fail, indicating a behavioral regression.\",\"severity\":\"high\",\"title\":\"Incorrect division logic\"}],\"summary\":\"The change does not correctly implement the requested behavior and would cause test failures; it should be rejected.\"}",
+    "raw_text": "{\"confidence\":0.95,\"decision\":\"reject\",\"findings\":[{\"category\":\"test_failure\",\"evidence_ids\":[\"diff:candidate.patch:f1b276a98a2fb601\",\"file:candidate_src_calc.py:fad9a65291d17b76\",\"file:candidate_tests_test_calc.py:7b159df2574e8536\"],\"explanation\":\"The implementation returns the default value when the denominator is negative, but the task requires returning the default only when the denominator is zero. This causes the test `test_negative_denominator_is_divided` to fail, violating the intended behavior.\",\"severity\":\"high\",\"title\":\"Incorrect division logic for negative denominators\"}],\"summary\":\"The change fails to meet the task requirements and causes test failures; it should be rejected.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1394,
-      "latency_ms": 11617,
+      "latency_ms": 11951,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 591,
+      "output_tokens": 576,
       "provider": "groq",
-      "rate_limit_wait_ms": 9229,
+      "rate_limit_wait_ms": 10889,
       "request_hash": "a0bf26b63c6d034f27fa864bc1fcd89363e0f0b6af312bbbc6e35b73738808dc",
-      "total_tokens": 1985
+      "total_tokens": 1970
     }
   },
   "schema_version": 1

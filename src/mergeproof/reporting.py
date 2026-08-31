@@ -3,11 +3,21 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import shutil
+import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from .models import AuditResult, CaseInput, Decision, EvidenceRecord, FindingStatus
-from .utils import canonical_json, pretty_json, sha256_text, stable_evidence_id, write_json
+from .utils import (
+    atomic_write_text,
+    canonical_json,
+    pretty_json,
+    redact_secrets,
+    sha256_text,
+    stable_evidence_id,
+    write_json,
+)
 
 BUNDLE_SCHEMA_VERSION = 1
 BUNDLE_FILES = (
@@ -25,12 +35,12 @@ class BundleVerificationError(ValueError):
     """Raised when a review bundle fails integrity or schema verification."""
 
 
-def decision_exit_code(decision: Decision) -> int:
-    return {
-        Decision.APPROVE: 0,
-        Decision.REJECT: 10,
-        Decision.HUMAN_REVIEW: 20,
-    }[decision]
+def decision_exit_code(decision: Decision) -> Literal[0, 10, 20]:
+    if decision == Decision.APPROVE:
+        return 0
+    if decision == Decision.REJECT:
+        return 10
+    return 20
 
 
 def _sha256_file(path: Path) -> str:
@@ -38,10 +48,7 @@ def _sha256_file(path: Path) -> str:
 
 
 def _atomic_write_text(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.tmp")
-    temporary.write_text(content, encoding="utf-8")
-    temporary.replace(path)
+    atomic_write_text(path, content)
 
 
 def _evidence_jsonl(evidence: list[EvidenceRecord]) -> str:
@@ -247,32 +254,90 @@ code {{ overflow-wrap:anywhere; background:#080c18; padding:.1rem .3rem; border-
 </main></body></html>\n"""
 
 
-def _prepare_bundle_directory(output_dir: Path) -> None:
+def prepare_review_output(output_dir: Path, *, replace: bool = False) -> None:
+    """Reserve a safe output path before a review starts.
+
+    Existing non-empty directories are never reused implicitly. An explicit
+    replacement may remove only a prior or partial MergeProof bundle, which
+    prevents a typo from recursively deleting an unrelated directory. Calling
+    this before intake also ensures that a failed rerun cannot leave an older
+    bundle at the path the caller expected the new run to populate.
+    """
+
     if output_dir.is_symlink():
         raise BundleVerificationError(f"bundle directory may not be a symlink: {output_dir}")
     if output_dir.exists() and not output_dir.is_dir():
         raise BundleVerificationError(f"bundle output must be a directory: {output_dir}")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    unexpected = sorted(
-        item.name for item in output_dir.iterdir() if item.name not in BUNDLE_ENTRY_NAMES
-    )
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    if not output_dir.exists():
+        return
+
+    entries = {item.name for item in output_dir.iterdir()}
+    if not entries:
+        output_dir.rmdir()
+        return
+    unexpected = sorted(entries - BUNDLE_ENTRY_NAMES)
     if unexpected:
         raise BundleVerificationError(
-            f"bundle directory contains unexpected entries: {unexpected}; use an empty or prior MergeProof bundle directory"
+            f"bundle directory contains unrelated entries: {unexpected}; choose a dedicated output path"
         )
+    if not replace:
+        raise BundleVerificationError(
+            f"bundle output already exists: {output_dir}; choose a new path or pass --replace-output"
+        )
+    shutil.rmtree(output_dir)
 
 
-def write_review_bundle(case: CaseInput, result: AuditResult, output_dir: Path) -> dict[str, Any]:
-    _prepare_bundle_directory(output_dir)
-    write_json(output_dir / "request.json", case.model_dump(mode="json"))
+def _redact_nested(value: Any) -> Any:
+    if isinstance(value, str):
+        return redact_secrets(value)
+    if isinstance(value, list):
+        return [_redact_nested(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _redact_nested(item) for key, item in value.items()}
+    return value
+
+
+def _bundle_case(case: CaseInput) -> tuple[CaseInput, bool, str]:
+    original = case.model_dump(mode="json")
+    redacted = dict(original)
+    redacted["title"] = redact_secrets(case.title)
+    redacted["task"] = redact_secrets(case.task)
+    redacted["before"] = {path: redact_secrets(content) for path, content in case.before.items()}
+    redacted["candidate"] = {
+        path: redact_secrets(content) for path, content in case.candidate.items()
+    }
+    redacted["trajectory"] = _redact_nested(original["trajectory"])
+    redacted["verification_commands"] = _redact_nested(original["verification_commands"])
+    redacted["metadata"] = _redact_nested(original["metadata"])
+    applied = redacted != original
+    original_sha256 = sha256_text(canonical_json(original))
+    if applied:
+        metadata = dict(redacted["metadata"])
+        metadata["bundle_redaction"] = {
+            "applied": True,
+            "original_request_sha256": original_sha256,
+        }
+        redacted["metadata"] = metadata
+    return CaseInput.model_validate(redacted), applied, original_sha256
+
+
+def _write_review_bundle_files(
+    case: CaseInput,
+    result: AuditResult,
+    output_dir: Path,
+) -> dict[str, Any]:
+    output_dir.mkdir(parents=True, exist_ok=False)
+    bundle_case, request_redacted, original_request_sha256 = _bundle_case(case)
+    write_json(output_dir / "request.json", bundle_case.model_dump(mode="json"))
     write_json(output_dir / "result.json", result.model_dump(mode="json"))
     _atomic_write_text(output_dir / "evidence.jsonl", _evidence_jsonl(result.evidence))
     write_json(
         output_dir / "agent-traces.json",
         [trace.model_dump(mode="json") for trace in result.agent_traces],
     )
-    _atomic_write_text(output_dir / "report.md", _markdown_report(case, result))
-    _atomic_write_text(output_dir / "report.html", _html_report(case, result))
+    _atomic_write_text(output_dir / "report.md", _markdown_report(bundle_case, result))
+    _atomic_write_text(output_dir / "report.html", _html_report(bundle_case, result))
 
     files = {
         name: {
@@ -288,12 +353,43 @@ def write_review_bundle(case: CaseInput, result: AuditResult, output_dir: Path) 
         "mode": result.mode,
         "decision": result.decision.value,
         "exit_code": decision_exit_code(result.decision),
+        "request_redacted": request_redacted,
+        "original_request_sha256": original_request_sha256,
         "human_approval_required": True,
         "consequential_action_taken": False,
         "files": files,
     }
     write_json(output_dir / "manifest.json", manifest)
     return manifest
+
+
+def write_review_bundle(case: CaseInput, result: AuditResult, output_dir: Path) -> dict[str, Any]:
+    """Build, verify, and publish a complete review bundle atomically."""
+
+    prepare_review_output(output_dir)
+    temporary = Path(
+        tempfile.mkdtemp(
+            prefix=f".{output_dir.name or 'mergeproof-bundle'}.",
+            dir=output_dir.parent,
+        )
+    )
+    # mkdtemp creates the directory; the writer creates it itself so every
+    # bundle follows the same entry-set checks.
+    temporary.rmdir()
+    try:
+        manifest = _write_review_bundle_files(case, result, temporary)
+        verification = verify_review_bundle(temporary)
+        if verification["decision"] != result.decision.value:
+            raise BundleVerificationError("verified bundle decision drifted from the result")
+        if output_dir.exists():
+            raise BundleVerificationError(
+                f"bundle output appeared during publication: {output_dir}"
+            )
+        temporary.replace(output_dir)
+        return manifest
+    finally:
+        if temporary.exists():
+            shutil.rmtree(temporary)
 
 
 def verify_review_bundle(output_dir: Path) -> dict[str, Any]:
@@ -345,6 +441,21 @@ def verify_review_bundle(output_dir: Path) -> dict[str, Any]:
         raise BundleVerificationError("manifest claims a consequential action was taken")
     if manifest.get("exit_code") != decision_exit_code(result.decision):
         raise BundleVerificationError("exit-code mapping mismatch")
+    if not isinstance(manifest.get("request_redacted"), bool):
+        raise BundleVerificationError("manifest request-redaction state is invalid")
+    original_request_sha256 = manifest.get("original_request_sha256")
+    if not isinstance(original_request_sha256, str) or len(original_request_sha256) != 64:
+        raise BundleVerificationError("manifest original-request hash is invalid")
+    if any(character not in "0123456789abcdef" for character in original_request_sha256):
+        raise BundleVerificationError("manifest original-request hash is invalid")
+    if manifest["request_redacted"]:
+        redaction = case.metadata.get("bundle_redaction")
+        if not isinstance(redaction, dict) or redaction.get("applied") is not True:
+            raise BundleVerificationError("redacted request is missing redaction provenance")
+        if redaction.get("original_request_sha256") != original_request_sha256:
+            raise BundleVerificationError("request redaction provenance hash mismatch")
+    elif original_request_sha256 != sha256_text(canonical_json(case.model_dump(mode="json"))):
+        raise BundleVerificationError("unredacted request provenance hash mismatch")
     if result.consequential_action_taken or not result.human_approval_required:
         raise BundleVerificationError("human approval boundary was weakened")
 

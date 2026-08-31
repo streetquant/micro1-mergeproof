@@ -1,32 +1,33 @@
 {
+  "agent_trace": null,
   "build": {
     "command": [
       "dbt",
       "build",
       "--project-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-5BC0FBC4D979",
+      "<WORKTREE>",
       "--profiles-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-5BC0FBC4D979",
+      "<WORKTREE>",
       "--no-use-colors"
     ],
-    "duration_ms": 4510,
-    "isolation": "disposable_copy",
+    "duration_ms": 6010,
+    "isolation": "bubblewrap",
     "passed": true,
     "returncode": 0,
     "stderr": "",
-    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 2 models, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 4 START sql table model analytics.stg_customers ........................... [RUN]\n1 of 4 OK created sql table model analytics.stg_customers ...................... [OK in <DURATION>]\n2 of 4 START sql table model analytics.mart_customer_revenue ................... [RUN]\n2 of 4 OK created sql table model analytics.mart_customer_revenue .............. [OK in <DURATION>]\n3 of 4 START test not_null_mart_customer_revenue_customer_id ................... [RUN]\n3 of 4 PASS not_null_mart_customer_revenue_customer_id ......................... [PASS in <DURATION>]\n4 of 4 START test unique_mart_customer_revenue_customer_id ..................... [RUN]\n4 of 4 PASS unique_mart_customer_revenue_customer_id ........................... [PASS in <DURATION>]\nFinished running 2 table models, 2 data tests in 0 hours 0 minutes and 0.85 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=4 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=4\n",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 2 models, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 4 START sql table model analytics.stg_customers ........................... [RUN]\n1 of 4 OK created sql table model analytics.stg_customers ...................... [OK in <DURATION>]\n2 of 4 START sql table model analytics.mart_customer_revenue ................... [RUN]\n2 of 4 OK created sql table model analytics.mart_customer_revenue .............. [OK in <DURATION>]\n3 of 4 START test not_null_mart_customer_revenue_customer_id ................... [RUN]\n3 of 4 PASS not_null_mart_customer_revenue_customer_id ......................... [PASS in <DURATION>]\n4 of 4 START test unique_mart_customer_revenue_customer_id ..................... [RUN]\n4 of 4 PASS unique_mart_customer_revenue_customer_id ........................... [PASS in <DURATION>]\nFinished running 2 table models, 2 data tests in 0 hours 0 minutes and 0.62 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=4 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=4\n",
     "worktree_sha256": "06cff5afd26a79f40882bddb3190023a2bbfe8a46bcf208b9519e6369c61ec8d"
   },
   "candidate_id": "DP-5BC0FBC4D979",
-  "certificate_sha256": "1a5f2506fdaa0e0cc74d68b2d5ba4b667af57741bbcbfcebdd013c39953eb06c",
+  "certificate_sha256": "efd557136963ab5b246c81b47a986337aac203c0c8e6a1954c21932a20972d2f",
   "checks": [
     {
-      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "detail": "dbt returned 0 under bubblewrap isolation.",
       "evidence": [
         "dbt build",
         "06cff5afd26a79f40882bddb3190023a2bbfe8a46bcf208b9519e6369c61ec8d"
       ],
-      "id": "C-046C625A4D7B",
+      "id": "C-C0B46176F241",
       "metadata": {},
       "rule_id": null,
       "status": "pass",

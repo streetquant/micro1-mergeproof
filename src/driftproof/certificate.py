@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
-from mergeproof.utils import canonical_json, sha256_text
+from mergeproof.utils import canonical_json, sha256_text, write_json
 
 from .models import ApprovalCertificate, CheckStatus, GateReport
 
@@ -81,13 +80,7 @@ def verify_certificate(report: GateReport, certificate: ApprovalCertificate) -> 
 
 
 def _atomic_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.tmp")
-    temporary.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    temporary.replace(path)
+    write_json(path, payload)
 
 
 def write_bundle(

@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "content": {
+      "title": "Content",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "sha256": {
+      "title": "Sha256",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "source",
+    "sha256",
+    "content"
+  ],
+  "title": "EvidenceRecord",
+  "type": "object"
+}

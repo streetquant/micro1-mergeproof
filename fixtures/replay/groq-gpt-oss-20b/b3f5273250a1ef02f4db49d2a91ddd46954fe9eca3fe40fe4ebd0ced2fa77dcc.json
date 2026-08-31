@@ -11,24 +11,24 @@
   "request_hash": "b3f5273250a1ef02f4db49d2a91ddd46954fe9eca3fe40fe4ebd0ced2fa77dcc",
   "response": {
     "data": {
-      "confidence": 0.9,
+      "confidence": 0.95,
       "decision": "approve",
       "findings": [],
-      "summary": "The change adds the idna dependency and updates normalize_host to use idna for Unicode host name normalization. The diff is syntactically correct, the new import is present, and the file compiles successfully. No material blockers are evident, so the change is approved."
+      "summary": "Change approved: idna dependency added and host normalization updated."
     },
-    "raw_text": "{\"confidence\":0.9,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change adds the idna dependency and updates normalize_host to use idna for Unicode host name normalization. The diff is syntactically correct, the new import is present, and the file compiles successfully. No material blockers are evident, so the change is approved.\"}",
+    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"Change approved: idna dependency added and host normalization updated.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1104,
-      "latency_ms": 12491,
+      "latency_ms": 11869,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 615,
+      "output_tokens": 516,
       "provider": "groq",
-      "rate_limit_wait_ms": 11393,
+      "rate_limit_wait_ms": 11120,
       "request_hash": "b3f5273250a1ef02f4db49d2a91ddd46954fe9eca3fe40fe4ebd0ced2fa77dcc",
-      "total_tokens": 1719
+      "total_tokens": 1620
     }
   },
   "schema_version": 1

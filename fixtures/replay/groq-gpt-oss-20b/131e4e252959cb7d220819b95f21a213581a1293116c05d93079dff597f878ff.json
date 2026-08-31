@@ -14,21 +14,21 @@
       "confidence": 0.95,
       "decision": "approve",
       "findings": [],
-      "summary": "The change correctly implements lexicographically smallest selection on ties and passes all tests. No blockers detected."
+      "summary": "The change correctly implements lexicographically smallest name selection for ties, passes all tests, and introduces no blockers."
     },
-    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change correctly implements lexicographically smallest selection on ties and passes all tests. No blockers detected.\"}",
+    "raw_text": "{\"confidence\":0.95,\"decision\":\"approve\",\"findings\":[],\"summary\":\"The change correctly implements lexicographically smallest name selection for ties, passes all tests, and introduces no blockers.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1439,
-      "latency_ms": 11551,
+      "latency_ms": 9613,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 259,
+      "output_tokens": 291,
       "provider": "groq",
-      "rate_limit_wait_ms": 10563,
+      "rate_limit_wait_ms": 8883,
       "request_hash": "131e4e252959cb7d220819b95f21a213581a1293116c05d93079dff597f878ff",
-      "total_tokens": 1698
+      "total_tokens": 1730
     }
   },
   "schema_version": 1

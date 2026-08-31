@@ -1,0 +1,9 @@
+{
+  "candidate_id": "DP-AGENT-FALLBACK-UNSAFE",
+  "certificate_sha256": "4292a30f93a74f18d37dea356110e58d65a7a36911c61a5bc2585e09e76f9ad7",
+  "consequential_action_taken": false,
+  "human_approval_required": true,
+  "schema_version": 1,
+  "verdict": "human_review",
+  "verified": true
+}

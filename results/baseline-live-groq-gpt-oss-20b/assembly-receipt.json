@@ -1,0 +1,14 @@
+{
+  "assembled_raw_results_sha256": "6a2927bd57d28f3d62f7d120a862387c5747f432cf5b7f170abd97603d9fab43",
+  "failed_case": "C023",
+  "fixture_count": 24,
+  "gold_loaded_only_after_complete_predictions_written": true,
+  "initial_raw_results_sha256": "1c4240a849c02ac713a62cf1c6a193ad7efb5cd1cdc05c4be1653bd4caeefeca",
+  "method": "23 successful rows from one frozen sequential run plus one same-request bounded retry",
+  "model": "openai/gpt-oss-20b",
+  "provider": "groq",
+  "retry_request_hash": "bdee010d6fe0576ca72175619add292feb8322839cf624e61202443fb0d3d81d",
+  "retry_result_sha256": "6e13111abb1988514330127f81005ebe98cb9ea0703ae9d78f3619b04ed1b445",
+  "schema_version": 1,
+  "unique_request_hashes": 24
+}

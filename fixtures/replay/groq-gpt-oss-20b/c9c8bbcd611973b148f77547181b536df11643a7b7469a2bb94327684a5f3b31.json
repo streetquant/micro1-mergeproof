@@ -33,11 +33,11 @@
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1237,
-      "latency_ms": 12270,
+      "latency_ms": 8254,
       "model": "openai/gpt-oss-20b",
       "output_tokens": 371,
       "provider": "groq",
-      "rate_limit_wait_ms": 11153,
+      "rate_limit_wait_ms": 7650,
       "request_hash": "c9c8bbcd611973b148f77547181b536df11643a7b7469a2bb94327684a5f3b31",
       "total_tokens": 1608
     }

@@ -11,35 +11,35 @@
   "request_hash": "7657af980e45e2639c76f7425f6557ccd20e6a397f36eaade4a4f7ac3d1166a1",
   "response": {
     "data": {
-      "confidence": 0.9,
-      "decision": "reject",
+      "confidence": 0.85,
+      "decision": "human_review",
       "findings": [
         {
-          "category": "behavioral_regression",
+          "category": "insufficient_evidence",
           "evidence_ids": [
             "diff:candidate.patch:93c05d06fd2055a4",
             "file:candidate_tests_test_rank.py:373985b80ef79c7f"
           ],
-          "explanation": "The implementation replaces deterministic lexicographic selection with a random choice among top-scoring names, violating the task requirement that the lexicographically smallest name be returned. The accompanying test patches `random.choice` to return a non‑lexicographically smallest name and expects the correct lexicographic result, which will fail. Thus the change does not satisfy the specified behavior.",
+          "explanation": "The proposed implementation uses random.choice to select among tied scores, which contradicts the task requirement to return the lexicographically smallest name. The accompanying test attempts to patch random.choice but expects the lexicographically smallest result, leading to a logical inconsistency. The verification claim that tests passed is not corroborated by the test logic, indicating incomplete or contradictory evidence.",
           "severity": "high",
-          "title": "Incorrect tie‑breaking logic"
+          "title": "Implementation violates task specification"
         }
       ],
-      "summary": "The proposed change fails to meet the task requirement and introduces incorrect behavior; it should not be merged."
+      "summary": "The change does not meet the task requirement and the evidence is contradictory; a qualified human review is needed."
     },
-    "raw_text": "{\"confidence\":0.9,\"decision\":\"reject\",\"findings\":[{\"category\":\"behavioral_regression\",\"evidence_ids\":[\"diff:candidate.patch:93c05d06fd2055a4\",\"file:candidate_tests_test_rank.py:373985b80ef79c7f\"],\"explanation\":\"The implementation replaces deterministic lexicographic selection with a random choice among top-scoring names, violating the task requirement that the lexicographically smallest name be returned. The accompanying test patches `random.choice` to return a non‑lexicographically smallest name and expects the correct lexicographic result, which will fail. Thus the change does not satisfy the specified behavior.\",\"severity\":\"high\",\"title\":\"Incorrect tie‑breaking logic\"}],\"summary\":\"The proposed change fails to meet the task requirement and introduces incorrect behavior; it should not be merged.\"}",
+    "raw_text": "{\"confidence\":0.85,\"decision\":\"human_review\",\"findings\":[{\"category\":\"insufficient_evidence\",\"evidence_ids\":[\"diff:candidate.patch:93c05d06fd2055a4\",\"file:candidate_tests_test_rank.py:373985b80ef79c7f\"],\"explanation\":\"The proposed implementation uses random.choice to select among tied scores, which contradicts the task requirement to return the lexicographically smallest name. The accompanying test attempts to patch random.choice but expects the lexicographically smallest result, leading to a logical inconsistency. The verification claim that tests passed is not corroborated by the test logic, indicating incomplete or contradictory evidence.\",\"severity\":\"high\",\"title\":\"Implementation violates task specification\"}],\"summary\":\"The change does not meet the task requirement and the evidence is contradictory; a qualified human review is needed.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1461,
-      "latency_ms": 21075,
+      "latency_ms": 8218,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 829,
+      "output_tokens": 866,
       "provider": "groq",
-      "rate_limit_wait_ms": 11009,
+      "rate_limit_wait_ms": 6962,
       "request_hash": "7657af980e45e2639c76f7425f6557ccd20e6a397f36eaade4a4f7ac3d1166a1",
-      "total_tokens": 2290
+      "total_tokens": 2327
     }
   },
   "schema_version": 1

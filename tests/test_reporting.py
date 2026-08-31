@@ -16,9 +16,11 @@ from mergeproof.models import (
     ModelUsage,
     Severity,
 )
+from mergeproof.pipeline import build_static_evidence
 from mergeproof.reporting import (
     BundleVerificationError,
     decision_exit_code,
+    prepare_review_output,
     verify_review_bundle,
     write_review_bundle,
 )
@@ -71,12 +73,53 @@ def test_bundle_round_trip_and_human_boundary(tmp_path: Path) -> None:
     verification = verify_review_bundle(bundle)
 
     assert manifest["decision"] == "reject"
+    assert manifest["request_redacted"] is False
+    assert len(manifest["original_request_sha256"]) == 64
     assert verification["verified"] is True
     assert verification["exit_code"] == 10
     markdown = (bundle / "report.md").read_text(encoding="utf-8")
     html = (bundle / "report.html").read_text(encoding="utf-8")
     assert "Human approval boundary" in markdown
     assert "MergeProof performed no merge, deployment, push, publication" in html
+
+
+def test_bundle_redacts_secret_shaped_request_content(tmp_path: Path) -> None:
+    secret = "sk-" + "live_" + "ABCDEFGHIJKLMNOPQRSTUV"
+    case = CaseInput(
+        id="reporting-secret",
+        title="Secret reporting case",
+        task=f"Remove {secret} from the candidate.",
+        before={"config.py": "TOKEN = 'old'\n"},
+        candidate={"config.py": f"TOKEN = '{secret}'\n"},
+        trajectory=[{"role": "agent", "content": f"Observed {secret}."}],
+        allowed_changed_globs=["config.py"],
+    )
+    result = AuditResult(
+        case_id=case.id,
+        mode="verified",
+        decision=Decision.REJECT,
+        summary="Credential-shaped material blocks approval.",
+        confidence=1.0,
+        evidence=build_static_evidence(case),
+        provider="deterministic",
+        model="fixture",
+    )
+    bundle = tmp_path / "bundle"
+
+    manifest = write_review_bundle(case, result, bundle)
+    verification = verify_review_bundle(bundle)
+
+    combined = b"\n".join(path.read_bytes() for path in sorted(bundle.iterdir()))
+    assert secret.encode() not in combined
+    assert b"[REDACTED_SECRET]" in combined
+    assert manifest["request_redacted"] is True
+    request = CaseInput.model_validate_json((bundle / "request.json").read_text())
+    assert request.metadata["bundle_redaction"]["applied"] is True
+    assert (
+        request.metadata["bundle_redaction"]["original_request_sha256"]
+        == manifest["original_request_sha256"]
+    )
+    assert verification["verified"] is True
 
 
 def test_bundle_tampering_fails_closed(tmp_path: Path) -> None:
@@ -97,6 +140,30 @@ def test_bundle_rejects_unexpected_entry(tmp_path: Path) -> None:
 
     with pytest.raises(BundleVerificationError, match="entry set mismatch"):
         verify_review_bundle(bundle)
+
+
+def test_existing_bundle_requires_explicit_replacement(tmp_path: Path) -> None:
+    case, result = sample_bundle()
+    bundle = tmp_path / "bundle"
+    write_review_bundle(case, result, bundle)
+
+    with pytest.raises(BundleVerificationError, match="--replace-output"):
+        prepare_review_output(bundle)
+
+    prepare_review_output(bundle, replace=True)
+    assert not bundle.exists()
+
+
+def test_replacement_refuses_unrelated_directory(tmp_path: Path) -> None:
+    output = tmp_path / "not-a-bundle"
+    output.mkdir()
+    sentinel = output / "keep-me.txt"
+    sentinel.write_text("important\n", encoding="utf-8")
+
+    with pytest.raises(BundleVerificationError, match="unrelated entries"):
+        prepare_review_output(output, replace=True)
+
+    assert sentinel.read_text(encoding="utf-8") == "important\n"
 
 
 def test_bundle_recomputes_agent_trace_output_hash(tmp_path: Path) -> None:
@@ -125,10 +192,10 @@ def test_bundle_recomputes_agent_trace_output_hash(tmp_path: Path) -> None:
         }
     )
     bundle = tmp_path / "bundle"
-    write_review_bundle(case, result, bundle)
 
     with pytest.raises(BundleVerificationError, match="agent output hash mismatch"):
-        verify_review_bundle(bundle)
+        write_review_bundle(case, result, bundle)
+    assert not bundle.exists()
 
 
 def test_bundle_recomputes_evidence_identity(tmp_path: Path) -> None:
@@ -137,10 +204,10 @@ def test_bundle_recomputes_evidence_identity(tmp_path: Path) -> None:
     finding = result.findings[0].model_copy(update={"evidence_ids": [evidence.id]})
     result = result.model_copy(update={"evidence": [evidence], "findings": [finding]})
     bundle = tmp_path / "bundle"
-    write_review_bundle(case, result, bundle)
 
     with pytest.raises(BundleVerificationError, match="evidence identity mismatch"):
-        verify_review_bundle(bundle)
+        write_review_bundle(case, result, bundle)
+    assert not bundle.exists()
 
 
 def test_exit_codes_are_stable() -> None:

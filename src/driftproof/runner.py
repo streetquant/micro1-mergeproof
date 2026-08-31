@@ -94,11 +94,41 @@ def _runtime_venv(dbt: str) -> Path:
     return venv
 
 
+def _runtime_python(venv: Path) -> tuple[Path, str, str]:
+    """Resolve the immutable interpreter and the venv site-packages mount.
+
+    uv virtual environments commonly use an absolute ``bin/python`` symlink.
+    Mounting only the virtual environment leaves that interpreter target absent
+    inside bubblewrap. Bind the resolved base runtime independently and expose
+    only the virtual environment's site-packages through ``PYTHONPATH``.
+    """
+
+    python = (venv / "bin" / "python").resolve(strict=True)
+    python_root = python.parent.parent
+    if not python.is_file() or not python_root.is_dir():
+        raise BuildExecutionError(f"Python runtime is not a regular installation: {python}")
+
+    site_packages = sorted(
+        path
+        for base in (venv / "lib", venv / "lib64")
+        if base.is_dir() and not base.is_symlink()
+        for path in base.glob("python*/site-packages")
+        if path.is_dir() and not path.is_symlink()
+    )
+    if len(site_packages) != 1:
+        raise BuildExecutionError(
+            "dbt virtual environment must contain exactly one regular site-packages directory"
+        )
+    site_relative = site_packages[0].relative_to(venv).as_posix()
+    return python_root, python.name, site_relative
+
+
 def _bubblewrap_command(dbt: str, worktree: Path) -> list[str]:
     bwrap = shutil.which("bwrap")
     if bwrap is None:
         raise BuildExecutionError("bubblewrap is not installed")
     venv = _runtime_venv(dbt)
+    python_root, python_binary, site_relative = _runtime_python(venv)
     return [
         str(Path(bwrap).resolve()),
         "--die-with-parent",
@@ -108,6 +138,9 @@ def _bubblewrap_command(dbt: str, worktree: Path) -> list[str]:
         "--ro-bind",
         str(venv),
         "/runtime-venv",
+        "--ro-bind",
+        str(python_root),
+        "/runtime-python",
         "--bind",
         str(worktree),
         "/workspace",
@@ -124,7 +157,13 @@ def _bubblewrap_command(dbt: str, worktree: Path) -> list[str]:
         "--clearenv",
         "--setenv",
         "PATH",
-        "/runtime-venv/bin:/usr/bin:/bin",
+        "/runtime-python/bin:/usr/bin:/bin",
+        "--setenv",
+        "PYTHONPATH",
+        f"/runtime-venv/{site_relative}",
+        "--setenv",
+        "VIRTUAL_ENV",
+        "/runtime-venv",
         "--setenv",
         "HOME",
         "/workspace/.home",
@@ -149,8 +188,9 @@ def _bubblewrap_command(dbt: str, worktree: Path) -> list[str]:
         "--setenv",
         "LC_ALL",
         "C.UTF-8",
-        "/runtime-venv/bin/python",
-        "/runtime-venv/bin/dbt",
+        f"/runtime-python/bin/{python_binary}",
+        "-c",
+        "from dbt.cli.main import cli; cli()",
         "build",
         "--project-dir",
         "/workspace",

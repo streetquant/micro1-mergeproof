@@ -1,0 +1,78 @@
+{
+  "$defs": {
+    "FindingCategory": {
+      "enum": [
+        "behavioral_regression",
+        "edge_case_failure",
+        "test_failure",
+        "test_skip",
+        "unverified_claim",
+        "out_of_scope_change",
+        "dependency_drift",
+        "secret_exposure",
+        "path_traversal",
+        "flaky_behavior",
+        "unsafe_command",
+        "insufficient_evidence",
+        "provider_failure",
+        "other"
+      ],
+      "title": "FindingCategory",
+      "type": "string"
+    },
+    "FindingStatus": {
+      "enum": [
+        "verified",
+        "hypothesis"
+      ],
+      "title": "FindingStatus",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "category": {
+      "$ref": "#/$defs/FindingCategory"
+    },
+    "evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "explanation": {
+      "title": "Explanation",
+      "type": "string"
+    },
+    "severity": {
+      "$ref": "#/$defs/Severity"
+    },
+    "status": {
+      "$ref": "#/$defs/FindingStatus",
+      "default": "verified"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "category",
+    "severity",
+    "title",
+    "explanation"
+  ],
+  "title": "Finding",
+  "type": "object"
+}

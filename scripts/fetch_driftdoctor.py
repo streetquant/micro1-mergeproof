@@ -34,7 +34,14 @@ def _run(
         raise UpstreamVerificationError(
             f"command failed ({completed.returncode}): {' '.join(argv)}\n{stderr[-4000:]}"
         )
-    return completed.stdout
+    stdout = completed.stdout
+    if binary:
+        if not isinstance(stdout, bytes):
+            raise UpstreamVerificationError("binary command unexpectedly returned text")
+        return stdout
+    if not isinstance(stdout, str):
+        raise UpstreamVerificationError("text command unexpectedly returned bytes")
+    return stdout
 
 
 def _sha256_bytes(payload: bytes) -> str:
@@ -46,7 +53,10 @@ def _sha256_file(path: Path) -> str:
 
 
 def load_lock(path: Path = LOCK_PATH) -> dict[str, Any]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise UpstreamVerificationError("upstream lock root must be an object")
+    payload: dict[str, Any] = {str(key): value for key, value in raw.items()}
     required = {
         "repository",
         "commit",
@@ -59,6 +69,21 @@ def load_lock(path: Path = LOCK_PATH) -> dict[str, Any]:
     if missing:
         raise UpstreamVerificationError(f"upstream lock is missing fields: {missing}")
     return payload
+
+
+def build_verification_receipt(
+    lock: dict[str, Any],
+    observed: dict[str, str],
+) -> dict[str, Any]:
+    """Return portable upstream identity without leaking the host checkout path."""
+
+    return {
+        "schema_version": 1,
+        "verified": True,
+        "destination": "<UPSTREAM_CACHE>",
+        "repository": lock["repository"],
+        **observed,
+    }
 
 
 def fetch_and_verify(destination: Path, *, reset: bool = False) -> dict[str, Any]:
@@ -126,13 +151,7 @@ def fetch_and_verify(destination: Path, *, reset: bool = False) -> dict[str, Any
             + json.dumps(mismatches, sort_keys=True)
         )
 
-    return {
-        "schema_version": 1,
-        "verified": True,
-        "destination": str(destination),
-        "repository": lock["repository"],
-        **observed,
-    }
+    return build_verification_receipt(lock, observed)
 
 
 def main() -> int:

@@ -11,35 +11,36 @@
   "request_hash": "6085887c3047dff0cd5cbd3f8c141d9933c441626f14a1e3108e61027cc7a736",
   "response": {
     "data": {
-      "confidence": 0.95,
+      "confidence": 0.99,
       "decision": "reject",
       "findings": [
         {
           "category": "behavioral_regression",
           "evidence_ids": [
             "diff:candidate.patch:0618b6e974014d64",
-            "file:candidate_src_counter.py:4d653ed77b64e206"
+            "file:candidate_src_counter.py:4d653ed77b64e206",
+            "file:candidate_tests_test_counter.py:f512c8ba5a29d138"
           ],
-          "explanation": "The implementation changes the return type from int to str, violating the task requirement that the function return an integer. The unit test expects an int, so the change would cause a test failure and incorrect behavior.",
+          "explanation": "The implementation changes the return type from int to str, violating the task requirement that the function return an integer. The test suite expects an int, so this change would cause a type mismatch and test failure.",
           "severity": "high",
-          "title": "Return type mismatch"
+          "title": "Incorrect return type"
         }
       ],
-      "summary": "The change fails to preserve the integer return type and would break the tests; it should be rejected."
+      "summary": "The proposed change fails to preserve the integer return type and should be rejected."
     },
-    "raw_text": "{\"confidence\":0.95,\"decision\":\"reject\",\"findings\":[{\"category\":\"behavioral_regression\",\"evidence_ids\":[\"diff:candidate.patch:0618b6e974014d64\",\"file:candidate_src_counter.py:4d653ed77b64e206\"],\"explanation\":\"The implementation changes the return type from int to str, violating the task requirement that the function return an integer. The unit test expects an int, so the change would cause a test failure and incorrect behavior.\",\"severity\":\"high\",\"title\":\"Return type mismatch\"}],\"summary\":\"The change fails to preserve the integer return type and would break the tests; it should be rejected.\"}",
+    "raw_text": "{\"confidence\":0.99,\"decision\":\"reject\",\"findings\":[{\"category\":\"behavioral_regression\",\"evidence_ids\":[\"diff:candidate.patch:0618b6e974014d64\",\"file:candidate_src_counter.py:4d653ed77b64e206\",\"file:candidate_tests_test_counter.py:f512c8ba5a29d138\"],\"explanation\":\"The implementation changes the return type from int to str, violating the task requirement that the function return an integer. The test suite expects an int, so this change would cause a type mismatch and test failure.\",\"severity\":\"high\",\"title\":\"Incorrect return type\"}],\"summary\":\"The proposed change fails to preserve the integer return type and should be rejected.\"}",
     "usage": {
       "agent": "baseline_reviewer",
       "estimated_cost_usd": null,
       "http_attempts": 1,
       "input_tokens": 1250,
-      "latency_ms": 12374,
+      "latency_ms": 8595,
       "model": "openai/gpt-oss-20b",
-      "output_tokens": 346,
+      "output_tokens": 430,
       "provider": "groq",
-      "rate_limit_wait_ms": 11129,
+      "rate_limit_wait_ms": 7775,
       "request_hash": "6085887c3047dff0cd5cbd3f8c141d9933c441626f14a1e3108e61027cc7a736",
-      "total_tokens": 1596
+      "total_tokens": 1680
     }
   },
   "schema_version": 1

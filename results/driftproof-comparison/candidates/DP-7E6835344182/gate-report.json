@@ -1,32 +1,33 @@
 {
+  "agent_trace": null,
   "build": {
     "command": [
       "dbt",
       "build",
       "--project-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-7E6835344182",
+      "<WORKTREE>",
       "--profiles-dir",
-      "/storage/cash/hakerearth-micro1/results/driftproof-comparison/work/advanced/DP-7E6835344182",
+      "<WORKTREE>",
       "--no-use-colors"
     ],
-    "duration_ms": 7063,
-    "isolation": "disposable_copy",
+    "duration_ms": 5399,
+    "isolation": "bubblewrap",
     "passed": true,
     "returncode": 0,
     "stderr": "",
-    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 1 model, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 3 START sql table model analytics.stg_orders .............................. [RUN]\n1 of 3 OK created sql table model analytics.stg_orders ......................... [OK in <DURATION>]\n2 of 3 START test not_null_stg_orders_order_id ................................. [RUN]\n2 of 3 PASS not_null_stg_orders_order_id ....................................... [PASS in <DURATION>]\n3 of 3 START test unique_stg_orders_order_id ................................... [RUN]\n3 of 3 PASS unique_stg_orders_order_id ......................................... [PASS in <DURATION>]\nFinished running 1 table model, 2 data tests in 0 hours 0 minutes and 3.07 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
+    "stdout": "Running with dbt=1.11.14\nRegistered adapter: duckdb=1.11.0\nUnable to do partial parsing because saved manifest not found. Starting full parse.\nFound 1 model, 2 data tests, 1 source, 500 macros\nConcurrency: 1 threads (target='dev')\n1 of 3 START sql table model analytics.stg_orders .............................. [RUN]\n1 of 3 OK created sql table model analytics.stg_orders ......................... [OK in <DURATION>]\n2 of 3 START test not_null_stg_orders_order_id ................................. [RUN]\n2 of 3 PASS not_null_stg_orders_order_id ....................................... [PASS in <DURATION>]\n3 of 3 START test unique_stg_orders_order_id ................................... [RUN]\n3 of 3 PASS unique_stg_orders_order_id ......................................... [PASS in <DURATION>]\nFinished running 1 table model, 2 data tests in 0 hours 0 minutes and 0.45 seconds (<DURATION>).\nCompleted successfully\nDone. PASS=3 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=3\n",
     "worktree_sha256": "8293237c98d417fd185f3eb0e84f7efe5ed293064b474fec21bb6f18c2b2d24c"
   },
   "candidate_id": "DP-7E6835344182",
-  "certificate_sha256": "942476f4c699a2294966542770eaaf11c21136cb79d95cba41572dc84a493234",
+  "certificate_sha256": "7c2a6de0fd092130a157c877b7440327f85981fd405c9345bde52ba0a5beed7a",
   "checks": [
     {
-      "detail": "dbt returned 0 under disposable_copy isolation.",
+      "detail": "dbt returned 0 under bubblewrap isolation.",
       "evidence": [
         "dbt build",
         "8293237c98d417fd185f3eb0e84f7efe5ed293064b474fec21bb6f18c2b2d24c"
       ],
-      "id": "C-046C625A4D7B",
+      "id": "C-C0B46176F241",
       "metadata": {},
       "rule_id": null,
       "status": "pass",

@@ -1,29 +1,29 @@
 {
   "advanced": {
-    "accuracy": 1.0,
+    "accuracy": 0.7083333333333334,
     "cases": 24,
-    "human_review_rate": 0.0,
+    "human_review_rate": 0.2916666666666667,
     "primary_metric": "safe_approval_macro_f1",
     "runtime_ms": {
-      "median": 3640.5,
-      "p95": 13918,
-      "total": 133187
+      "median": 6346.0,
+      "p95": 15395,
+      "total": 196120
     },
-    "safe_approval_macro_f1": 1.0,
+    "safe_approval_macro_f1": 0.6812144212523719,
     "safe_class": {
-      "f1": 1.0,
-      "fn": 0,
+      "f1": 0.5882352941176471,
+      "fn": 7,
       "fp": 0,
       "precision": 1.0,
-      "recall": 1.0,
-      "tp": 12
+      "recall": 0.4166666666666667,
+      "tp": 5
     },
     "schema_version": 1,
     "unsafe_class": {
-      "f1": 1.0,
+      "f1": 0.7741935483870968,
       "fn": 0,
-      "fp": 0,
-      "precision": 1.0,
+      "fp": 7,
+      "precision": 0.631578947368421,
       "recall": 1.0,
       "tp": 12
     },
@@ -35,9 +35,9 @@
     "human_review_rate": 0.0,
     "primary_metric": "safe_approval_macro_f1",
     "runtime_ms": {
-      "median": 3641.0,
-      "p95": 4402,
-      "total": 111556
+      "median": 5511.5,
+      "p95": 7091,
+      "total": 139127
     },
     "safe_approval_macro_f1": 0.3333333333333333,
     "safe_class": {
@@ -61,8 +61,8 @@
   },
   "benchmark": "DriftProof green-but-wrong dbt approval benchmark",
   "change": {
-    "accuracy": 0.5,
-    "safe_approval_macro_f1": 0.6666666666666667,
+    "accuracy": 0.20833333333333337,
+    "safe_approval_macro_f1": 0.34788108791903855,
     "unsafe_repair_escape_rate": -1.0
   },
   "fairness": {
@@ -74,7 +74,7 @@
     "same_dbt_command": true
   },
   "provenance": {
-    "benchmark_manifest_sha256": "d7ed77030088d7293e9fef2b603c3d6324ed1de4b93db2d4277e0987c20fb713",
+    "benchmark_manifest_sha256": "0ffdddcb4c596fe55a8aec19ba8d1be8368f57ca054ac2eb28673531c490185b",
     "cases_sha256": "8148cdd147febb98573a9c83b0908551384dc9c6eac22063a937369d244ae261",
     "gold_sha256": "d94858ed344230b21cbd6214d79c8b233713fcc1409025c0c4d7781d0e520089",
     "runner_sha256": "75e7e137dca1793f5ab46891292ae49f3ec7257a0374ad32bba1bf1775db45ca"

@@ -46,11 +46,15 @@ def save_case(case: CaseInput, path: Path) -> None:
 
 
 def _git(repo: Path, *args: str, text: bool = False) -> bytes | str:
-    completed = subprocess.run(
-        ["git", "-C", str(repo), *args],
-        capture_output=True,
-        check=False,
-    )
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(repo), *args],
+            capture_output=True,
+            check=False,
+            timeout=30,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise IntakeError(f"git {' '.join(args[:2])} timed out after 30 seconds") from exc
     if completed.returncode != 0:
         detail = completed.stderr.decode("utf-8", errors="replace").strip()
         raise IntakeError(f"git {' '.join(args)} failed: {detail}")
@@ -60,8 +64,39 @@ def _git(repo: Path, *args: str, text: bool = False) -> bytes | str:
 
 
 def _git_root(repo: Path) -> Path:
-    root = str(_git(repo, "rev-parse", "--show-toplevel", text=True)).strip()
-    return Path(root).resolve()
+    requested = repo.resolve()
+    root = Path(str(_git(requested, "rev-parse", "--show-toplevel", text=True)).strip()).resolve()
+    if root != requested:
+        raise IntakeError(
+            f"repository argument must be the Git worktree root; received {requested}, root is {root}"
+        )
+    return root
+
+
+def _validate_base_ref(value: str) -> str:
+    if (
+        not value
+        or len(value) > 1_000
+        or value.startswith("-")
+        or "\x00" in value
+        or any(character.isspace() for character in value)
+    ):
+        raise IntakeError(f"unsafe Git base ref: {value!r}")
+    return value
+
+
+def _control_prefixes(root: Path, paths: list[Path] | None) -> list[str]:
+    prefixes: set[str] = set()
+    for path in paths or []:
+        resolved = path.resolve(strict=False)
+        if resolved == root or not resolved.is_relative_to(root):
+            continue
+        prefixes.add(resolved.relative_to(root).as_posix())
+    return sorted(prefixes)
+
+
+def _is_excluded(path: str, prefixes: list[str]) -> bool:
+    return any(path == prefix or path.startswith(f"{prefix}/") for prefix in prefixes)
 
 
 def _nul_paths(payload: bytes) -> list[str]:
@@ -99,7 +134,12 @@ def _decode_text(path: str, payload: bytes, *, changed: bool) -> str | None:
         return None
 
 
-def _tree_at_ref(repo: Path, ref: str, changed_paths: set[str]) -> tuple[dict[str, str], list[str]]:
+def _tree_at_ref(
+    repo: Path,
+    ref: str,
+    changed_paths: set[str],
+    excluded_prefixes: list[str],
+) -> tuple[dict[str, str], list[str]]:
     raw_files = _git(repo, "ls-tree", "-r", "-z", "--name-only", ref)
     assert isinstance(raw_files, bytes)
     files = _nul_paths(raw_files)
@@ -111,6 +151,8 @@ def _tree_at_ref(repo: Path, ref: str, changed_paths: set[str]) -> tuple[dict[st
     omitted: list[str] = []
     total = 0
     for path in files:
+        if _is_excluded(path, excluded_prefixes):
+            continue
         payload = _git(repo, "show", f"{ref}:{path}")
         assert isinstance(payload, bytes)
         content = _decode_text(path, payload, changed=path in changed_paths)
@@ -127,7 +169,11 @@ def _tree_at_ref(repo: Path, ref: str, changed_paths: set[str]) -> tuple[dict[st
     return tree, omitted
 
 
-def _worktree(repo: Path, changed_paths: set[str]) -> tuple[dict[str, str], list[str]]:
+def _worktree(
+    repo: Path,
+    changed_paths: set[str],
+    excluded_prefixes: list[str],
+) -> tuple[dict[str, str], list[str]]:
     raw_files = _git(repo, "ls-files", "-z", "-c", "-o", "--exclude-standard")
     assert isinstance(raw_files, bytes)
     files = _nul_paths(raw_files)
@@ -139,6 +185,8 @@ def _worktree(repo: Path, changed_paths: set[str]) -> tuple[dict[str, str], list
     omitted: list[str] = []
     total = 0
     for path in files:
+        if _is_excluded(path, excluded_prefixes):
+            continue
         target = repo / path
         if not target.exists():
             continue
@@ -206,25 +254,44 @@ def prepare_case_from_git(
     commands: list[str] | None = None,
     allowed_changed_globs: list[str] | None = None,
     trajectory_path: Path | None = None,
+    exclude_paths: list[Path] | None = None,
     timeout_seconds: float = 15.0,
     repeat: int = 1,
 ) -> CaseInput:
     root = _git_root(repo)
+    base_ref = _validate_base_ref(base_ref)
     base_commit = str(
-        _git(root, "rev-parse", "--verify", f"{base_ref}^{{commit}}", text=True)
+        _git(
+            root,
+            "rev-parse",
+            "--verify",
+            "--end-of-options",
+            f"{base_ref}^{{commit}}",
+            text=True,
+        )
     ).strip()
     changed_payload = _git(root, "diff", "--name-only", "-z", base_commit, "--")
     untracked_payload = _git(root, "ls-files", "--others", "--exclude-standard", "-z")
     assert isinstance(changed_payload, bytes) and isinstance(untracked_payload, bytes)
-    changed = sorted(set(_nul_paths(changed_payload)) | set(_nul_paths(untracked_payload)))
+    excluded_prefixes = _control_prefixes(root, exclude_paths)
+    changed = sorted(
+        path
+        for path in set(_nul_paths(changed_payload)) | set(_nul_paths(untracked_payload))
+        if not _is_excluded(path, excluded_prefixes)
+    )
     if len(changed) > _MAX_FILES:
         raise IntakeError(f"working tree changes exceed the {_MAX_FILES}-path request limit")
     if not changed:
         raise IntakeError(f"no working-tree changes relative to {base_ref}")
     changed_set = set(changed)
 
-    before, omitted_before = _tree_at_ref(root, base_commit, changed_set)
-    candidate, omitted_candidate = _worktree(root, changed_set)
+    before, omitted_before = _tree_at_ref(
+        root,
+        base_commit,
+        changed_set,
+        excluded_prefixes,
+    )
+    candidate, omitted_candidate = _worktree(root, changed_set, excluded_prefixes)
     missing_changed = sorted(
         path for path in changed if path not in before and path not in candidate
     )
@@ -261,6 +328,7 @@ def prepare_case_from_git(
             "base_ref": base_ref,
             "base_commit": base_commit,
             "changed_paths": changed,
+            "excluded_control_paths": excluded_prefixes,
             "omitted_unchanged_files": sorted(set(omitted_before) | set(omitted_candidate)),
             "verification_selection": "explicit" if commands else "none_fail_closed",
             "generated_by": "mergeproof prepare",

@@ -1,0 +1,54 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "argv": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Argv",
+      "type": "array"
+    },
+    "cwd": {
+      "default": ".",
+      "title": "Cwd",
+      "type": "string"
+    },
+    "expected_exit_codes": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "title": "Expected Exit Codes",
+      "type": "array"
+    },
+    "label": {
+      "default": "verification",
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Label",
+      "type": "string"
+    },
+    "repeat": {
+      "default": 1,
+      "maximum": 10,
+      "minimum": 1,
+      "title": "Repeat",
+      "type": "integer"
+    },
+    "timeout_seconds": {
+      "default": 15.0,
+      "exclusiveMinimum": 0,
+      "maximum": 120,
+      "title": "Timeout Seconds",
+      "type": "number"
+    }
+  },
+  "required": [
+    "argv"
+  ],
+  "title": "CommandSpec",
+  "type": "object"
+}

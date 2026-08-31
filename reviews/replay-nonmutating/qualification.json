@@ -1,0 +1,24 @@
+{
+  "canonical_file_sha256": {
+    "results/baseline-replay-gpt-oss-20b/manifest.json": "3179ca07a1816d5c021bf7335c80555e6020f749118bb156883ee0c459527e0c",
+    "results/baseline-replay-gpt-oss-20b/metrics.json": "8202069a43914ca59f7d04b57ccc5d67c12134f0f215841579f87dfd7fefe943",
+    "results/baseline-replay-gpt-oss-20b/predictions-manifest.json": "1bb546e5ce9371a0b620e3f8f62ed849bee1972fb86cacfd2cffb83fed017747",
+    "results/baseline-replay-gpt-oss-20b/raw-results.jsonl": "cbc93beade07200070f0c1b95a3de3854ec99e01beed31c21b2c4d7ecd3c2bf6",
+    "results/baseline-replay-gpt-oss-20b/replay-verification.json": "f1a85a4698ad28d68177c154a010c90d875c5e1b725293ac87e8b35e81466825"
+  },
+  "finding": "The replay verifier rewrote tracked evidence with volatile runtime fields during every check.",
+  "implementation_sha256": "3e542ba141c1b6ffc681a19e25037726be516805adebf48050216b1669891401",
+  "parent_commit": "7ab5d40722dc50522b2d433c5760df73a3ba9acf",
+  "qualification": {
+    "canonical_file_hashes_unchanged": true,
+    "make_check": true,
+    "mypy_strict": true,
+    "pytest_passed": 173,
+    "ruff": true,
+    "status_hash_unchanged_across_make_check": true
+  },
+  "repair": "Run replay into a temporary directory, verify committed artifact integrity and semantic equality, then remove the temporary output without modifying canonical evidence.",
+  "schema_version": 1,
+  "status": "passed",
+  "test_sha256": "706b0557e24aa08500c31ded0d4e9180ad035b82b797ab7f2060168a9020c894"
+}
